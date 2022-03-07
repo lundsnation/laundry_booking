@@ -15,7 +15,10 @@
     "@emotion/server": "latest",
     "@emotion/styled": "latest",
     "@mui/icons-material": "latest",
+    "@mui/lab": "^5.0.0-alpha.72",
     "@mui/material": "latest",
+    "@types/date-fns": "^2.6.0",
+    "date-fns": "^2.28.0",
     "next": "latest",
     "react": "latest",
     "react-dom": "latest"
