@@ -1,21 +1,30 @@
-import { Button } from "@mui/material"
-import { useState } from "react";
+import { Button, Container } from "@mui/material"
+import { useEffect, useState } from "react";
 
 interface Props {
-    title: String;
-    status: boolean;
+    time: String;
+    //status: boolean;
 }
 
 
 
 const BookingButton = (props: Props) => {
-    const [bookedStatus, setBookedStatus] = useState<boolean>(false);
+    const [booked, setBooked] = useState<boolean>(false);
+    let buttonColor: string = "success";
+
+    /*
+    useEffect(() => {
+        color = booked ? color = "error" : color = "success";
+    }, [booked]);
+    */
 
     const handleClick = () => {
-        setBookedStatus(!bookedStatus);
+        setBooked(!booked);
     }
 
     return (
-        <Button onClick={handleClick}> {props.title} </Button>
+            <Button onClick={handleClick} color={booked ?  "error" : "success"} variant="outlined" > {props.time} </Button>
     );
 };
+
+export default BookingButton;
