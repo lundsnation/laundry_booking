@@ -57,14 +57,14 @@ The work for each category is divided into **subcategories**, which are:
 ## Repository conventions
 This heading and the following sub headings contain information regarding different types of naming conventions.
 
-# Branch Conventions
+### Branch Conventions
 There should be branches for each of the main categories listed in the 'Kanban Board' section above or in the projects section of the repository. When working on a feature,
 one should create a sub branch of the main branch.
 
 Example: mainCategory/feature -> backend/api, where the feature/task should be found in the project section of the repository.
 
 
-# Git Commit Conventions
+### Git Commit Conventions
 Git commits are allowed both in past and present tense.  
 Example: Updated/Update README.md
 
