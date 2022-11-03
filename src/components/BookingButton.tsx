@@ -1,10 +1,13 @@
 import { Button, Container } from "@mui/material"
+import { time } from "console";
 import { useEffect, useState } from "react";
+import {Booking, ResponseFuncs} from "../../utils/types"
 
 interface Props {
     time: String;
     //status: boolean;
 }
+
 
 
 
@@ -17,8 +20,18 @@ const BookingButton = (props: Props) => {
         color = booked ? color = "error" : color = "success";
     }, [booked]);
     */
+    
 
-    const handleClick = () => {
+    const  handleClick =  async () => {
+        const response = await fetch("/api/bookings", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({})
+        });
+        const data = await  response.json();
+
         setBooked(!booked);
     }
 
