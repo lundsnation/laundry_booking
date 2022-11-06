@@ -8,7 +8,9 @@ export interface ResponseFuncs {
   
   // Interface to define our Todo model on the frontend
   export interface Booking {
-    //_id?: number
-    time: string
-    booked: boolean
+    _id?: Number
+    time: Number
+    date: Date
+    building: String
+    tenant: Number
   }

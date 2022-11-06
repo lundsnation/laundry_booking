@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next"
 import { connect } from "../../../utils/connection"
 import { ResponseFuncs } from "../../../utils/types"
-import Booking from '../../../models/Booking'
+import Booking from "../../../models/Booking"
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   //capture request method, we type it as a key of ResponseFunc to reduce typing later
@@ -10,18 +10,27 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   //function for catch errors
   const catcher = (error: Error) => res.status(400).json({ error })
 
-  // Potential Responses
+  // GRAB ID FROM req.query (where next stores params)
+  const id: string = req.query.id as string
+
+  // Potential Responses for /Bookings/:id
   const handleCase: ResponseFuncs = {
     // RESPONSE FOR GET REQUESTS
     GET: async (req: NextApiRequest, res: NextApiResponse) => {
-      await connect()
-      res.json(await Booking.find({}).catch(catcher))
+      await connect() // connect to database
+      res.json(await Booking.findById(id).catch(catcher))
     },
-    // RESPONSE POST REQUESTS
-    POST: async (req: NextApiRequest, res: NextApiResponse) => {
-      console.log("Got post request");
-      await connect()
-      res.json(await Booking.create(req.body).catch(catcher))
+    // RESPONSE PUT REQUESTS
+    PUT: async (req: NextApiRequest, res: NextApiResponse) => {
+      await connect() // connect to database
+      res.json(
+        await Booking.findByIdAndUpdate(id, req.body, { new: true }).catch(catcher)
+      )
+    },
+    // RESPONSE FOR DELETE REQUESTS
+    DELETE: async (req: NextApiRequest, res: NextApiResponse) => {
+      await connect() // connect to database
+      res.json(await Booking.findByIdAndRemove(id).catch(catcher))
     },
   }
 

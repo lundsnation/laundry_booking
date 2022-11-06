@@ -10,16 +10,6 @@ export const connect = async () => {
     .connect(DATABASE_URL as string)
     .catch(err => console.log(err))
   console.log("Mongoose Connection Established")
-
-  // OUR TODO SCHEMA
-  const BookingSchema = new mongoose.Schema({
-    time: String,
-    booken: Boolean
-  });
-
-  // OUR TODO MODEL
-  const Booking = mongoose.models.Booking || mongoose.model("bookings", BookingSchema)
-
-  return { conn, Booking }
- 
+  
+  return { conn }
 }
