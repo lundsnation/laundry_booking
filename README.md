@@ -37,12 +37,37 @@ Next.js has [a custom Link component](https://nextjs.org/docs/api-reference/next
 The example folder provides adapters for usage with MUI.
 More information [in the documentation](https://mui.com/guides/routing/#next-js).
 
-## What's next?
+## Kanban Board
+The kanban board is used to structure the work. There are **main categories**, which include category specific work. 
+The main categories are:
 
-<!-- #default-branch-switch -->
+*Frontend
+*Backend
+*Auth0
+*Database
+*Testing
+*Other
 
-You now have a working example project.
-You can head back to the documentation, continuing browsing it from the [templates](https://mui.com/getting-started/templates/) section.
+
+The work for each category is divided into **subcategories**, which are:
+*Backlog
+*In progress
+*Done
+
+## Repository conventions
+This heading and the following sub headings contain information regarding different types of naming conventions.
+
+### Branch Conventions
+There should be branches for each of the main categories listed in the 'Kanban Board' section above or in the projects section of the repository. When working on a feature,
+one should create a sub branch of the main branch.
+
+Example: mainCategory/feature -> backend/api, where the feature/task should be found in the project section of the repository.
+
+
+### Git Commit Conventions
+Git commits are allowed both in past and present tense.  
+Example: Updated/Update README.md
+
 
 ## Good links and keywords for tutorials
 https://mui.com/
