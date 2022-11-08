@@ -3,6 +3,9 @@ import Document, { Html, Head, Main, NextScript } from 'next/document';
 import createEmotionServer from '@emotion/server/create-instance';
 import theme from '../src/theme';
 import createEmotionCache from '../src/createEmotionCache';
+import { createTheme } from '@mui/material/styles';
+
+
 
 export default class MyDocument extends Document {
   render() {
@@ -55,6 +58,11 @@ MyDocument.getInitialProps = async (ctx) => {
 
   const originalRenderPage = ctx.renderPage;
 
+  const theme = createTheme({
+    shape: {
+      borderRadius: 10,
+    },
+  });
   // You can consider sharing the same emotion cache between all the SSR requests to speed up performance.
   // However, be aware that it can have global side effects.
   const cache = createEmotionCache();

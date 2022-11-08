@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next"
 import { connect } from "../../../utils/connection"
 import { ResponseFuncs } from "../../../utils/types"
-import Booking from "../../../models/Booking"
+import Booking from '../../../models/Booking'
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   //capture request method, we type it as a key of ResponseFunc to reduce typing later
