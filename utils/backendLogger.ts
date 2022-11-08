@@ -1,16 +1,19 @@
 import mongoose from 'mongoose'
 
+//Potential todo list:
+//Add method for logging responses?
+
+//Constants for controlling logging
 const LOGEVENTS = true;
 const DEBUGEVENTS = false;
 const LOGREQUESTS = true;
+//const writeToFile = false; //add writeToFile functionality
 
-//Create DbLogger with write to file functionality and make global values for writeFile like in DATABASE_URL and exapnd for all api endpoints add header format
-
-
+//Logs events when added to models/Bookings.ts
 export const addEventLogging = () => {
     //0 = disconnected, 1 = connected, 2 = connecting, 3 = disconnecting
   
-  //const HEADER = "[ TYPE \t something ] Can be added later if logging to file will be used
+  //const HEADER = "[ TYPE \t something ] Can be added later if logging to file will be used and for further clarity
 
     if(LOGEVENTS) {
         DEBUGEVENTS && console.log('[ readyStates: { 0 = disconnected, 1 = connected, 2 = connecting, 3 = disconnecting } ]')
@@ -38,11 +41,13 @@ export const addEventLogging = () => {
     }
 }
 
+//Logs requests when added to [ID].ts and index.ts in pages/api/bookings/
 export const logRequest = (method: string) => {
     if(LOGREQUESTS) {
         switch(method) {
             case 'GET':
             case 'POST':
+            case 'GET_ID':
             case 'PUT':
             case 'DELETE':
             console.log("LOGGER: [Received " + method + " request \t\t" + new Date().toLocaleString() + "]")
@@ -53,4 +58,5 @@ export const logRequest = (method: string) => {
         }
     } 
 }
+
   

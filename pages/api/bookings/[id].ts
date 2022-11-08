@@ -22,7 +22,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const handleCase: ResponseFuncs = {
     // RESPONSE FOR GET REQUESTS
     GET: async (req: NextApiRequest, res: NextApiResponse) => {
-      logRequest('GET')
+      logRequest('GET_ID')
       res.json(await Booking.findById(id).catch(catcher))
     },
     // RESPONSE PUT REQUESTS
