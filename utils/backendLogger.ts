@@ -1,7 +1,7 @@
 import mongoose from 'mongoose'
 
 const LOGEVENTS = true;
-const DEBUGEVENTS = true;
+const DEBUGEVENTS = false;
 const LOGREQUESTS = true;
 
 //Create DbLogger with write to file functionality and make global values for writeFile like in DATABASE_URL and exapnd for all api endpoints add header format
