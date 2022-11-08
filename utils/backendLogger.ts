@@ -2,6 +2,7 @@ import mongoose from 'mongoose'
 
 //Potential todo list:
 //Add method for logging responses?
+//Add logging for unknown requests
 
 //Constants for controlling logging
 const LOGEVENTS = true;
