@@ -3,7 +3,7 @@ import BookingCalendar from '../src/components/BookingCalendar';
 
 const Calendar: NextPage = () => {
     return(
-        <BookingCalendar title="Lunds Nation"/>
+        <BookingCalendar title="Tvättbokning - Lunds Nation"/>
     );
 }
 
