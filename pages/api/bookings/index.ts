@@ -1,5 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next"
-import { connect, logRequest } from "../../../utils/connection"
+import { connect } from "../../../utils/connection"
+import { logRequest } from "../../../utils/backendLogger"
 import { ResponseFuncs } from "../../../utils/types"
 import Booking from '../../../models/Booking'
 
