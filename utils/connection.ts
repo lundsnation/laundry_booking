@@ -17,7 +17,9 @@ export const logRequest = (method: string) => {
 
   switch(method) {
     case 'GET':
-    case 'POST': 
+    case 'POST':
+    case 'PUT':
+    case 'DELETE':
       console.log("LOGGER: [Received " + method + " request \t\t" + new Date().toLocaleString() + "]")
       break;
 

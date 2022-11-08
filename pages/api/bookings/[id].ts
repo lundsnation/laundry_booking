@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next"
-import { connect } from "../../../utils/connection"
+import { connect, logRequest } from "../../../utils/connection"
 import { ResponseFuncs } from "../../../utils/types"
 import Booking from '../../../models/Booking'
 
@@ -12,22 +12,26 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
   // GRAB ID FROM req.query (where next stores params)
   const id: string = req.query.id as string
+  
+  // connect to database
+  await connect()
+
 
   // Potential Responses for /Bookings/:id
   const handleCase: ResponseFuncs = {
     // RESPONSE FOR GET REQUESTS
     GET: async (req: NextApiRequest, res: NextApiResponse) => {
-      await connect() // connect to database
+      logRequest('GET')
       res.json(await Booking.findById(id).catch(catcher))
     },
     // RESPONSE PUT REQUESTS
     PUT: async (req: NextApiRequest, res: NextApiResponse) => {
-      await connect() // connect to database
+      logRequest('PUT')
       res.json(await Booking.findByIdAndUpdate(id, req.body, { new: true }).catch(catcher))
     },
     // RESPONSE FOR DELETE REQUESTS
     DELETE: async (req: NextApiRequest, res: NextApiResponse) => {
-      await connect() // connect to database
+      logRequest('DELETE')
       res.json(await Booking.findByIdAndRemove(id).catch(catcher))
     },
   }
