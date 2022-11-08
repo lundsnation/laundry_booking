@@ -77,6 +77,27 @@ const BookingCalendar = (props: Props) => {
                 }           
                 }
                 renderInput={(params) => <TextField {...params} />}
+                renderDay={(day, _value, DayComponentProps) => {
+                    let isBooked = false;
+
+                    const calendarDayInYear = getDayOfYear(day);
+                    bookedDates.forEach(bookedDayInYear => {
+                        if(calendarDayInYear === bookedDayInYear)
+                            isBooked = true
+                    });
+                
+
+                    return (
+                        <Badge
+                            key={day.toString()}
+                            overlap="circular"
+                            badgeContent={isBooked ? '🔴' : undefined}
+                        >
+                            <PickersDay {...DayComponentProps} />
+                        </Badge>
+                    );
+                    
+                }}
             />
         </LocalizationProvider>
         
