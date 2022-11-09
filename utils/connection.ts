@@ -11,7 +11,5 @@ export const connect = async () => {
     .connect((DATABASE_URL as string))
     .catch(err => console.log(err))
 
-
-  
   return { conn }
 }

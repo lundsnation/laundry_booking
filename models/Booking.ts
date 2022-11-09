@@ -8,8 +8,7 @@ const BookingSchema = new mongoose.Schema({
 
 const Booking = mongoose.models.Booking || mongoose.model("Booking", BookingSchema)
 
-//print header for logger [type nanana]
-
+//print header for logger here
 
 addEventLogging();
 
