@@ -47,15 +47,17 @@ export const logRequest = (method: string) => {
     if(LOGREQUESTS) {
         switch(method) {
             case 'GET':
+            case 'PUT':
+                console.log("LOGGER: [ Received " + method + " request \t\t\t" + new Date().toLocaleString() + " ]")
+                break;
             case 'POST':
             case 'GET_ID':
-            case 'PUT':
             case 'DELETE':
-            console.log("LOGGER: [Received " + method + " request \t\t" + new Date().toLocaleString() + "]")
-            break;
+                console.log("LOGGER: [ Received " + method + " request \t\t" + new Date().toLocaleString() + " ]")
+                break;
     
             default:
-            console.log("LOGGER: [ Receved unknown " + method + " request \t\t" + new Date().toLocaleString() + "]")
+                console.log("LOGGER: [ Receved unknown " + method + " request \t\t" + new Date().toLocaleString() + " ] ")
         }
     } 
 }
