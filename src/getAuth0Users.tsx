@@ -1,23 +1,32 @@
 
-async function setAuth0Token() {
-    const options = {
-        method: 'POST',
-        url: 'https://dev-otg4ju0e.us.auth0.com/oauth/token',
-        headers: { 'content-type': 'application/json' },
-        body: '{"client_id": "pbfa0jWn2CTVbp0wZMAUUSwOvmQGs08F", "client_secret": "EYr-521H0mJIsuNkGRuBLe3pSP9zftTn_DB5WcCGzeR0vnR-Wt_6iwoqBtYSqPAZ", "audience": "https://dev-otg4ju0e.us.auth0.com/api/v2/", "grant_type": "client_credentials"}',
-    }
-
-    const response = await fetch(options.url, options)
-    const responseJson = await response.json()
-    const parsed = await responseJson.access_token
-    return parsed
-
-}
-
 
 export class getUsers {
 
-    private token: Promise<string> = setAuth0Token()
+    private token: Promise<string>;
+
+    constructor() {
+        this.token = this.setAuth0Token()
+    }
+
+
+    private async setAuth0Token() {
+        const id = (process.env.REACT_APP_ID as string)
+        const secret = (process.env.REACT_APP_SECRET as string)
+
+        const options = {
+            method: 'POST',
+            url: 'https://dev-otg4ju0e.us.auth0.com/oauth/token',
+            headers: { 'content-type': 'application/json' },
+            body: `{"client_id" : "${id}", "client_secret": "${secret}", "audience" : "https://dev-otg4ju0e.us.auth0.com/api/v2/", "grant_type" : "client_credentials"}`,
+        }
+        const response = await fetch(options.url, options)
+        const responseJson = await response.json()
+        const parsed = await responseJson.access_token
+
+        return parsed
+
+    }
+
 
     downloadJSON = (json: String) => {
 
@@ -49,6 +58,7 @@ export class getUsers {
     }
 
     private async _getSpecificUser(key: string, value: string) {
+
         const token = await this.token
         const specified = `${key} : "${value}"`
         const options = {
@@ -64,7 +74,6 @@ export class getUsers {
         const response = await fetch(options.url + searchParams.toString(), options)
         const data = await response.json()
         const parser = JSON.parse(JSON.stringify(data))
-        console.log(options.url + searchParams)
 
         return parser[0]
 
@@ -74,18 +83,16 @@ export class getUsers {
         this.getUser(key, value)
     }
 
-    get allUsers() {
+    get getAllUsers() {
         return this._downloadAllUsers()
     }
 
     getUser(key: string, value: string) {
+        if (!key || !value) {
+            return
+        }
         return this._getSpecificUser(key, value)
     }
 
 
-    get getToken() {
-        return this.token
-    }
-
 }
-
