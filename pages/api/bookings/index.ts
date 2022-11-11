@@ -19,8 +19,8 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     },
     // RESPONSE POST REQUESTS
     POST: async (req: NextApiRequest, res: NextApiResponse) => {
-      console.log("Got post request");
       await connect()
+      //console.log(req.body)
       res.json(await Booking.create(req.body).catch(catcher))
     },
   }
