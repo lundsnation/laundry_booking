@@ -3,6 +3,7 @@
 # dependencies
 /node_modules
 /.pnp
+/package-lock.json
 .pnp.js
 
 # testing
@@ -36,3 +37,5 @@ yarn-error.log*
 
 #
 .vscode/
+
+

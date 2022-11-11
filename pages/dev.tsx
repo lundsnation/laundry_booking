@@ -3,18 +3,18 @@ import { useUser } from '@auth0/nextjs-auth0/dist/frontend';
 import { NextPage } from "next";
 import { getUsers } from "../src/getAuth0Users";
 import NotLoggedIn from "../src/components/NotLoggedIn";
+import { getUsers } from "../src/getAuth0Users";
 
 
 
 const Dev: NextPage = () => {
 
     const { user, isLoading, error } = useUser()
+    const userGetter = new getUsers()
 
     const handleClick = async () => {
-        const userJson = new getUsers()
-        const specified = await userJson.getUser("name", "NH1105")
-
-        console.log(specified)
+        const adam = await userGetter.getUser("name", "NH1105")
+        console.log(adam)
     }
 
     return (
