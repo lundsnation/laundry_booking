@@ -6,12 +6,20 @@ import CssBaseline from '@mui/material/CssBaseline';
 import { CacheProvider, EmotionCache } from '@emotion/react';
 import createEmotionCache from '../src/createEmotionCache';
 import { UserProvider } from '@auth0/nextjs-auth0';
+import theme from "../src/theme"
 
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
 // Theme for Lunds Nation as specified in the design handbook
 const lundsNationtheme = createTheme({
+  typography: {
+    allVariants: {
+      fontFamily: [
+        'Montserrat'
+      ].join(",")
+    },
+  },
   palette: {
     primary: {
       // Laurel
