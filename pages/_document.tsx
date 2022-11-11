@@ -9,6 +9,7 @@ import { createTheme } from '@mui/material/styles';
 
 export default class MyDocument extends Document {
   render() {
+    console.count("Re-renders")
     return (
       <Html lang="en">
         <Head>

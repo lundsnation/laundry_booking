@@ -1,9 +1,15 @@
 import mongoose from 'mongoose'
+import { addEventLogging } from '../utils/backendLogger'
 
 const BookingSchema = new mongoose.Schema({
     date: Date,
-    building: String,
-    tenant: Number,
+    userName: String
   })
-  
-  export default mongoose.models['Booking'] || mongoose.model("Booking", BookingSchema)
+
+const Booking = mongoose.models.Booking || mongoose.model("Booking", BookingSchema)
+
+//print header for logger here
+
+addEventLogging();
+
+export default Booking;

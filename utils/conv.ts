@@ -9,6 +9,8 @@ export class conv{
     d:Date
     // Array
     times:Array<Date>
+    // Length of timeslots
+    ts:number
     constructor(minH: number,maxH: number,n: number,d:Date){
         this.minH = minH;
         this.maxH = maxH;
@@ -16,24 +18,33 @@ export class conv{
         this.d = d;
         this.times = new Array<Date>();
         // Timeslot time in milliseconds 
-        const ts = ((maxH-minH)/n)*60*60*1000;
+        this.ts = ((maxH-minH)/n)*60*60*1000;
         let tempDate;
         for(let i = 0;i<n;i++){
             tempDate = new Date(d.getFullYear(),d.getMonth(),d.getDate(),minH)
-            tempDate.setTime(tempDate.getTime()+i*ts)
+            tempDate.setTime(tempDate.getTime()+i*this.ts)
+            this.times[i] = tempDate
+        }
+    }
+    // Sets new date and updates timeslots accordingly
+    setDate(d: Date){
+        this.d = d
+        let tempDate;
+        for(let i = 0;i<this.n;i++){
+            tempDate = new Date(d.getFullYear(),d.getMonth(),d.getDate(),this.minH)
+            tempDate.setTime(tempDate.getTime()+i*this.ts)
             this.times[i] = tempDate
         }
     }
     // Returns corresponding date from specified timeslot from 0-9 
-    getDate(tSlot: number ){
+    getDate(tSlot: number ) : Date{
         return this.times[tSlot]
     }
 
     // Takes in a date and returns corresponding time-slot between 0-9
     // TODO currently broken if date is not aligned with defined slot
     // also bad code, can be streamlined
-    getTSlot(date: Date){
-        
+    getTSlot(date: Date) : number{
         let tempArray = new Array<number>(10)
         for(let i = 0;i<tempArray.length;i++){
             tempArray[i] = this.times[i].getTime()
@@ -45,8 +56,12 @@ export class conv{
         }
         return -1
     }   
-    getArray(){
+
+    getArray() : Array<Date>{
         return this.times
+    }
+    getspecDate(): Date{
+        return this.d
     }
 
 }
