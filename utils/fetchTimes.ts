@@ -1,11 +1,12 @@
 import {conv} from "./conv"
+import {Booking} from "../utils/types"
 
 const n = 10;
 const maxH = 22;
 const minH = 7;
-export async function fetchTimes(d:Date): Promise<Array<boolean>>{
-    const converter = new conv(minH,maxH,n,d);
-    const bookedTimes = new Array<boolean>(10).fill(false);
+export async function fetchTimes(converter:conv): Promise<Array<Booking>>{
+
+    const bookedTimes = new Array<Booking>(10);
     const response = await fetch("/api/bookings", {
         method: "GET",
         headers: {
@@ -20,7 +21,7 @@ export async function fetchTimes(d:Date): Promise<Array<boolean>>{
             tempDate = new Date(data[i]['date'])
             timeSlot = converter.getTSlot(tempDate)
             if(timeSlot != -1){
-                bookedTimes[timeSlot] = true;
+                bookedTimes[timeSlot] = data[i]
             }
         }
     }

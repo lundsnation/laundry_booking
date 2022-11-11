@@ -1,6 +1,7 @@
 import { Box, Button, Container, Typography } from "@mui/material";
 import { useUser } from '@auth0/nextjs-auth0/dist/frontend';
 import { NextPage } from "next";
+import { getUsers } from "../src/getAuth0Users";
 import NotLoggedIn from "../src/components/NotLoggedIn";
 import { getUsers } from "../src/getAuth0Users";
 
