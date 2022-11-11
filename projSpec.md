@@ -24,11 +24,12 @@ For this project we want to offer complete solution as opposed to integrating co
 
 ### Database
 The database will mainly keep track of which users has booked which times. Therefore the only data fields of interest would be: 
-- `userID`
-- `timeSlotBooked`
+- `userName`
+- `dateofTimeslot`
 
-The data will be accessed thorugh basic HTTP api-calls such as GET & POST, and then processed in the frontend.  
+Having booked a timeslot, the user submits a POST-request to the backend, which in turn updates the DB using mongoose. This means that each database object will correspond to one booked time-slot, which will lower complexity and save on memory usage. 
 
+Since each object in the database is associated with a user, it is easy to determine which time the user already has booked. 
 
 #### Mongodb Atlas. 
 Due to great integration and included web UI, mongodb Atlas will handle database storage and CRUD-operations. Mongodb Atlas is essentially free (512 MB, 500 Collections and 100 CRUD-operations/second for free-tier), enabling us to 
@@ -37,10 +38,13 @@ setup a functioning database very quickly.
 In order to represent data, we define a mongoose shcema-representation for our data, making operations on database-objects easier to write code for.  
 
 ### Backend
+Utilizing next.js built in API-router, we define static calls for GET & POST requests. While we also implement dynamic api-calls for GET , PUT and DELETE. This allows us to operate on objects directly by object-ID.  
+
 #### NextJs
-good for smth idk
+Next comes packed with great full-stack capabilities which we will use extensively during th project. Routing, server-side rendering and state management is being used to build the web-service. 
+
 #### Auth0 
-good for pass&user idk
+Auth0 will offload much work on authentication. Using their free tier, we get access to a user-database way bigger than we actually need, with global login, managment tools etc. It is also notoriously easy to implement with next.js
 
 ### Frontend
 React
