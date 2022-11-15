@@ -6,21 +6,21 @@ import Header from '../src/components/Header'
 
 const Calendar: NextPage = () => {
     const { user, isLoading, error } = useUser()
-    return(
-       
-    <Container maxWidth="lg">
-        <Grid container spacing = {10}>
-        <Grid item xs={12}>
-            <Header/> 
-        </Grid>    
-        <Grid item xs={12}>
-            {user ?  <BookingCalendar title="Tvättbokning - Lunds Nation" user = {user}/> : <Typography>Logga in!</Typography>}
-        </Grid>  
-        </Grid>       
-    </Container>
-        ); 
+    return (
+
+        <Container maxWidth="lg">
+            <Grid container spacing={10}>
+                <Grid item xs={12}>
+                    <Header />
+                </Grid>
+                <Grid item xs={12}>
+                    {user ? <BookingCalendar title="Tvättbokning - Lunds Nation" user={user} /> : <Typography>Logga in!</Typography>}
+                </Grid>
+            </Grid>
+        </Container>
+    );
 }
 
 export default Calendar;
 
- /*{user ?  <BookingCalendar title="Tvättbokning - Lunds Nation" user = {user}/> : router.push("/index")}*/
+/*{user ?  <BookingCalendar title="Tvättbokning - Lunds Nation" user = {user}/> : router.push("/index")}*/

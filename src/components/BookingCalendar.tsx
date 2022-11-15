@@ -1,4 +1,4 @@
-import { LocalizationProvider, PickersDay, StaticDatePicker } from "@mui/lab";
+import { LocalizationProvider, PickersDay, StaticDatePicker, DatePicker } from "@mui/lab";
 import { useState, useEffect } from "react";
 import AdapterDateFns from '@mui/lab/AdapterDateFns'
 import { Badge, Container, Grid, Stack, TextField, Typography } from "@mui/material";
@@ -54,6 +54,8 @@ const BookingCalendar = (props: Props) => {
         <Typography variant="body1" align="center">Laddar...</Typography>
     )
 
+    let dayColor = "white"
+
     return (
         <div>
             <Typography sx={{ m: 3 }} variant="h3" component="h2" align="center"> {props.title} </Typography>
@@ -83,11 +85,19 @@ const BookingCalendar = (props: Props) => {
                                 let isBooked = false;
 
                                 const calendarDayInYear = getDayOfYear(day);
-                                bookedTimes.forEach(bookedDayInYear => {
-                                    if (calendarDayInYear === getDayOfYear(bookedDayInYear.date))
-                                        isBooked = true
-                                });
+                                const currentDayBookings = bookedTimes.map(time => {
+                                    if (getDayOfYear(time.date) === calendarDayInYear) {
+                                        time
+                                    } else { null }
+                                })
+                                let newBookingListLength = 0
+                                currentDayBookings.forEach(time => {
+                                    if (time !== null) {
+                                        newBookingListLength++
+                                    }
+                                })
 
+                                if (newBookingListLength === times.length) { isBooked = !isBooked }
 
                                 return (
                                     <Badge
@@ -95,7 +105,13 @@ const BookingCalendar = (props: Props) => {
                                         overlap="circular"
                                         badgeContent={isBooked ? '🔴' : undefined}
                                     >
-                                        <PickersDay {...DayComponentProps} />
+                                        <PickersDay {...DayComponentProps}
+                                            sx={{
+                                                color: {
+                                                    backgroundColor: dayColor
+                                                }
+                                            }}
+                                        />
                                     </Badge>
                                 );
 
