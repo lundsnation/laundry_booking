@@ -1,5 +1,5 @@
 import { LocalizationProvider, PickersDay, StaticDatePicker } from "@mui/lab";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import AdapterDateFns  from '@mui/lab/AdapterDateFns'
 import { Badge, Container, Grid, Stack, TextField, Typography } from "@mui/material";
 import svLocale from 'date-fns/locale/sv';
@@ -10,7 +10,7 @@ import {conv} from "../../utils/conv";
 import { UserProfile } from "@auth0/nextjs-auth0";
 
 interface Props {
-    title: String;
+    title: string;
     user: UserProfile;
 }
 //Program parameters 
@@ -43,12 +43,12 @@ const BookingCalendar = (props: Props) => {
                                     "19:00-20:30",
                                     "20:30-22:00"]
 
-    let bookingButtonGroup = (
+    const bookingButtonGroup = (
         <Grid container direction="row" justifyContent="center" alignItems="left">
             <BookingButtonGroup selectedDate={selectedDate} times={times} booked={bookedTimes} user = {user} converter = {converter}/>
         </Grid>
     )
-    let loadingText = (
+    const loadingText = (
         <Typography variant="body1" align = "center">Laddar...</Typography>
     )  
 
@@ -74,9 +74,11 @@ const BookingCalendar = (props: Props) => {
                     date && setBookedTimes(await fetchTimes(converter))
                     date && setSelectedDate(date)
                     setShowButtons(true)                 
-                }           
+                    }
                 }
                 renderInput={(params) => <TextField {...params} />}
+                
+                /* DO NOT REMOVE
                 renderDay={(day, _value, DayComponentProps) => {
                     let isBooked = false;
 
@@ -98,6 +100,7 @@ const BookingCalendar = (props: Props) => {
                     );
                     
                 }}
+                */
             />
         </LocalizationProvider>
         
