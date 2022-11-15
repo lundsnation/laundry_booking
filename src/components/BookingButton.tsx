@@ -9,7 +9,7 @@ const MIN_H = 7
 const MAX_H = 22
 
 interface Props {
-    time: String;
+    time: string;
     status: Booking;
     user: UserProfile;
     converter: conv;
@@ -17,7 +17,7 @@ interface Props {
 }
 const BookingButton = (props: Props) => {
     // Checking if the supplied timeslot is the users booking
-    let status = props.status
+    const status = props.status
     let initState = BUTTON_STATES.UNAVAILIBLE
     let initID = 0;
     if(status != null){
@@ -42,7 +42,7 @@ const BookingButton = (props: Props) => {
             },
             body: JSON.stringify(bookingResponse)
         });
-        let ans = await response.json()
+        const ans = await response.json()
         setLocalID(ans._id)
         setButtonState(BUTTON_STATES.EDITABLE)
         setSucessSnack(true)
