@@ -3,8 +3,9 @@ import { connect } from "../../../utils/connection"
 import { logRequest } from "../../../utils/backendLogger"
 import { ResponseFuncs } from "../../../utils/types"
 import Booking from '../../../models/Booking'
+import { withApiAuthRequired } from '@auth0/nextjs-auth0';
 
-const handler = async (req: NextApiRequest, res: NextApiResponse) => {
+const handler = withApiAuthRequired(async (req: NextApiRequest, res: NextApiResponse) => {
   //capture request method, we type it as a key of ResponseFunc to reduce typing later
   const method: keyof ResponseFuncs = req.method as keyof ResponseFuncs
 
@@ -41,6 +42,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const response = handleCase[method]
   if (response) return response(req, res)
   else return res.status(400).json({ error: "No Response for This Request" })
-}
+});
 
 export default handler
