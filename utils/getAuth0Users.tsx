@@ -2,7 +2,7 @@
 
 export class getUsers {
 
-    private token: Promise<string>;
+    private token: Promise<string>
 
     constructor() {
         this.token = this.setAuth0Token()
@@ -26,7 +26,6 @@ export class getUsers {
         return parsed
 
     }
-
 
     downloadJSON = (json: String) => {
 
@@ -80,14 +79,22 @@ export class getUsers {
     }
 
     async checkForPrivliges(key: string, value: string) {
-        this.getUser(key, value)
+        const currentUser = await this._getSpecificUser("name", (value as string))
+        const getDev: boolean = currentUser.app_metadata.isDev
+        let isDev = false
+        switch (getDev) {
+            case true:
+                isDev = true
+                break;
+        }
+        return isDev
     }
 
     get getAllUsers() {
         return this._downloadAllUsers()
     }
 
-    getUser(key: string, value: string) {
+    getSpecificUser(key: string, value: string) {
         if (!key || !value) {
             return
         }
