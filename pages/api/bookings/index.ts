@@ -19,12 +19,23 @@ const handler = withApiAuthRequired(async (req: NextApiRequest, res: NextApiResp
     // RESPONSE FOR GET REQUESTS
     GET: async (req: NextApiRequest, res: NextApiResponse) => {
       res.json(await Booking.find({}).catch(catcher))
+      res.status(200).send({ success: true })
       logRequest('GET');
     },
-    // RESPONSE POST REQUESTS
+    // RESPONSE POST REQUESTS WITH VALIDATION, ONLY UNIQUE DATES CAN BE ADDED
     POST: async (req: NextApiRequest, res: NextApiResponse) => {
-      res.json(await Booking.create(req.body).catch(catcher))
+      const {date, userName} = req.body
+      let query = await Booking.findOne({date}).catch(catcher)
+      if(!query){
+        res.json(await Booking.create(req.body).catch(catcher))
+        res.status(200).send({ success: true })
+      }
+      else{
+        res.status(500).send({ success: false })
+      }
       logRequest('POST');
+      
+      
     },
   }
 

@@ -24,7 +24,7 @@ def run():
             for row in csvreader:
                 userNames.append(row)
                 nUsers += len(row)
-    #print("Found " + str(nUsers) +" Users in directory in " + str(nFiles) + " files")
+    # Print("Found " + str(nUsers) +" Users in directory in " + str(nFiles) + " files")
     users = set([item for sublist in userNames for item in sublist])
     ## Testing token
     endpoint = url + '/api/v2/users'

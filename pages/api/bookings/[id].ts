@@ -27,14 +27,22 @@ const handler = withApiAuthRequired(async (req: NextApiRequest, res: NextApiResp
       res.json(await Booking.findById(id).catch(catcher))
     },
     // RESPONSE PUT REQUESTS
+    // TODO, what is this for
     PUT: async (req: NextApiRequest, res: NextApiResponse) => {
       logRequest('PUT')
       res.json(await Booking.findByIdAndUpdate(id, req.body, { new: true }).catch(catcher))
     },
-    // RESPONSE FOR DELETE REQUESTS
+    // RESPONSE FOR DELETE REQUESTS WITH VALIDATION
     DELETE: async (req: NextApiRequest, res: NextApiResponse) => {
+      let query = await Booking.findById(id).catch(catcher)
+      if(!query){
+        res.status(500).send({ success: false })
+        
+      }else{
+        res.json(await Booking.findByIdAndRemove(id).catch(catcher))
+        res.status(200).send({ success: true })
+      }
       logRequest('DELETE')
-      res.json(await Booking.findByIdAndRemove(id).catch(catcher))
     },
   }
 

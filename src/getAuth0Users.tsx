@@ -22,9 +22,7 @@ export class getUsers {
         const response = await fetch(options.url, options)
         const responseJson = await response.json()
         const parsed = await responseJson.access_token
-
         return parsed
-
     }
 
 
