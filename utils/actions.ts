@@ -39,22 +39,25 @@ export async function post(index:number, user:UserProfile, converter:conv){
         },
         body: JSON.stringify(bookingRequest)
     })
+    
     return response.ok ? response.json() : null
     }catch (err){
-        console.log("Obokbar Tid")
         return null
     }
 }
 
-export async function del(id:number, ){
+export async function del(id:number, user:UserProfile){
     try{
     const req = "/api/bookings/" + id
     const response = await fetch(req, {
-        method: "DELETE"
+        method: "DELETE",
+        headers: {
+            "Content-Type": "application/json"
+         },
+         body: JSON.stringify({userName: user.name})
     });
-    return response.ok ? response.json() : null
+    return response.ok 
     }catch (err){
-        console.log("Tiden obokad")
         return null
     }
     

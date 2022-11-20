@@ -85,9 +85,9 @@ export class getUsers {
         return this._downloadAllUsers()
     }
 
-    getUser(key: string, value: string) {
+    getUser(key: string, value: string){
         if (!key || !value) {
-            return
+            return 
         }
         return this._getSpecificUser(key, value)
     }

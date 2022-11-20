@@ -22,5 +22,14 @@ export interface ResponseFuncs {
     // Time can be cancelled by user == Occurence in DB from this user
     EDITABLE = 2
   }
+    // Error messages
+    export const enum ERROR_MSG {
+      // General error
+      GENERAL = "Internt fel, Ladda om sidan",
+      // User tries to exceed allowedSlots
+      TOOMANYSLOTS = "Max antal slottar bokade",
+      // Time has been booked by someone else
+       ALREADYBOOKED = "Tidsslot redan bokad, Ladda om sidan"
+    }
 
   

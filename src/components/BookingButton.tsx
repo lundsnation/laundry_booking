@@ -1,7 +1,7 @@
 import { Button, Container, Snackbar, Alert } from "@mui/material"
 import { UserProfile } from "@auth0/nextjs-auth0";
 import { useState } from "react";
-import {Booking, BUTTON_STATES} from "../../utils/types"
+import {Booking, BUTTON_STATES, ERROR_MSG} from "../../utils/types"
 import {conv} from "../../utils/conv"
 import { post, del} from "../../utils/actions";
 
@@ -35,12 +35,14 @@ const BookingButton = (props: Props) => {
     const [showSucessSnack, setSucessSnack] = useState<boolean>(false);
     const [showDebookedSnack, setDebookedSnack] = useState<boolean>(false);
     const [showFailSnack, setFailSnack] = useState<boolean>(false);
+    const [errorString, seterrorString] = useState<string>(ERROR_MSG.GENERAL);
 
     // Function for booking time
     const bookTime = async () =>{
         setButtonState(BUTTON_STATES.UNAVAILIBLE)
         let response = await post(props.index, props.user, props.converter)
         if(!response){
+            seterrorString(ERROR_MSG.TOOMANYSLOTS)
             setFailSnack(true)
             setButtonState(BUTTON_STATES.AVAILIBLE)
             return 
@@ -52,8 +54,9 @@ const BookingButton = (props: Props) => {
     // Function for deleting already aquired time
     const deleteTime =  async () => {
         setButtonState(BUTTON_STATES.UNAVAILIBLE)
-        let response = await del(localID)
+        let response = await del(localID,props.user)
         if(!response){
+            seterrorString(ERROR_MSG.GENERAL)
             setFailSnack(true)
             setButtonState(BUTTON_STATES.EDITABLE)
             return
@@ -78,7 +81,7 @@ const BookingButton = (props: Props) => {
                 <Alert severity="info"  sx={{ width: '100%' }}>Tid Avbokad : {props.time}</Alert>
             </Snackbar>
             <Snackbar open={showFailSnack} autoHideDuration={3000} onClose = {resetSnack}>
-                <Alert severity="error"  sx={{ width: '100%' }}>Internt Fel, ladda om sidan</Alert>
+                <Alert severity="error"  sx={{ width: '100%' }}>{errorString}</Alert>
             </Snackbar>
         </Container>
     );
