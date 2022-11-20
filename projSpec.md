@@ -31,20 +31,22 @@ Having booked a timeslot, the user submits a POST-request to the backend, which 
 
 Since each object in the database is associated with a user, it is easy to determine which time the user already has booked. 
 
+We consider the case where two users are trying to access a resource concurrently, and arrived at the conclusion that we may allow certain race-conditions for data fetching/posting, given the low-intensity usage of the site. Therefore, validation of data is a big concern. Initial test indicated that we have a critical region of about 250 ms, which is acceptable.
+
 #### Mongodb Atlas. 
-Due to great integration and included web UI, mongodb Atlas will handle database storage and CRUD-operations. Mongodb Atlas is essentially free (512 MB, 500 Collections and 100 CRUD-operations/second for free-tier), enabling us to 
-setup a functioning database very quickly. 
+Due to great integration and included web UI, mongodb Atlas will handle database storage and CRUD-operations. Mongodb Atlas is essentially free (512 MB, 500 Collections and 100 CRUD-operations/second for free-tier), enabling us to setup a functioning database very quickly.
+
 #### Mongoose Schemas
-In order to represent data, we define a mongoose shcema-representation for our data, making operations on database-objects easier to write code for.  
+In order to represent data, we define a mongoose shcema-representation for our data, making operations on database-objects easier to write code for. This also simplifies creation of the REST API, since we can manipulate the database in single actions.  
 
 ### Backend
-Utilizing next.js built in API-router, we define static calls for GET & POST requests. While we also implement dynamic api-calls for GET , PUT and DELETE. This allows us to operate on objects directly by object-ID.  
+Utilizing next.js built in API-router, we define static calls for GET & POST requests. While we also implement dynamic api-calls for GET , PUT and DELETE. This allows us to operate on objects directly by object-ID. In the backend we hard-code verification by returning appropriate HTTP status codes.   
 
 #### NextJs
 Next comes packed with great full-stack capabilities which we will use extensively during th project. Routing, server-side rendering and state management is being used to build the web-service. 
 
 #### Auth0 
-Auth0 will offload much work on authentication. Using their free tier, we get access to a user-database way bigger than we actually need, with global login, managment tools etc. It is also notoriously easy to implement with next.js
+Auth0 will offload much work on authentication. Using their free tier, we get access to a user-database way bigger than we actually need, with global login, managment tools etc. It is also notoriously easy to implement with next.js. This will guarantee security, aswell as protect sensitive user details. 
 
 ### Frontend
-React
+React/MUI-components, logic is done by state-hooks.
