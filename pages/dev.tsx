@@ -3,24 +3,25 @@ import { useUser } from '@auth0/nextjs-auth0/dist/frontend';
 import { NextPage } from "next";
 import { getUsers } from "../utils/getAuth0Users";
 import NotLoggedIn from "../src/components/NotLoggedIn";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 
-
+//page is currently visible for all users
 const Dev: NextPage = () => {
-
+    const getter = new getUsers
     const { user, isLoading, error } = useUser()
-    const userGetter = new getUsers()
+
+
 
     const handleClick = async () => {
-        const adamDev = await userGetter.checkForPrivliges("name", "NH1105")
-        console.log(adamDev)
+        const all = await getter.downloadAllUsers
+        console.log(all)
     }
 
     return (
 
         <Container maxWidth="lg">
-            {user ?
+            {user && !isLoading ?
                 <Box>
                     <Typography>
                         /dev
@@ -28,10 +29,11 @@ const Dev: NextPage = () => {
                     <Button onClick={handleClick}>request users</Button>
                 </Box>
                 :
+
                 <NotLoggedIn />
             }
         </Container>
     )
 }
 
-export default Dev;
+export default Dev

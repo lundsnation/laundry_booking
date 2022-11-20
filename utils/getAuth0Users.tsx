@@ -27,7 +27,7 @@ export class getUsers {
 
     }
 
-    downloadJSON = (json: String) => {
+    private downloadJSON = (json: String) => {
 
 
         const dataStr = 'data:application/json;charset=utf-8,' + json
@@ -78,8 +78,8 @@ export class getUsers {
 
     }
 
-    async checkForPrivliges(key: string, value: string) {
-        const currentUser = await this._getSpecificUser("name", (value as string))
+    private async _checkForPrivliges(key: string, value: string) {
+        const currentUser = await this._getSpecificUser(key, (value as string))
         const getDev: boolean = currentUser.app_metadata.isDev
         let isDev = false
         switch (getDev) {
@@ -90,8 +90,19 @@ export class getUsers {
         return isDev
     }
 
-    get getAllUsers() {
+    get downloadAllUsers() {
         return this._downloadAllUsers()
+    }
+
+    async getPrivileges(key: string, value: string) {
+        // let priv = false
+        // this._checkForPrivliges(key, value).then(bool => {
+        //     if (bool) {
+        //         priv = true
+        //     }
+        // })
+        // return priv
+        return this._checkForPrivliges(key, value)
     }
 
     getSpecificUser(key: string, value: string) {
