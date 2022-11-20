@@ -26,7 +26,7 @@ const Home: NextPage = () => {
             <Header/> 
         </Grid>    
         <Grid item xs={12}>
-            {<BookingCalendar title="Tvättbokning - Lunds Nation" user = {user}/>}
+            {<BookingCalendar title="Tvättbokning - GH/NH" user = {user}/>}
         </Grid> 
         </Grid>       
     </Container> : <Typography>Laddar...</Typography>

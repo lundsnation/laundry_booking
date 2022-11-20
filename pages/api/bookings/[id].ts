@@ -36,11 +36,10 @@ const handler = withApiAuthRequired(async (req: NextApiRequest, res: NextApiResp
     DELETE: async (req: NextApiRequest, res: NextApiResponse) => {
       let query = await Booking.findById(id).catch(catcher)
       if(!query){
-        res.status(500).send({ success: false })
+        res.status(400).send({error: 'No such booking exists'})
         
       }else{
-        res.json(await Booking.findByIdAndRemove(id).catch(catcher))
-        res.status(200).send({ success: true })
+        res.status(200).json(await Booking.findByIdAndRemove(id).catch(catcher))
       }
       logRequest('DELETE')
     },
