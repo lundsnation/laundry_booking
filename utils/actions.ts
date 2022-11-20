@@ -47,11 +47,16 @@ export async function post(index:number, user:UserProfile, converter:conv){
 }
 
 export async function del(id:number, ){
-    const res = "/api/bookings/" + id
-    const response = await fetch(res, {
+    try{
+    const req = "/api/bookings/" + id
+    const response = await fetch(req, {
         method: "DELETE"
     });
-    return response.json();
+    return response.ok ? response.json() : null
+    }catch (err){
+        console.log("Tiden obokad")
+        return null
+    }
     
 }
 

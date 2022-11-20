@@ -55,6 +55,7 @@ const BookingButton = (props: Props) => {
         let response = await del(localID)
         if(!response){
             setFailSnack(true)
+            setButtonState(BUTTON_STATES.EDITABLE)
             return
         }
         setButtonState(BUTTON_STATES.AVAILIBLE)
@@ -77,7 +78,7 @@ const BookingButton = (props: Props) => {
                 <Alert severity="info"  sx={{ width: '100%' }}>Tid Avbokad : {props.time}</Alert>
             </Snackbar>
             <Snackbar open={showFailSnack} autoHideDuration={3000} onClose = {resetSnack}>
-                <Alert severity="error"  sx={{ width: '100%' }}>Internt Fel</Alert>
+                <Alert severity="error"  sx={{ width: '100%' }}>Internt Fel, ladda om sidan</Alert>
             </Snackbar>
         </Container>
     );
