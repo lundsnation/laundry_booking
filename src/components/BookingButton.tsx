@@ -40,7 +40,7 @@ const BookingButton = (props: Props) => {
     // Function for booking time
     const bookTime = async () =>{
         setButtonState(BUTTON_STATES.UNAVAILIBLE)
-        let response = await post(props.index, props.user, props.converter)
+        const response = await post(props.index, props.user, props.converter)
         if(!response){
             seterrorString(ERROR_MSG.TOOMANYSLOTS)
             setFailSnack(true)
@@ -54,7 +54,7 @@ const BookingButton = (props: Props) => {
     // Function for deleting already aquired time
     const deleteTime =  async () => {
         setButtonState(BUTTON_STATES.UNAVAILIBLE)
-        let response = await del(localID,props.user)
+        const response = await del(localID,props.user)
         if(!response){
             seterrorString(ERROR_MSG.GENERAL)
             setFailSnack(true)

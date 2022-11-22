@@ -35,7 +35,7 @@ const handler = withApiAuthRequired(async (req: NextApiRequest, res: NextApiResp
     // RESPONSE FOR DELETE REQUESTS WITH VALIDATION
     DELETE: async (req: NextApiRequest, res: NextApiResponse) => {
       const {userName} = req.body
-      let query = await Booking.find({_id:id, userName:userName }).catch(catcher)
+      const query = await Booking.find({_id:id, userName:userName }).catch(catcher)
       if(!query){
         res.status(400).send({error: 'No such booking exists'})
       }else{

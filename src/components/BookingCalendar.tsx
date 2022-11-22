@@ -1,14 +1,13 @@
-import { LocalizationProvider, PickersDay, StaticDatePicker } from "@mui/lab";
+import { StaticDatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import React, { useState, useEffect } from "react";
-import AdapterDateFns  from '@mui/lab/AdapterDateFns'
-import { Badge, Container, Grid, Stack, TextField, Typography } from "@mui/material";
+import AdapterDateFns from '@date-io/date-fns'
+import { Grid, TextField, Typography } from "@mui/material";
 import svLocale from 'date-fns/locale/sv';
 import BookingButtonGroup from "./BookingButtonGroup";
 import {get} from "../../utils/actions"
 import {Booking} from "../../utils/types";
 import {conv} from "../../utils/conv";
-import { getAccessToken, UserProfile } from "@auth0/nextjs-auth0";
-import HourglassEmptyIcon from '@mui/icons-material/HourglassEmpty';
+import { UserProfile } from "@auth0/nextjs-auth0";
 
 interface Props {
     title: string;
@@ -18,7 +17,6 @@ interface Props {
 const MINH = 7;
 const MAXH = 22;
 const NSLOTS = 10;
-
 
 const BookingCalendar = (props: Props) => {
     const converter = new conv(MINH,MAXH,NSLOTS,new Date());
@@ -52,14 +50,13 @@ const BookingCalendar = (props: Props) => {
     const loadingText = (
         <Typography variant="body1" align = "center">Laddar...</Typography>
     )  
-
     return (
     <div>
 
         <Grid container spacing={1} direction="row" justifyContent="center" alignItems="left">
         <Grid item xs="auto" >
-        <LocalizationProvider dateAdapter={AdapterDateFns} locale={svLocale}>
-            <StaticDatePicker<Date>
+        <LocalizationProvider dateAdapter={AdapterDateFns} /*locale={svLocale}*/>
+            <StaticDatePicker
                 orientation="landscape"
                 displayStaticWrapperAs="desktop"
                 openTo="day"
@@ -68,16 +65,14 @@ const BookingCalendar = (props: Props) => {
                 showToolbar = {false}
                 value={selectedDate}
                 toolbarTitle = {"Valt Datum: "}
-                allowSameDateSelection = {true}
                 onChange={async (date) => {
                     setShowButtons(false) 
                     date && converter.setDate(date)
                     date && setBookedTimes(await get(converter))
                     date && setSelectedDate(date)
                     setShowButtons(true)                 
-                    }
-                }
-                renderInput={(params) => <TextField {...params} />}
+                    }}
+                renderInput={(params: any) => <TextField {...params} />}
                 
                 /* DO NOT REMOVE
                 renderDay={(day, _value, DayComponentProps) => {
@@ -104,8 +99,6 @@ const BookingCalendar = (props: Props) => {
                 */
             />
         </LocalizationProvider>
-        
-        
         </Grid>
         <Grid item xs={2} >
             <Grid>
