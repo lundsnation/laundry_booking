@@ -4,6 +4,7 @@ import { logRequest } from "../../../utils/backendLogger"
 import { ResponseFuncs } from "../../../utils/types"
 import Booking from '../../../models/Booking'
 import { withApiAuthRequired } from "@auth0/nextjs-auth0"
+import { getUsers} from '../../../src/getAuth0Users'
 
 const handler = withApiAuthRequired(async (req: NextApiRequest, res: NextApiResponse) => {
   //capture request method, we type it as a key of ResponseFunc to reduce typing later
@@ -18,13 +19,40 @@ const handler = withApiAuthRequired(async (req: NextApiRequest, res: NextApiResp
   const handleCase: ResponseFuncs = {
     // RESPONSE FOR GET REQUESTS
     GET: async (req: NextApiRequest, res: NextApiResponse) => {
-      res.json(await Booking.find({}).catch(catcher))
+      const query = await Booking.find({}).catch(catcher)
+      res.status(200).json(query)
       logRequest('GET');
     },
-    // RESPONSE POST REQUESTS
+    // RESPONSE POST REQUESTS WITH VALIDATION, ONLY UNIQUE DATES CAN BE ADDED AND IS SUBJECT TO ALLOWEDSLOT PROPERTY OF USER
     POST: async (req: NextApiRequest, res: NextApiResponse) => {
-      res.json(await Booking.create(req.body).catch(catcher))
+      const {date, userName} = req.body  
+      const query = await Booking.findOne({date}).catch(catcher)
+      if(!query){
+        // Validation, checking timeslots already booked by the user, aswell as date being unique.
+        const userFinder = new getUsers()
+        const fetchAllowedSlots = await userFinder.getUser("name",userName)
+        console.log(fetchAllowedSlots)
+        if(!fetchAllowedSlots){
+          console.log("1")
+          res.status(400).send({error: 'User error'})
+          return 
+        }
+        const allowedSlots = fetchAllowedSlots.app_metadata.allowedSlots
+        const slotCheck = await Booking.find({userName:userName}).catch(catcher)
+        if(!slotCheck || slotCheck.length < allowedSlots){
+          res.status(201).json(await Booking.create(req.body).catch(catcher))
+          return
+        }
+        console.log("2")
+        res.status(400).send({ error: 'Exceeded number of allowed slots'})
+      }
+      else{
+        console.log("3")
+        res.status(400).send({ error: 'Time is already booked! '})
+      }
       logRequest('POST');
+      
+      
     },
   }
 

@@ -3,12 +3,12 @@ import { connect } from "../../../utils/connection"
 import { logRequest } from "../../../utils/backendLogger"
 import { ResponseFuncs } from "../../../utils/types"
 import Booking from '../../../models/Booking'
-import { withApiAuthRequired } from '@auth0/nextjs-auth0';
+import { withApiAuthRequired} from '@auth0/nextjs-auth0';
+import {getUsers} from '../../../src/getAuth0Users'
 
 const handler = withApiAuthRequired(async (req: NextApiRequest, res: NextApiResponse) => {
   //capture request method, we type it as a key of ResponseFunc to reduce typing later
   const method: keyof ResponseFuncs = req.method as keyof ResponseFuncs
-
   //function for catch errors
   const catcher = (error: Error) => res.status(400).json({ error })
 
@@ -27,14 +27,21 @@ const handler = withApiAuthRequired(async (req: NextApiRequest, res: NextApiResp
       res.json(await Booking.findById(id).catch(catcher))
     },
     // RESPONSE PUT REQUESTS
+    // TODO, what is this for
     PUT: async (req: NextApiRequest, res: NextApiResponse) => {
       logRequest('PUT')
       res.json(await Booking.findByIdAndUpdate(id, req.body, { new: true }).catch(catcher))
     },
-    // RESPONSE FOR DELETE REQUESTS
+    // RESPONSE FOR DELETE REQUESTS WITH VALIDATION
     DELETE: async (req: NextApiRequest, res: NextApiResponse) => {
+      const {userName} = req.body
+      const query = await Booking.find({_id:id, userName:userName }).catch(catcher)
+      if(!query){
+        res.status(400).send({error: 'No such booking exists'})
+      }else{
+        res.status(200).json(await Booking.findByIdAndRemove(id).catch(catcher))
+      }
       logRequest('DELETE')
-      res.json(await Booking.findByIdAndRemove(id).catch(catcher))
     },
   }
 

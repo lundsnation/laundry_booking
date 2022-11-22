@@ -9,8 +9,7 @@ import { AccountCircle } from '@mui/icons-material';
 import LoginButton from './LoginButton';
 import ProfileButton from './ProfileButton';
 
-
-const Header: NextPage = () => {
+const Header: NextPage = (title) => {
     const { user, isLoading, error } = useUser()
     const [auth, setAuth] = React.useState(true);
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -42,8 +41,8 @@ const Header: NextPage = () => {
                         </IconButton>
 
                         {user ?
-                            <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-                                Välkommen!
+                            <Typography variant="h5" component="div" sx={{ flexGrow: 1 }}>
+                               Tvättbokning NH/GH 
                             </Typography>
                             :
                             <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>

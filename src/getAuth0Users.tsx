@@ -2,33 +2,35 @@
 
 export class getUsers {
 
+
     private token: Promise<string>;
+    private url : string;
 
     constructor() {
         this.token = this.setAuth0Token()
+        this.url  = (process.env.AUTH_ISSUER_BASE as string)
     }
 
 
     private async setAuth0Token() {
         const id = (process.env.REACT_APP_ID as string)
         const secret = (process.env.REACT_APP_SECRET as string)
+        
 
         const options = {
             method: 'POST',
-            url: 'https://dev-otg4ju0e.us.auth0.com/oauth/token',
+            url: 'https://lundsnation.eu.auth0.com/oauth/token',
             headers: { 'content-type': 'application/json' },
-            body: `{"client_id" : "${id}", "client_secret": "${secret}", "audience" : "https://dev-otg4ju0e.us.auth0.com/api/v2/", "grant_type" : "client_credentials"}`,
+            body: `{"client_id" : "${id}", "client_secret": "${secret}", "audience" : "https://lundsnation.eu.auth0.com/api/v2/", "grant_type" : "client_credentials"}`,
         }
         const response = await fetch(options.url, options)
         const responseJson = await response.json()
         const parsed = await responseJson.access_token
-
         return parsed
-
     }
 
 
-    downloadJSON = (json: String) => {
+    downloadJSON = (json: string) => {
 
 
         const dataStr = 'data:application/json;charset=utf-8,' + json
@@ -46,7 +48,7 @@ export class getUsers {
         const token = await this.token
         const options = {
             method: 'GET',
-            url: 'https://dev-otg4ju0e.us.auth0.com/api/v2/users',
+            url: "https://lundsnation.eu.auth0.com/api/v2/users",
             headers: { authorization: 'Bearer ' + token }
         }
         const response = await fetch(options.url, options)
@@ -63,7 +65,7 @@ export class getUsers {
         const specified = `${key} : "${value}"`
         const options = {
             method: 'GET',
-            url: 'https://dev-otg4ju0e.us.auth0.com/api/v2/users?',
+            url: "https://lundsnation.eu.auth0.com/api/v2/users?",
             headers: { authorization: 'Bearer ' + token }
         }
 
@@ -74,7 +76,7 @@ export class getUsers {
         const response = await fetch(options.url + searchParams.toString(), options)
         const data = await response.json()
         const parser = JSON.parse(JSON.stringify(data))
-
+        console.log(response)
         return parser[0]
 
     }
@@ -87,9 +89,9 @@ export class getUsers {
         return this._downloadAllUsers()
     }
 
-    getUser(key: string, value: string) {
+    getUser(key: string, value: string){
         if (!key || !value) {
-            return
+            return 
         }
         return this._getSpecificUser(key, value)
     }

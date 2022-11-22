@@ -1,10 +1,10 @@
-import { LocalizationProvider, PickersDay, StaticDatePicker } from "@mui/lab";
+import { StaticDatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import React, { useState, useEffect } from "react";
-import AdapterDateFns  from '@mui/lab/AdapterDateFns'
-import { Badge, Container, Grid, Stack, TextField, Typography } from "@mui/material";
+import AdapterDateFns from '@date-io/date-fns'
+import { Grid, TextField, Typography } from "@mui/material";
 import svLocale from 'date-fns/locale/sv';
 import BookingButtonGroup from "./BookingButtonGroup";
-import {fetchTimes} from "../../utils/fetchTimes"
+import {get} from "../../utils/actions"
 import {Booking} from "../../utils/types";
 import {conv} from "../../utils/conv";
 import { UserProfile } from "@auth0/nextjs-auth0";
@@ -18,7 +18,6 @@ const MINH = 7;
 const MAXH = 22;
 const NSLOTS = 10;
 
-
 const BookingCalendar = (props: Props) => {
     const converter = new conv(MINH,MAXH,NSLOTS,new Date());
     const [selectedDate, setSelectedDate] = useState<Date>(new Date());
@@ -26,57 +25,54 @@ const BookingCalendar = (props: Props) => {
     const [bookedTimes, setBookedTimes] = useState<Array<Booking>>([]);
     useEffect(() => {
         const fetch = async () => {
-            const data = await fetchTimes(converter)
+            const data = await get(converter)
             setBookedTimes(data)
             setShowButtons(true)
         }
         fetch().catch(console.error)}, [])
     const user = props.user
-    const times: Array<string> = [  "07:00-08:30",
-                                    "08:30-10:00",
-                                    "10:00-11:30",
-                                    "11:30-13:00",
-                                    "13:00-14:30",
-                                    "14:30-16:00",
-                                    "16:00-17:30",
-                                    "17:30-19:00",
-                                    "19:00-20:30",
-                                    "20:30-22:00"]
+    const times: Array<string> = [  "07:00",
+                                    "08:30",
+                                    "10:00",
+                                    "11:30",
+                                    "13:00",
+                                    "14:30",
+                                    "16:00",
+                                    "17:30",
+                                    "19:00",
+                                    "20:30"]
 
     const bookingButtonGroup = (
-        <Grid container direction="row" justifyContent="center" alignItems="left">
+        <Grid container direction="row" justifyContent="center" alignItems="center">
             <BookingButtonGroup selectedDate={selectedDate} times={times} booked={bookedTimes} user = {user} converter = {converter}/>
         </Grid>
     )
     const loadingText = (
         <Typography variant="body1" align = "center">Laddar...</Typography>
     )  
-
     return (
     <div>
-        <Typography sx={{m:3}} variant="h3" component="h2" align = "center"> {props.title} </Typography>
+
         <Grid container spacing={1} direction="row" justifyContent="center" alignItems="left">
         <Grid item xs="auto" >
-        <LocalizationProvider dateAdapter={AdapterDateFns} locale={svLocale}>
-            <StaticDatePicker<Date>
+        <LocalizationProvider dateAdapter={AdapterDateFns} /*locale={svLocale}*/>
+            <StaticDatePicker
                 orientation="landscape"
                 displayStaticWrapperAs="desktop"
                 openTo="day"
                 showDaysOutsideCurrentMonth={true}
                 views={['day']}
-                showToolbar = {true}
+                showToolbar = {false}
                 value={selectedDate}
                 toolbarTitle = {"Valt Datum: "}
-                allowSameDateSelection = {true}
                 onChange={async (date) => {
                     setShowButtons(false) 
                     date && converter.setDate(date)
-                    date && setBookedTimes(await fetchTimes(converter))
+                    date && setBookedTimes(await get(converter))
                     date && setSelectedDate(date)
                     setShowButtons(true)                 
-                    }
-                }
-                renderInput={(params) => <TextField {...params} />}
+                    }}
+                renderInput={(params: any) => <TextField {...params} />}
                 
                 /* DO NOT REMOVE
                 renderDay={(day, _value, DayComponentProps) => {
@@ -103,12 +99,12 @@ const BookingCalendar = (props: Props) => {
                 */
             />
         </LocalizationProvider>
-        
-        
         </Grid>
         <Grid item xs={2} >
-            
-        {showButtons ? bookingButtonGroup : loadingText}
+            <Grid>
+                <Typography variant = "subtitle2" align = 'center' >Slots:</Typography>
+            </Grid>
+            {showButtons ? bookingButtonGroup : loadingText}
         </Grid>
         </Grid>
     </div>
