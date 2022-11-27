@@ -19,20 +19,20 @@ const BookingCalendar = (props: Props) => {
     const [selectedDate, setSelectedDate] = useState<Date>(new Date());
 
 
-    // const initBookings: Array<Booking> = [];
-    // //Ful lösning. Går detta att göra bättre?
-    // props.bookings.forEach(booking => {
-    //     const tmpBooking = {
-    //         _id : booking._id,
-    //         userName : booking.userName,
-    //         date : new Date(booking.date),
-    //         timeSlot : booking.timeSlot,
-    //     }
+    const initBookings: Array<Booking> = [];
+    //Ful lösning. Går detta att göra bättre
+    props.bookings.forEach(booking => {
+        const tmpBooking = {
+            _id : booking._id,
+            userName : booking.userName,
+            date : new Date(booking.date),
+            timeSlot : booking.timeSlot,
+        }
 
-    //     initBookings.push(tmpBooking);
-    // });
+        initBookings.push(tmpBooking);
+    });
 
-    const [bookings, setBookings] = useState<Array<Booking>>(props.bookings);
+    const [bookings, setBookings] = useState<Array<Booking>>(initBookings);
     const { user } = props;
 
     const timeSlots: Array<string> = ["07:00-08:30",

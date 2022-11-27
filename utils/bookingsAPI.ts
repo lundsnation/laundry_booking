@@ -16,7 +16,6 @@ export const compareDates = (d1: Date, d2: Date): boolean => {
 
 export const getDateBookings = (bookings: Array<Booking>, selectedDate: Date ) => {
     const dateBookings: Set<Booking> = new Set();
-    
     bookings.forEach(booking => {
         //const bookingYear   = booking.date.getFullYear();
         //const bookingMonth  = booking.date.getMonth();

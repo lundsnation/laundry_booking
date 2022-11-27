@@ -8,14 +8,15 @@ import BookingSchema from '../models/Booking'
 import BookingCalendar from '../src/components/BookingCalendar';
 import { useRouter } from 'next/router'
 import { Booking } from "../utils/types"
+import {connect} from "../utils/connection"
 
 interface IndexProps {
   bookings: Array<Booking>
 }
 
 const Index: NextPage<IndexProps> = (props: IndexProps) => {
-  const { bookings } = props;
 
+  const  bookings  = JSON.parse(props.bookings);
   const { user, isLoading, error } = useUser()
   const router = useRouter()
 
@@ -43,6 +44,7 @@ const Index: NextPage<IndexProps> = (props: IndexProps) => {
 
 export async function getServerSideProps() {
   // get todo data from API
+  await connect()
   const res = await BookingSchema.find({})
   const bookings = JSON.stringify(res)
 
