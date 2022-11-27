@@ -3,60 +3,43 @@ import { connect } from "../../../utils/connection"
 import { logRequest } from "../../../utils/backendLogger"
 import { ResponseFuncs } from "../../../utils/types"
 import Booking from '../../../models/Booking'
-import { withApiAuthRequired } from "@auth0/nextjs-auth0"
+import { withApiAuthRequired, getSession } from "@auth0/nextjs-auth0"
 import { getUsers} from '../../../src/getAuth0Users'
 
+//add withApiAuthRequired
 const handler = withApiAuthRequired(async (req: NextApiRequest, res: NextApiResponse) => {
   //capture request method, we type it as a key of ResponseFunc to reduce typing later
   const method: keyof ResponseFuncs = req.method as keyof ResponseFuncs
-
+  const session = getSession(req, res);
   //function for catch errors
   const catcher = (error: Error) => res.status(400).json({ error })
   await connect()
+  console.log(session?.user)
 
   
   // Potential Responses
   const handleCase: ResponseFuncs = {
     // RESPONSE FOR GET REQUESTS
     GET: async (req: NextApiRequest, res: NextApiResponse) => {
-      const query = await Booking.find({}).catch(catcher)
-      res.status(200).json(query)
       logRequest('GET');
+      res.status(200).json(await Booking.find({}).catch(catcher))
+
     },
-    // RESPONSE POST REQUESTS WITH VALIDATION, ONLY UNIQUE DATES CAN BE ADDED AND IS SUBJECT TO ALLOWEDSLOT PROPERTY OF USER
+    // RESPONSE POST REQUESTS
     POST: async (req: NextApiRequest, res: NextApiResponse) => {
-      const {date, userName} = req.body  
-      const query = await Booking.findOne({date}).catch(catcher)
-      if(!query){
-        // Validation, checking timeslots already booked by the user, aswell as date being unique.
-        const userFinder = new getUsers()
-        const fetchAllowedSlots = await userFinder.getUser("name",userName)
-        console.log(fetchAllowedSlots)
-        if(!fetchAllowedSlots){
-          console.log("1")
-          res.status(400).send({error: 'User error'})
-          return 
-        }
-        const allowedSlots = fetchAllowedSlots.app_metadata.allowedSlots
-        const slotCheck = await Booking.find({userName:userName}).catch(catcher)
-        if(!slotCheck || slotCheck.length < allowedSlots){
-          res.status(201).json(await Booking.create(req.body).catch(catcher))
-          return
-        }
-        console.log("2")
-        res.status(400).send({ error: 'Exceeded number of allowed slots'})
-      }
-      else{
-        console.log("3")
-        res.status(400).send({ error: 'Time is already booked! '})
-      }
+      const userFinder = new getUsers()
+      const { userName, date, timeSlot} = req.body  
+      const fetchAllowedSlots = await userFinder.getUser("name",userName)
+      const allowedSlots = fetchAllowedSlots.app_metadata.allowedSlots
+      const slotCheck = await Booking.find({userName:userName}).catch(catcher)
+      console.log(allowedSlots)
       logRequest('POST');
-      
-      
+      if(!slotCheck || slotCheck.length < allowedSlots){
+        return res.status(201).json(await Booking.create(req.body).catch(catcher))
+      }
+      return res.status(400).json({error: "User has max number of slots booked"})
     },
   }
-
-
 
   // Check if there is a response for the particular method, if so invoke it, if not response with an error
   const response = handleCase[method]

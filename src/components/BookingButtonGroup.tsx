@@ -3,26 +3,41 @@ import ButtonGroup from '@mui/material/ButtonGroup';
 import { useState } from "react";
 import {Booking} from "../../utils/types"
 import { UserProfile } from "@auth0/nextjs-auth0";
-import {conv} from "../../utils/conv"
+import { BookOnlineSharp } from "@mui/icons-material";
+import { timeSlotToBooking } from "../../utils/bookingsAPI";
 
 
 interface Props {
-    times: Array<string>
-    selectedDate: Date
-    booked: Array<Booking>
-    user: UserProfile
-    converter: conv
+    bookedBookings: Set<Booking>;
+    timeSlots: Array<string>;
+    selectedDate: Date;
+    user: UserProfile;
+    
+
+    updateBookings: () => void;
 }
 
 const BookingButtonGroup = (props: Props) => {
-    const times = props.times;
-    const booked = props.booked;
-    props.converter.setDate(props.selectedDate);
+    const timeSlots = props.timeSlots;
+    const selectedDate = props.selectedDate;
+    const bookedBookings = props.bookedBookings;
+    const updateBookings = props.updateBookings;
+    const user = props.user;
+    
+    const timeToBooking: Map<string, Booking> = timeSlotToBooking(bookedBookings);
 
-    const buttons = times.map((time,index) => {
-        return <BookingButton key={time} time={time} status={booked[index]} user = {props.user} converter ={props.converter} index = {index}/>
+    const buttons = timeSlots.map(timeSlot => {
+        let booking: null | Booking = null;
+        
+        if(timeToBooking.has(timeSlot)) {
+            //console.log("bookBooking in timeSlot : " + timeSlot )
+            booking = timeToBooking.get(timeSlot) as Booking;
+        }
+
+        return <BookingButton key = { timeSlot } timeSlot = { timeSlot } booking = { booking != null ? booking : null } selectedDate = { selectedDate } user = { user }  updateBookings = {updateBookings}  />
     });
-
+        //Kan vara fel här
+     
 
     return(
         <ButtonGroup orientation = 'vertical'> {buttons}  </ButtonGroup>     

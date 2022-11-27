@@ -1,111 +1,142 @@
-import { StaticDatePicker, LocalizationProvider } from '@mui/x-date-pickers';
+import { StaticDatePicker, LocalizationProvider, PickersDay } from '@mui/x-date-pickers';
 import React, { useState, useEffect } from "react";
 import AdapterDateFns from '@date-io/date-fns'
-import { Grid, TextField, Typography } from "@mui/material";
+import { Badge, Grid, TextField, Typography } from "@mui/material";
 import svLocale from 'date-fns/locale/sv';
 import BookingButtonGroup from "./BookingButtonGroup";
-import {get} from "../../utils/actions"
 import {Booking} from "../../utils/types";
-import {conv} from "../../utils/conv";
 import { UserProfile } from "@auth0/nextjs-auth0";
+import { getDateBookings, compareDates } from "../../utils/bookingsAPI"
+
 
 interface Props {
     title: string;
     user: UserProfile;
+    bookings: Array<Booking>;
 }
-//Program parameters 
-const MINH = 7;
-const MAXH = 22;
-const NSLOTS = 10;
 
 const BookingCalendar = (props: Props) => {
-    const converter = new conv(MINH,MAXH,NSLOTS,new Date());
     const [selectedDate, setSelectedDate] = useState<Date>(new Date());
-    const [showButtons, setShowButtons] = useState<boolean>(false);
-    const [bookedTimes, setBookedTimes] = useState<Array<Booking>>([]);
-    useEffect(() => {
-        const fetch = async () => {
-            const data = await get(converter)
-            setBookedTimes(data)
-            setShowButtons(true)
-        }
-        fetch().catch(console.error)}, [])
-    const user = props.user
-    const times: Array<string> = [  "07:00",
-                                    "08:30",
-                                    "10:00",
-                                    "11:30",
-                                    "13:00",
-                                    "14:30",
-                                    "16:00",
-                                    "17:30",
-                                    "19:00",
-                                    "20:30"]
+
+
+    // const initBookings: Array<Booking> = [];
+    // //Ful lösning. Går detta att göra bättre?
+    // props.bookings.forEach(booking => {
+    //     const tmpBooking = {
+    //         _id : booking._id,
+    //         userName : booking.userName,
+    //         date : new Date(booking.date),
+    //         timeSlot : booking.timeSlot,
+    //     }
+
+    //     initBookings.push(tmpBooking);
+    // });
+
+    const [bookings, setBookings] = useState<Array<Booking>>(props.bookings);
+    const { user } = props;
+
+    const timeSlots: Array<string> = ["07:00-08:30",
+                                    "08:30-10:00",
+                                    "10:00-11:30",
+                                    "11:30-13:00",
+                                    "13:00-14:30",
+                                    "14:30-16:00",
+                                    "16:00-17:30",
+                                    "17:30-19:00",
+                                    "19:00-20:30",
+                                    "20:30-22:00"]
+
+    const updateBookings = async () => {
+        //fetch bookings and update
+        const res = await fetch("/api/bookings")
+        
+        const resBooking: Array<Booking> = await res.json();
+
+        const bookings: Array<Booking> = [];
+
+        resBooking.forEach(booking => {
+            const tmpBooking = {
+                _id : booking._id,
+                userName : booking.userName,
+                date : new Date(booking.date),
+                timeSlot : booking.timeSlot,
+            }
+    
+            bookings.push(tmpBooking);
+        });
+
+
+        setBookings(bookings);
+    }
 
     const bookingButtonGroup = (
-        <Grid container direction="row" justifyContent="center" alignItems="center">
-            <BookingButtonGroup selectedDate={selectedDate} times={times} booked={bookedTimes} user = {user} converter = {converter}/>
+    
+        <Grid container direction="row" justifyContent="center" alignItems="left">
+            <BookingButtonGroup timeSlots={timeSlots} bookedBookings={ getDateBookings(bookings, selectedDate) } selectedDate = {selectedDate} user = { user } updateBookings = {updateBookings}/>
         </Grid>
     )
-    const loadingText = (
-        <Typography variant="body1" align = "center">Laddar...</Typography>
-    )  
+    
     return (
     <div>
-
+        <Typography sx={{m:3}} variant="h3" component="h2" align = "center"> {props.title} </Typography>
         <Grid container spacing={1} direction="row" justifyContent="center" alignItems="left">
         <Grid item xs="auto" >
-        <LocalizationProvider dateAdapter={AdapterDateFns} /*locale={svLocale}*/>
-            <StaticDatePicker
+        <LocalizationProvider dateAdapter={AdapterDateFns} locale={svLocale}>
+            <StaticDatePicker<Date>
                 orientation="landscape"
                 displayStaticWrapperAs="desktop"
                 openTo="day"
                 showDaysOutsideCurrentMonth={true}
                 views={['day']}
-                showToolbar = {false}
+                showToolbar = {true}
                 value={selectedDate}
                 toolbarTitle = {"Valt Datum: "}
                 onChange={async (date) => {
-                    setShowButtons(false) 
-                    date && converter.setDate(date)
-                    date && setBookedTimes(await get(converter))
-                    date && setSelectedDate(date)
-                    setShowButtons(true)                 
-                    }}
-                renderInput={(params: any) => <TextField {...params} />}
+                    date && setSelectedDate(date);
+                    updateBookings();
+                    }
+                }
+                renderInput={(params) => <TextField {...params} />}
                 
-                /* DO NOT REMOVE
+                //DO NOT REMOVE
                 renderDay={(day, _value, DayComponentProps) => {
-                    let isBooked = false;
+                    let nbrBookedTimes = 0;
 
-                    const calendarDayInYear = getDayOfYear(day);
-                    bookedDates.forEach(bookedDayInYear => {
-                        if(calendarDayInYear === bookedDayInYear)
-                            isBooked = true
+                    bookings.forEach(booking => {
+                        if(compareDates(booking.date, day)) {
+                            nbrBookedTimes += 1;
+                        }
                     });
                 
+
+                    const badge = (nbr: number): string | undefined => {
+                        if(nbr == 10) {
+                            return '🔴';
+                        }
+                        else if (nbr >= 4 && nbr < 10) {
+                            return '🟡'
+                        }
+                        return undefined;
+                    }
 
                     return (
                         <Badge
                             key={day.toString()}
                             overlap="circular"
-                            badgeContent={isBooked ? '🔴' : undefined}
+                            badgeContent={badge(nbrBookedTimes)}
                         >
                             <PickersDay {...DayComponentProps} />
                         </Badge>
                     );
                     
                 }}
-                */
             />
         </LocalizationProvider>
+        
         </Grid>
-        <Grid item xs={2} >
-            <Grid>
-                <Typography variant = "subtitle2" align = 'center' >Slots:</Typography>
+            <Grid item xs={2} >
+                { bookingButtonGroup }
             </Grid>
-            {showButtons ? bookingButtonGroup : loadingText}
-        </Grid>
         </Grid>
     </div>
     );

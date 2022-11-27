@@ -76,7 +76,7 @@ export class getUsers {
         const response = await fetch(options.url + searchParams.toString(), options)
         const data = await response.json()
         const parser = JSON.parse(JSON.stringify(data))
-        console.log(response)
+
         return parser[0]
 
     }
