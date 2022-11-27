@@ -11,14 +11,26 @@ import { Booking } from "../utils/types"
 import {connect} from "../utils/connection"
 
 interface IndexProps {
-  bookings: Array<Booking>
+  bookings: string
 }
 
 const Index: NextPage<IndexProps> = (props: IndexProps) => {
-
-  const  bookings  = JSON.parse(props.bookings);
   const { user, isLoading, error } = useUser()
   const router = useRouter()
+
+  //Detta är ett hack för att få det att funka. Det är egentligen strängar
+  const bookings: Array<Booking> = JSON.parse(props.bookings) 
+
+  const initBookings: Array<Booking> = [];
+  bookings.forEach(booking => {
+      const tmpBooking = {
+          _id : booking._id,
+          userName : booking.userName,
+          date : new Date(booking.date),
+          timeSlot : booking.timeSlot,
+      }
+      initBookings.push(tmpBooking);
+  });
 
   //Se över denna
   useEffect(() => {
@@ -34,7 +46,7 @@ const Index: NextPage<IndexProps> = (props: IndexProps) => {
             <Header/> 
         </Grid>    
         <Grid item xs={12}>
-            {<BookingCalendar title="Tvättbokning - GH/NH" user = {user} bookings = { bookings }/>}
+            {<BookingCalendar title="Tvättbokning - GH/NH" user = {user} initBookings = { initBookings }/>}
         </Grid> 
         </Grid>       
     </Container> : <Typography>Laddar...</Typography>

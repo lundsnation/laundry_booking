@@ -14,8 +14,6 @@ const handler = withApiAuthRequired(async (req: NextApiRequest, res: NextApiResp
   //function for catch errors
   const catcher = (error: Error) => res.status(400).json({ error })
   await connect()
-  console.log(session?.user)
-
   
   // Potential Responses
   const handleCase: ResponseFuncs = {
@@ -32,7 +30,6 @@ const handler = withApiAuthRequired(async (req: NextApiRequest, res: NextApiResp
       const fetchAllowedSlots = await userFinder.getUser("name",userName)
       const allowedSlots = fetchAllowedSlots.app_metadata.allowedSlots
       const slotCheck = await Booking.find({userName:userName}).catch(catcher)
-      console.log(allowedSlots)
       logRequest('POST');
       if(!slotCheck || slotCheck.length < allowedSlots){
         return res.status(201).json(await Booking.create(req.body).catch(catcher))
