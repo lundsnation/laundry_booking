@@ -4,23 +4,28 @@ import { NextPage } from "next";
 import Header from "../src/components/Header"
 import { WithApiAuthRequired } from "@auth0/nextjs-auth0";
 import NotLoggedIn from "../src/components/NotLoggedIn";
+import ProfileBox from "../src/components/ProfileBox";
+import ProfileBooked from "../src/components/ProfileBooked";
 
 
 const Profile: NextPage = () => {
     const { user, isLoading, error } = useUser()
     return (
-        <Container maxWidth="lg" sx={{ my: "100" }}>
-            <Header />
-            {user ?
+        <Container maxWidth="lg">
 
-                <Box display={"flex"} alignItems="flex" justifyContent={"center"} my="100px">
-                    <Button href="/" variant="outlined">
-                        <Typography>Till startsida</Typography>
-                    </Button>
-                    <Typography sx={{ p: 2 }}>i /Profile</Typography>
+            {user ?
+                <Box sx={{
+                    alignItems: "center",
+                    justifyContent: "center",
+                    display: "flex"
+                }}>
+                    <Header />
+                    <ProfileBox />
+                    <ProfileBooked />
                 </Box>
                 :
                 <NotLoggedIn />
+
             }
         </Container >
     )

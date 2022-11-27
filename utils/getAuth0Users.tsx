@@ -1,5 +1,3 @@
-
-
 export class getUsers {
 
     private token: Promise<string>
@@ -78,6 +76,7 @@ export class getUsers {
 
     }
 
+    //for learning
     private async _checkForPrivliges(key: string, value: string) {
         const currentUser = await this._getSpecificUser(key, (value as string))
         const getDev: boolean = currentUser.app_metadata.isDev
@@ -94,6 +93,7 @@ export class getUsers {
         return this._downloadAllUsers()
     }
 
+    //for learning
     async getPrivileges(key: string, value: string) {
         // let priv = false
         // this._checkForPrivliges(key, value).then(bool => {
@@ -105,7 +105,7 @@ export class getUsers {
         return this._checkForPrivliges(key, value)
     }
 
-    getSpecificUser(key: string, value: string) {
+    getUser(key: string, value: string) {
         if (!key || !value) {
             return
         }
