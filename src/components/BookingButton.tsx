@@ -1,7 +1,7 @@
-import { Button, Container, Snackbar, Alert } from "@mui/material"
+import { Button, Container, AlertColor, Alert } from "@mui/material"
 import { UserProfile } from "@auth0/nextjs-auth0";
 import { useState } from "react";
-import {Booking} from "../../utils/types"
+import {Booking,timeFromTimeSlot} from "../../utils/types"
 
 interface Props {
     user: UserProfile;
@@ -9,30 +9,20 @@ interface Props {
     selectedDate: Date;
     timeSlot: string;
     updateBookings: () => void;
+    snackTrigger: (severity: AlertColor, snackString: string) => void;
 }
 const BookingButton = (props: Props) => {
     // Checking if the supplied timeslot is the users booking
-    const booking = props.booking;
-    const selectedDate = props.selectedDate;
-    const timeSlot = props.timeSlot;
-    const user = props.user;
-    const updateBookings = props.updateBookings;
+    const [disabled, setDisabled] = useState<boolean>(false)
+    const {user, booking, selectedDate,timeSlot, updateBookings,snackTrigger} = props
     const bookedTimeSlot = booking != null;
+    let snackString;
     const myTimeSlot =  user.name == booking?.userName ? bookedTimeSlot : null;
-    const [successfullBooking, setsuccessfullBooking] = useState(false);
-    const [sucessfullCancellation, setSucessfullCancellation] = useState(false);
-
-    //let successfullBooking = false;
-    //let sucessfullCancellation = false;
-    // Function for booking time
+   // Function for booking time
     const handleBook =  async () => {   
-        //const bookingDate = props.converter.getDate(props.index);
-        //console.log("Running handleBook in bookingButton");
-        //console.log("Selected Date: " + selectedDate);
-        //console.log("timeSlot : " + timeSlot);
-        //console.log("User name : " + user.name);
-        
-        const jsonBooking = { userName : (user.name as string), date :  new Date(selectedDate), timeSlot: timeSlot }
+        setDisabled(true)
+        const date = new Date(timeFromTimeSlot(selectedDate,timeSlot))
+        const jsonBooking = { userName : (user.name as string), date : date, timeSlot: timeSlot }
         const response = await fetch("/api/bookings", {
             method: "POST",
             headers: {
@@ -40,12 +30,19 @@ const BookingButton = (props: Props) => {
             },
             body: JSON.stringify(jsonBooking)
         });
-        const ans = await response
-        //console.log(ans)
-        if(ans.ok){
-            setsuccessfullBooking(true);
+        updateBookings();  
+        if(response.ok){
+            snackString = "Du har bokat: " + String(timeSlot) 
+            snackTrigger("success",snackString)
+        }else if(response.status == 400){
+            snackString = "Du kan inte boka flera tider"
+            snackTrigger("error",snackString)
+        }else if(response.status == 406){
+            snackString = "Du kan inte boka tider som redan varit"
+            snackTrigger("error",snackString)
         }
-        updateBookings();        
+        setDisabled(false)
+              
     }
 
     // Function for deleting already aquired time
@@ -54,25 +51,19 @@ const BookingButton = (props: Props) => {
         const response = await fetch(api_url, {
             method: "DELETE",
         });
-        const data = await response.json();
-        setSucessfullCancellation(true);
-        updateBookings();
-    }
-
-    function resetSnack() {
-        setSucessfullCancellation(false);
-        setsuccessfullBooking(false);
+        updateBookings();  
+        if(response.ok){
+            snackString = "Du har avbokat tiden"
+            snackTrigger("success",snackString)
+        }else{
+            snackString ="Internt fel"
+            snackTrigger("error",snackString)
+        }
     }
 
     return (
         <Container maxWidth="lg">
-            <Button onClick={bookedTimeSlot && myTimeSlot ? handleCancel : handleBook } color = {!bookedTimeSlot ? 'primary' : 'secondary'} disabled = {bookedTimeSlot && !myTimeSlot} variant="contained"  > {props.timeSlot} </Button>
-            <Snackbar open={successfullBooking} autoHideDuration={3000} onClose = {resetSnack}>
-                <Alert severity="success" color ='success' sx={{ width: '100%' }}> Tid Bokad : {props.timeSlot}</Alert>
-            </Snackbar>
-            <Snackbar open={sucessfullCancellation} autoHideDuration={3000} onClose = {resetSnack}>
-                <Alert severity="success" color ='info' sx={{ width: '100%' }}> Tid Avbokad : {props.timeSlot}</Alert>
-            </Snackbar>
+            <Button onClick={bookedTimeSlot && myTimeSlot ? handleCancel : handleBook } color = {!bookedTimeSlot ? 'primary' : 'secondary'} disabled = {(bookedTimeSlot && !myTimeSlot) || disabled} variant="contained"  > {props.timeSlot} </Button>
         </Container>
 
         
