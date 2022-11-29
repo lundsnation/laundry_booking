@@ -48,6 +48,9 @@ export const getDateBookings = (bookings: Array<Booking>, selectedDate: Date ) =
     return dateBookings;
 }
 
+//The method timeSlotToBooking and and dateToNbrOfBookingsMap can be combined for further optimization.
+//By combining them, both maps can be created in one iteration instead of two. And since they are both created
+//in bookingCalendar, it is actually unnecessary to create them in two separate methods and loops  
 export const timeSlotToBooking = (bookings: Set<Booking>) => {
     const map: Map<string, Booking> = new Map<string, Booking>();
 
@@ -55,6 +58,24 @@ export const timeSlotToBooking = (bookings: Set<Booking>) => {
     bookings.forEach(booking => {
         map.set(booking.timeSlot, booking); 
     });
+
+    return map;
+}
+
+export const dateToNbrOfBookingsMap = (bookings: Array<Booking>) => {
+    const map: Map<string, number> = new Map<string, number>();
+
+    bookings.forEach(booking => {
+        const strDate = booking.date.getFullYear().toString() + ":" + booking.date.getMonth().toString() + ":" +  booking.date.getDay().toString();
+
+        const strDateExists = map.has(strDate)
+
+        if(!strDateExists) {
+            map.set(strDate, 1);
+        } else {
+            map.set(strDate, (map.get(strDate) as number) + 1);
+        }
+    })
 
     return map;
 }
