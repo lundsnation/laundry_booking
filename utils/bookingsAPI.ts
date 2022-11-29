@@ -17,24 +17,6 @@ export const compareDates = (d1: Date, d2: Date): boolean => {
 export const getDateBookings = (bookings: Array<Booking>, selectedDate: Date ) => {
     const dateBookings: Set<Booking> = new Set();
     bookings.forEach(booking => {
-        //const bookingYear   = booking.date.getFullYear();
-        //const bookingMonth  = booking.date.getMonth();
-        //const bookingDay   = booking.date.getDate();
-
-        //const selectedYear = selectedDate.getFullYear();
-        //const selectedMonth = selectedDate.getMonth();
-        //const selectedDay = selectedDate.getDate();
-
-        //const sameDate = bookingYear == selectedYear && bookingMonth == selectedMonth && bookingDay == selectedDay;
-        //console.log("bookingYear, selectedYear : " + bookingYear as string + ", " + selectedYear as string  + " = " + (bookingYear == selectedYear) as string)
-        //console.log("bookingMonth, selectedMonth : " + bookingMonth as string + ", " + selectedMonth as string  + " = " + (bookingMonth == selectedMonth) as string)
-        //console.log("bookingDay, selectedDay : " + bookingDay as string + ", " +  selectedDay as string  +  (bookingDay == selectedDay) as string)
-        //console.log("bookedDate: " + bookingDay + " , " + bookingMonth + " , " + bookingYear)
-        //console.log("selectedDate: " + selectedDay + " , " + selectedMonth + " , " + selectedYear)
-        //console.log("sameDates : " + sameDate);
-        //console.log("timeSlot: " + booking.timeSlot)
-       
-
 
         const sameDate = compareDates(selectedDate, booking.date);
 
@@ -42,9 +24,6 @@ export const getDateBookings = (bookings: Array<Booking>, selectedDate: Date ) =
             dateBookings.add(booking);
         }
     });
-
-    //console.log(dateBookings.size);
-    //console.log("-------------------------------------------------")
     return dateBookings;
 }
 

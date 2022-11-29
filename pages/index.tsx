@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useEffect } from "react";
-import type { NextApiRequest, NextPage } from 'next';
+import type { NextPage } from 'next';
 import {Container, Typography, Box, Button, Grid} from '@mui/material';
 import { useUser } from '@auth0/nextjs-auth0/dist/frontend';
 import Header from '../src/components/Header'
@@ -9,6 +9,8 @@ import BookingCalendar from '../src/components/BookingCalendar';
 import { useRouter } from 'next/router'
 import { Booking } from "../utils/types"
 import {connect} from "../utils/connection"
+
+
 
 interface IndexProps {
   bookings: string
