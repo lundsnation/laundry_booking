@@ -10,7 +10,7 @@ import LoginButton from './LoginButton';
 import ProfileButton from './ProfileButton';
 
 
-const Header = () => {
+const Footer = () => {
     const { user, isLoading, error } = useUser()
     const [auth, setAuth] = React.useState(true);
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -28,7 +28,7 @@ const Header = () => {
 
     return (
         <Container maxWidth="lg">
-            <Box sx={{ alignItems: "top" }}>
+            <Box sx={{ alignItems: "end" }}>
                 <AppBar position="fixed" color="primary">
                     <Toolbar>
                         <IconButton
@@ -45,7 +45,6 @@ const Header = () => {
                             <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
                                 Välkommen!
                             </Typography>
-
                             :
                             <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
                                 Du är utloggad
@@ -102,4 +101,4 @@ const Header = () => {
 
 };
 
-export default Header;
+export default Footer;

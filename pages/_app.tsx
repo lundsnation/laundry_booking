@@ -7,6 +7,10 @@ import { CacheProvider, EmotionCache } from '@emotion/react';
 import createEmotionCache from '../src/createEmotionCache';
 import { UserProvider } from '@auth0/nextjs-auth0';
 import theme from "../src/theme"
+import { makeStyles, Paper, alpha } from '@mui/material';
+import Header from '../src/components/Header';
+import Footer from '../src/components/Footer';
+
 
 
 // Client-side cache, shared for the whole session of the user in the browser.
@@ -35,6 +39,18 @@ const lundsNationtheme = createTheme({
     }
   }
 });
+const img = 'http://localhost:3000/logotyp04.png'
+const styles = {
+  paperContainer: {
+    backgroundImage: `url(${img})`,
+    backgroundRepeat: 'no-repeat',
+    backgroundSize: 'contain',
+    backgroundPosition: 'center',
+    height: '100vh',
+    width: '100%',
+
+  }
+}
 
 interface MyAppProps extends AppProps {
   emotionCache?: EmotionCache;
@@ -44,18 +60,30 @@ export default function MyApp(props: MyAppProps) {
   const { Component, emotionCache = clientSideEmotionCache, pageProps } = props;
   return (
     <UserProvider>
+
       <CacheProvider value={emotionCache}>
+
         <Head>
+
           <link rel="shortcut icon" href="/favicon.ico" />
           <meta name="viewport" content="initial-scale=1, width=device-width" />
+
         </Head>
         <ThemeProvider theme={lundsNationtheme}>
+
           {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
-          <CssBaseline />
-          <Component {...pageProps} />
+          <Paper style={styles.paperContainer}>
+            <Header />
+            <CssBaseline />
+
+            <Component {...pageProps} />
+          </Paper>
+
+
         </ThemeProvider>
       </CacheProvider>
-    </UserProvider>
+    </UserProvider >
 
   );
 }
+
