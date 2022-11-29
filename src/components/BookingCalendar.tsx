@@ -8,6 +8,7 @@ import {Booking, timeSlots} from "../../utils/types";
 import { UserProfile } from "@auth0/nextjs-auth0";
 import { getDateBookings, compareDates } from "../../utils/bookingsAPI"
 import {Snack, SnackInterface} from "../components/Snack"
+import Pusher from 'pusher-js'
 
 interface Props {
     title: string;
@@ -21,10 +22,22 @@ const BookingCalendar = (props: Props) => {
     const [snack, setSnack] = useState<SnackInterface>({show: false, snackString : "", severity: "success"})
     const { user } = props;
 
+    // Substitute for componntDidMount()
+    useEffect(() => {
+        const pusher = new Pusher("fa569778e9e1c854bf93",{
+            cluster: "eu",
+            forceTLS: true
+        })
+        const channel = pusher.subscribe("RTupdate")
+        channel.bind('notify', () => {
+            updateBookings()
+          });
+       }, [])
+
     const updateBookings = async () => {
         //fetch bookings and update
         const res = await fetch("/api/bookings")
-        const resBooking: Array<Booking> = await res.json();
+        const resBooking: Array<Booking> = await res.json()
         const bookings: Array<Booking> = [];
         resBooking.forEach(booking => {
             const tmpBooking = {
@@ -69,7 +82,6 @@ const BookingCalendar = (props: Props) => {
                 toolbarTitle = {"Valt Datum: "}
                 onChange={async (date) => {
                     date && setSelectedDate(date);
-                    updateBookings();
                     }
                 }
                 renderInput={(params) => <TextField {...params} />}

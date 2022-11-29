@@ -5,6 +5,17 @@ import { ResponseFuncs } from "../../../utils/types"
 import Booking from '../../../models/Booking'
 import { withApiAuthRequired, getSession } from "@auth0/nextjs-auth0"
 import { getUsers} from '../../../src/getAuth0Users'
+import Pusher from 'pusher'
+
+
+const pusher = new Pusher({
+  appId: "1515147",
+  key: "fa569778e9e1c854bf93",
+  secret: "fbb573750e39f273ac3d",
+  cluster: "eu",
+  encrypted: true
+});
+
 
 const handler = withApiAuthRequired(async (req: NextApiRequest, res: NextApiResponse) => {
   //capture request method, we type it as a key of ResponseFunc to reduce typing later
@@ -34,7 +45,11 @@ const handler = withApiAuthRequired(async (req: NextApiRequest, res: NextApiResp
       logRequest('POST');
       // Checks if user has no bookings or have less than allowed slots already booked in DB
       if(!slotCheck || slotCheck.length < allowedSlots){
-        return res.status(201).json(await Booking.create(req.body).catch(catcher))
+        const postReq = await Booking.create(req.body).catch(catcher)
+        pusher.trigger("RTupdate", "notify", {
+          message: "POST"
+        });
+        return res.status(201).json(postReq)
       }
       return res.status(400).json({error: "User has max number of slots booked"})
       

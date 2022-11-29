@@ -4,7 +4,15 @@ import { logRequest } from "../../../utils/backendLogger"
 import { ResponseFuncs } from "../../../utils/types"
 import Booking from '../../../models/Booking'
 import { withApiAuthRequired, getSession} from '@auth0/nextjs-auth0';
-import {getUsers} from '../../../src/getAuth0Users'
+import Pusher from 'pusher';
+
+const pusher = new Pusher({
+  appId: "1515147",
+  key: "fa569778e9e1c854bf93",
+  secret: "fbb573750e39f273ac3d",
+  cluster: "eu",
+  encrypted: true
+});
 
 const handler = withApiAuthRequired(async (req: NextApiRequest, res: NextApiResponse) => {
   const method: keyof ResponseFuncs = req.method as keyof ResponseFuncs
@@ -36,6 +44,9 @@ const handler = withApiAuthRequired(async (req: NextApiRequest, res: NextApiResp
       if(!query){
         res.status(400).send({error: 'No bookings for active user'})
       }else{
+        pusher.trigger("RTupdate", "notify", {
+          message: "DELETE"
+        });
         res.status(200).json(await Booking.findByIdAndRemove(id).catch(catcher))
       }
       logRequest('DELETE')
