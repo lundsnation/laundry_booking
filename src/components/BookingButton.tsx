@@ -30,7 +30,7 @@ const BookingButton = (props: Props) => {
             },
             body: JSON.stringify(jsonBooking)
         });
-        updateBookings();  
+        updateBookings() 
         if(response.ok){
             snackString = "Du har bokat: " + String(timeSlot) 
             snackTrigger("success",snackString)
@@ -42,7 +42,7 @@ const BookingButton = (props: Props) => {
             snackTrigger("error",snackString)
         }
         setDisabled(false)
-              
+             
     }
 
     // Function for deleting already aquired time
@@ -51,7 +51,7 @@ const BookingButton = (props: Props) => {
         const response = await fetch(api_url, {
             method: "DELETE",
         });
-        updateBookings();  
+        updateBookings() 
         if(response.ok){
             snackString = "Du har avbokat tiden"
             snackTrigger("success",snackString)

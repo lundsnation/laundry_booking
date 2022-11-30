@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 import requests
 
 load_dotenv()
-my_id = os.getenv("AUTH0_CLIENT_ID")
+my_id = os.getenv("REACT_APP_ID")
 secret = os.getenv("REACT_APP_SECRET")
 url = os.getenv("AUTH0_ISSUER_BASE_URL")
 token = os.getenv("AUTH0_TOKEN")
