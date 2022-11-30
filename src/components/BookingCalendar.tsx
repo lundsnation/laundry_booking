@@ -12,15 +12,12 @@ import {Snack, SnackInterface} from "../components/Snack"
 interface Props {
     title: string;
     user: UserProfile;
-    initBookings: Array<Booking>;
 }
-
-
 
 
 const BookingCalendar = (props: Props) => {
     const [selectedDate, setSelectedDate] = useState<Date>(new Date());
-    const [bookings, setBookings] = useState<Array<Booking>>(props.initBookings);
+    const [bookings, setBookings] = useState<Array<Booking>>([]);
     const [snack, setSnack] = useState<SnackInterface>({show: false, snackString : "", severity: "success"})
     const { user } = props;
     
@@ -105,6 +102,12 @@ const handleDayColor = (day: Date): SxProps => {
         });
         setBookings(bookings);
     }
+    //get initial bookings
+    useEffect(() => {
+        updateBookings()
+        console.log("useeffect being run to get initial bookings");
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        }, []);
 
     const snackTrigger = (severity : AlertColor, snackString : string) => {
         setSnack({show: true, snackString : snackString, severity : severity})
