@@ -1,18 +1,13 @@
 import { NextApiRequest, NextApiResponse } from "next"
 import { connect } from "../../../utils/connection"
 import { logRequest } from "../../../utils/backendLogger"
-import { ResponseFuncs } from "../../../utils/types"
+import { ResponseFuncs,  } from "../../../utils/types"
+import { realTimePusher, pusherInfo } from "../../../utils/pusher"
 import Booking from '../../../models/Booking'
 import { withApiAuthRequired, getSession} from '@auth0/nextjs-auth0';
-import Pusher from 'pusher';
 
-const pusher = new Pusher({
-  appId: "1515147",
-  key: "fa569778e9e1c854bf93",
-  secret: "fbb573750e39f273ac3d",
-  cluster: "eu",
-  encrypted: true
-});
+
+
 
 const handler = withApiAuthRequired(async (req: NextApiRequest, res: NextApiResponse) => {
   const method: keyof ResponseFuncs = req.method as keyof ResponseFuncs
@@ -44,7 +39,7 @@ const handler = withApiAuthRequired(async (req: NextApiRequest, res: NextApiResp
       if(!query){
         res.status(400).send({error: 'No bookings for active user'})
       }else{
-        pusher.trigger("RTupdate", "notify", {
+        realTimePusher.trigger(pusherInfo.channelName, pusherInfo.eventName, {
           message: "DELETE"
         });
         res.status(200).json(await Booking.findByIdAndRemove(id).catch(catcher))

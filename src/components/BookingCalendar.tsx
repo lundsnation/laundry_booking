@@ -1,5 +1,5 @@
 import { StaticDatePicker, LocalizationProvider, PickersDay } from '@mui/x-date-pickers';
-import React, { useState, useEffect, forwardRef} from "react";
+import React, { useState, useEffect} from "react";
 import AdapterDateFns from '@date-io/date-fns'
 import { Badge, Grid, TextField, AlertColor, Typography } from "@mui/material";
 import svLocale from 'date-fns/locale/sv';
@@ -8,6 +8,7 @@ import {Booking, timeSlots} from "../../utils/types";
 import { UserProfile } from "@auth0/nextjs-auth0";
 import { getDateBookings, compareDates } from "../../utils/bookingsAPI"
 import {Snack, SnackInterface} from "../components/Snack"
+import {pusherInfo} from '../../utils/pusher'
 import Pusher from 'pusher-js'
 
 interface Props {
@@ -24,12 +25,12 @@ const BookingCalendar = (props: Props) => {
 
     // Substitute for componntDidMount()
     useEffect(() => {
-        const pusher = new Pusher("fa569778e9e1c854bf93",{
-            cluster: "eu",
+        const pusher = new Pusher(process.env.PUSHER_APP_KEY as string,{
+            cluster: process.env.PUSHER_CLUSTER as string,
             forceTLS: true
         })
-        const channel = pusher.subscribe("RTupdate")
-        channel.bind('notify', () => {
+        const channel = pusher.subscribe(pusherInfo.channelName)
+        channel.bind(pusherInfo.eventName, () => {
             updateBookings()
           });
        }, [])

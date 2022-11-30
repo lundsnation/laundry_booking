@@ -2,19 +2,10 @@ import { NextApiRequest, NextApiResponse } from "next"
 import { connect } from "../../../utils/connection"
 import { logRequest } from "../../../utils/backendLogger"
 import { ResponseFuncs } from "../../../utils/types"
+import { realTimePusher, pusherInfo } from "../../../utils/pusher"
 import Booking from '../../../models/Booking'
 import { withApiAuthRequired, getSession } from "@auth0/nextjs-auth0"
 import { getUsers} from '../../../src/getAuth0Users'
-import Pusher from 'pusher'
-
-
-const pusher = new Pusher({
-  appId: "1515147",
-  key: "fa569778e9e1c854bf93",
-  secret: "fbb573750e39f273ac3d",
-  cluster: "eu",
-  encrypted: true
-});
 
 
 const handler = withApiAuthRequired(async (req: NextApiRequest, res: NextApiResponse) => {
@@ -22,7 +13,7 @@ const handler = withApiAuthRequired(async (req: NextApiRequest, res: NextApiResp
   const method: keyof ResponseFuncs = req.method as keyof ResponseFuncs
   const session = getSession(req, res)
   const user = session?.user.name
-  const catcher = (error: Error) => res.status(400).json({ error })
+  const catcher = (error: Error) => res.status(400).json({ error: "Okänt fel" })
   await connect()
   
   const handleCase: ResponseFuncs = {
@@ -46,7 +37,7 @@ const handler = withApiAuthRequired(async (req: NextApiRequest, res: NextApiResp
       // Checks if user has no bookings or have less than allowed slots already booked in DB
       if(!slotCheck || slotCheck.length < allowedSlots){
         const postReq = await Booking.create(req.body).catch(catcher)
-        pusher.trigger("RTupdate", "notify", {
+        realTimePusher.trigger(pusherInfo.channelName, pusherInfo.eventName, {
           message: "POST"
         });
         return res.status(201).json(postReq)
