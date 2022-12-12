@@ -1,5 +1,5 @@
 import { StaticDatePicker, LocalizationProvider, PickersDay } from '@mui/x-date-pickers';
-import React, { useState, useEffect} from "react";
+import React, { useState, useEffect, forwardRef} from "react";
 import AdapterDateFns from '@date-io/date-fns'
 import { Badge, Grid, SxProps, TextField, AlertColor, Typography } from "@mui/material";
 import svLocale from 'date-fns/locale/sv';
@@ -8,8 +8,6 @@ import {Booking, timeSlots} from "../../utils/types";
 import { UserProfile } from "@auth0/nextjs-auth0";
 import { getDateBookings, compareDates } from "../../utils/bookingsAPI"
 import {Snack, SnackInterface} from "../components/Snack"
-import {pusherInfo} from '../../utils/pusher'
-import Pusher from 'pusher-js'
 
 interface Props {
     title: string;
@@ -88,22 +86,10 @@ const handleDayColor = (day: Date): SxProps => {
     }
 }
 
-    // Substitute for componntDidMount()
-    useEffect(() => {
-        const pusher = new Pusher(process.env.PUSHER_APP_KEY as string,{
-            cluster: process.env.PUSHER_CLUSTER as string,
-            forceTLS: true
-        })
-        const channel = pusher.subscribe(pusherInfo.channelName)
-        channel.bind(pusherInfo.eventName, () => {
-            updateBookings()
-          });
-       }, [])
-
     const updateBookings = async () => {
         //fetch bookings and update
         const res = await fetch("/api/bookings")
-        const resBooking: Array<Booking> = await res.json()
+        const resBooking: Array<Booking> = await res.json();
         const bookings: Array<Booking> = [];
         resBooking.forEach(booking => {
             const tmpBooking = {
@@ -154,6 +140,7 @@ const handleDayColor = (day: Date): SxProps => {
                 toolbarTitle = {"Valt Datum: "}
                 onChange={async (date) => {
                     date && setSelectedDate(date);
+                    updateBookings();
                     }
                 }
                 renderInput={(params) => <TextField {...params} />}
