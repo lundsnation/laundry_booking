@@ -27,77 +27,76 @@ const Header = () => {
 
 
     return (
-        <Container maxWidth="lg">
-            <Box sx={{ alignItems: "top" }}>
-                <AppBar position="fixed" color="primary">
-                    <Toolbar>
-                        <IconButton
+
+        <Box sx={{ alignItems: "top" }}>
+            <AppBar position="fixed" color="primary">
+                <Toolbar>
+                    <IconButton
+                        size="large"
+                        edge="start"
+                        color="inherit"
+                        aria-label="menu"
+                        sx={{ mr: 2 }}
+                    >
+                        <MenuIcon />
+                    </IconButton>
+
+                    {user ?
+                        <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+                            Välkommen!
+                        </Typography>
+
+                        :
+                        <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+                            Du är utloggad
+                        </Typography>
+                    }
+                    {auth && (
+                        <><IconButton
+                            sx={{ borderRadius: 10 }}
                             size="large"
-                            edge="start"
-                            color="inherit"
-                            aria-label="menu"
-                            sx={{ mr: 2 }}
-                        >
-                            <MenuIcon />
-                        </IconButton>
-
-                        {user ?
-                            <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-                                Välkommen!
+                            aria-label="account of current user"
+                            aria-controls="menu-appbar"
+                            aria-haspopup="true"
+                            onClick={handleMenu}
+                            color="inherit">
+                            <AccountCircle />
+                            <Typography
+                                sx={{ m: 1 }}
+                            >
+                                {user?.name}
                             </Typography>
+                        </IconButton><Box>
+                                <Menu
+                                    id="menu-appbar"
+                                    anchorEl={anchorEl}
+                                    anchorOrigin={{
+                                        vertical: 'bottom',
+                                        horizontal: 'left',
+                                    }}
+                                    keepMounted
+                                    transformOrigin={{
+                                        vertical: 'top',
+                                        horizontal: 'left',
+                                    }}
 
-                            :
-                            <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-                                Du är utloggad
-                            </Typography>
-                        }
-                        {auth && (
-                            <><IconButton
-                                sx={{ borderRadius: 10 }}
-                                size="large"
-                                aria-label="account of current user"
-                                aria-controls="menu-appbar"
-                                aria-haspopup="true"
-                                onClick={handleMenu}
-                                color="inherit">
-                                <AccountCircle />
-                                <Typography
-                                    sx={{ m: 1 }}
+                                    open={Boolean(anchorEl)}
+                                    onClose={handleClose}
                                 >
-                                    {user?.name}
-                                </Typography>
-                            </IconButton><Box>
-                                    <Menu
-                                        id="menu-appbar"
-                                        anchorEl={anchorEl}
-                                        anchorOrigin={{
-                                            vertical: 'bottom',
-                                            horizontal: 'left',
-                                        }}
-                                        keepMounted
-                                        transformOrigin={{
-                                            vertical: 'top',
-                                            horizontal: 'left',
-                                        }}
 
-                                        open={Boolean(anchorEl)}
-                                        onClose={handleClose}
-                                    >
-
-                                        <ProfileButton />
-                                        <LoginButton />
+                                    <ProfileButton />
+                                    <LoginButton />
 
 
-                                    </Menu>
-                                </Box></>
-                            //ProfileButton & LoginButton, Buttons in iconMenu
-                            //Whether buttons are shown are based on "user" in the components
-                        )}
+                                </Menu>
+                            </Box></>
+                        //ProfileButton & LoginButton, Buttons in iconMenu
+                        //Whether buttons are shown are based on "user" in the components
+                    )}
 
-                    </Toolbar>
-                </AppBar>
-            </Box>
-        </Container>
+                </Toolbar>
+            </AppBar>
+        </Box>
     )
 
 };

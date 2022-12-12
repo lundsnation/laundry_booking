@@ -7,9 +7,8 @@ import { CacheProvider, EmotionCache } from '@emotion/react';
 import createEmotionCache from '../src/createEmotionCache';
 import { UserProvider } from '@auth0/nextjs-auth0';
 import theme from "../src/theme"
-import { makeStyles, Paper, alpha } from '@mui/material';
-import Header from '../src/components/Header';
-import Footer from '../src/components/Footer';
+import { makeStyles, Paper, alpha, Grid } from '@mui/material';
+import Layout from '../src/components/Layout';
 
 
 
@@ -31,26 +30,15 @@ const lundsNationtheme = createTheme({
     },
     secondary: {
       // Brick Red
-      main: '#B72C3B'
+      main: '#F9D483'
     },
     background: {
       // Bianca
       default: "F7F3E6"
-    }
+    },
   }
 });
-const img = 'http://localhost:3000/logotyp04.png'
-const styles = {
-  paperContainer: {
-    backgroundImage: `url(${img})`,
-    backgroundRepeat: 'no-repeat',
-    backgroundSize: 'contain',
-    backgroundPosition: 'center',
-    height: '100vh',
-    width: '100%',
 
-  }
-}
 
 interface MyAppProps extends AppProps {
   emotionCache?: EmotionCache;
@@ -72,12 +60,12 @@ export default function MyApp(props: MyAppProps) {
         <ThemeProvider theme={lundsNationtheme}>
 
           {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
-          <Paper style={styles.paperContainer}>
-            <Header />
-            <CssBaseline />
+          <Layout>
 
             <Component {...pageProps} />
-          </Paper>
+            <CssBaseline />
+
+          </Layout>
 
 
         </ThemeProvider>

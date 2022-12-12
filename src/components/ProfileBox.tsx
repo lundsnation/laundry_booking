@@ -13,7 +13,7 @@ const ProfileBox = () => {
             justifyContent: "center",
             alignItems: "center",
             width: 300,
-            height: 300
+            height: 300,
         }}>
             <Grid container spacing={1} columns={1}>
                 <Grid item xs={"auto"} md={8}>

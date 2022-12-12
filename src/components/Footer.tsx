@@ -1,102 +1,30 @@
 import * as React from 'react';
-import { NextPage } from "next";
-import { Container, Typography, Box, Button, Toolbar, AppBar, Fade, Collapse } from '@mui/material';
-import MenuIcon from "@mui/icons-material/Menu";
-import Menu from '@mui/material/Menu';
-import IconButton from "@mui/material/IconButton";
-import { useUser } from '@auth0/nextjs-auth0/dist/frontend';
-import { AccountCircle } from '@mui/icons-material';
-import LoginButton from './LoginButton';
-import ProfileButton from './ProfileButton';
+import { Container, Typography, Box, Grid } from '@mui/material';
 
 
 const Footer = () => {
-    const { user, isLoading, error } = useUser()
-    const [auth, setAuth] = React.useState(true);
-    const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-    const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setAuth(event.target.checked);
-    };
-
-    const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
-        setAnchorEl(event.currentTarget);
-    };
-    const handleClose = () => {
-        setAnchorEl(null);
-    };
-
-
     return (
-        <Container maxWidth="lg">
-            <Box sx={{ alignItems: "end" }}>
-                <AppBar position="fixed" color="primary">
-                    <Toolbar>
-                        <IconButton
-                            size="large"
-                            edge="start"
-                            color="inherit"
-                            aria-label="menu"
-                            sx={{ mr: 2 }}
-                        >
-                            <MenuIcon />
-                        </IconButton>
+        <Grid container display={"flex"} alignItems={"top"} justifyContent={"center"} padding={4}
+            sx={{
+                backgroundColor: "#afa998", //Får den ej att vilja använda sig av themeProvider t.ex. "secondary"
+                color: "#fff",
+            }}
+        >
+            <Grid item xs={12} sm={3} mx={4}>
+                <Box borderBottom={1}> Test</Box>
+                <Box>Test</Box>
+                <Box>Test</Box>
+            </Grid>
+            <Grid item xs={12} sm={3} mx={4}>
+                <Box borderBottom={1}> En till</Box>
+                <Box>Också</Box>
+            </Grid>
+            <Grid item xs={12} sm={3} mx={4}>
+                <Box borderBottom={1}> Sista</Box>
+                <Box>Japp!</Box>
+            </Grid>
+        </Grid >
 
-                        {user ?
-                            <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-                                Välkommen!
-                            </Typography>
-                            :
-                            <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-                                Du är utloggad
-                            </Typography>
-                        }
-                        {auth && (
-                            <><IconButton
-                                sx={{ borderRadius: 10 }}
-                                size="large"
-                                aria-label="account of current user"
-                                aria-controls="menu-appbar"
-                                aria-haspopup="true"
-                                onClick={handleMenu}
-                                color="inherit">
-                                <AccountCircle />
-                                <Typography
-                                    sx={{ m: 1 }}
-                                >
-                                    {user?.name}
-                                </Typography>
-                            </IconButton><Box>
-                                    <Menu
-                                        id="menu-appbar"
-                                        anchorEl={anchorEl}
-                                        anchorOrigin={{
-                                            vertical: 'bottom',
-                                            horizontal: 'left',
-                                        }}
-                                        keepMounted
-                                        transformOrigin={{
-                                            vertical: 'top',
-                                            horizontal: 'left',
-                                        }}
-
-                                        open={Boolean(anchorEl)}
-                                        onClose={handleClose}
-                                    >
-
-                                        <ProfileButton />
-                                        <LoginButton />
-
-
-                                    </Menu>
-                                </Box></>
-                            //ProfileButton & LoginButton, Buttons in iconMenu
-                            //Whether buttons are shown are based on "user" in the components
-                        )}
-
-                    </Toolbar>
-                </AppBar>
-            </Box>
-        </Container>
     )
 
 };

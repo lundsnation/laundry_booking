@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 const ProfileBooked = () => {
     const { user, error, isLoading } = useUser()
 
+
     return (
         <Paper variant={"elevation"} sx={{
             width: 300,
