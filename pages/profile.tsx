@@ -1,28 +1,31 @@
-import { Box, Button, Container, Typography } from "@mui/material";
+import { Box, Button, Container, Grid, Paper, Typography } from "@mui/material";
 import { useUser } from '@auth0/nextjs-auth0/dist/frontend';
 import { NextPage } from "next";
-import Header from "../src/components/Header"
-import { WithApiAuthRequired } from "@auth0/nextjs-auth0";
 import NotLoggedIn from "../src/components/NotLoggedIn";
+import ProfileBox from "../src/components/ProfileBox";
+import ProfileBooked from "../src/components/ProfileBooked";
+
+
+
+
 
 
 const Profile: NextPage = () => {
     const { user, isLoading, error } = useUser()
     return (
-        <Container maxWidth="lg" sx={{ my: "100" }}>
-            <Header />
-            {user ?
+        <Grid container columns={2} minWidth={"75%"} spacing={2}>
+            <Grid item xs={2} md={2} sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+                <Typography variant="h2">NH0000</Typography>
+            </Grid>
+            <Grid item xs={2} md={1} sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+                <ProfileBox />
+            </Grid>
+            <Grid item xs={2} md={1} sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+                <ProfileBooked />
+            </Grid>
+        </Grid>
 
-                <Box display={"flex"} alignItems="flex" justifyContent={"center"} my="100px">
-                    <Button href="/" variant="outlined">
-                        <Typography>Till startsida</Typography>
-                    </Button>
-                    <Typography sx={{ p: 2 }}>i /Profile</Typography>
-                </Box>
-                :
-                <NotLoggedIn />
-            }
-        </Container >
+
     )
 }
 

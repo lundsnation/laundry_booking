@@ -9,7 +9,8 @@ import { AccountCircle } from '@mui/icons-material';
 import LoginButton from './LoginButton';
 import ProfileButton from './ProfileButton';
 
-const Header: NextPage = (title) => {
+
+const Header = () => {
     const { user, isLoading, error } = useUser()
     const [auth, setAuth] = React.useState(true);
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -26,76 +27,76 @@ const Header: NextPage = (title) => {
 
 
     return (
-        <Container maxWidth="lg">
-            <Box sx={{ alignItems: "top" }}>
-                <AppBar position="fixed" color="primary">
-                    <Toolbar>
-                        <IconButton
+
+        <Box sx={{ alignItems: "top" }}>
+            <AppBar position="fixed" color="primary">
+                <Toolbar>
+                    <IconButton
+                        size="large"
+                        edge="start"
+                        color="inherit"
+                        aria-label="menu"
+                        sx={{ mr: 2 }}
+                    >
+                        <MenuIcon />
+                    </IconButton>
+
+                    {user ?
+                        <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+                            Välkommen!
+                        </Typography>
+
+                        :
+                        <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+                            Du är utloggad
+                        </Typography>
+                    }
+                    {auth && (
+                        <><IconButton
+                            sx={{ borderRadius: 10 }}
                             size="large"
-                            edge="start"
-                            color="inherit"
-                            aria-label="menu"
-                            sx={{ mr: 2 }}
-                        >
-                            <MenuIcon />
-                        </IconButton>
+                            aria-label="account of current user"
+                            aria-controls="menu-appbar"
+                            aria-haspopup="true"
+                            onClick={handleMenu}
+                            color="inherit">
+                            <AccountCircle />
+                            <Typography
+                                sx={{ m: 1 }}
+                            >
+                                {user?.name}
+                            </Typography>
+                        </IconButton><Box>
+                                <Menu
+                                    id="menu-appbar"
+                                    anchorEl={anchorEl}
+                                    anchorOrigin={{
+                                        vertical: 'bottom',
+                                        horizontal: 'left',
+                                    }}
+                                    keepMounted
+                                    transformOrigin={{
+                                        vertical: 'top',
+                                        horizontal: 'left',
+                                    }}
 
-                        {user ?
-                            <Typography variant="h5" component="div" sx={{ flexGrow: 1 }}>
-                               Tvättbokning NH/GH 
-                            </Typography>
-                            :
-                            <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-                                Du är utloggad
-                            </Typography>
-                        }
-                        {auth && (
-                            <><IconButton
-                                sx={{ borderRadius: 10 }}
-                                size="large"
-                                aria-label="account of current user"
-                                aria-controls="menu-appbar"
-                                aria-haspopup="true"
-                                onClick={handleMenu}
-                                color="inherit">
-                                <AccountCircle />
-                                <Typography
-                                    sx={{ m: 1 }}
+                                    open={Boolean(anchorEl)}
+                                    onClose={handleClose}
                                 >
-                                    {user?.name}
-                                </Typography>
-                            </IconButton><Box>
-                                    <Menu
-                                        id="menu-appbar"
-                                        anchorEl={anchorEl}
-                                        anchorOrigin={{
-                                            vertical: 'bottom',
-                                            horizontal: 'left',
-                                        }}
-                                        keepMounted
-                                        transformOrigin={{
-                                            vertical: 'top',
-                                            horizontal: 'left',
-                                        }}
 
-                                        open={Boolean(anchorEl)}
-                                        onClose={handleClose}
-                                    >
-
-                                        <ProfileButton />
-                                        <LoginButton />
+                                    <ProfileButton />
+                                    <LoginButton />
 
 
-                                    </Menu>
-                                </Box></>
-                            //ProfileButton & LoginButton, Buttons in iconMenu
-                            //Whether buttons are shown are based on "user" in the components
-                        )}
+                                </Menu>
+                            </Box></>
+                        //ProfileButton & LoginButton, Buttons in iconMenu
+                        //Whether buttons are shown are based on "user" in the components
+                    )}
 
-                    </Toolbar>
-                </AppBar>
-            </Box>
-        </Container>
+                </Toolbar>
+            </AppBar>
+        </Box>
     )
 
 };
