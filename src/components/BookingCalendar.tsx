@@ -1,7 +1,7 @@
 import { StaticDatePicker, LocalizationProvider, PickersDay } from '@mui/x-date-pickers';
 import React, { useState, useEffect, forwardRef } from "react";
 import AdapterDateFns from '@date-io/date-fns'
-import { Badge, Grid, SxProps, TextField, AlertColor, Typography } from "@mui/material";
+import { Badge, Grid, SxProps, TextField, AlertColor, Typography, Paper } from "@mui/material";
 import svLocale from 'date-fns/locale/sv';
 import BookingButtonGroup from "./BookingButtonGroup";
 import { Booking, timeSlots } from "../../utils/types";
@@ -125,40 +125,42 @@ const BookingCalendar = (props: Props) => {
 
     return (
         <div>
-            <Typography sx={{ m: 3 }} variant="h3" component="h2" align="center"> {props.title} </Typography>
-            <Grid container spacing={1} direction="row" justifyContent="center" alignItems="left">
-                <Grid item xs="auto" >
-                    <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={svLocale}>
-                        <StaticDatePicker<Date>
-                            orientation="landscape"
-                            displayStaticWrapperAs="desktop"
-                            openTo="day"
-                            showDaysOutsideCurrentMonth={true}
-                            views={['day']}
-                            showToolbar={true}
-                            value={selectedDate}
-                            toolbarTitle={"Valt Datum: "}
-                            onChange={async (date) => {
-                                date && setSelectedDate(date);
-                                updateBookings();
-                            }
-                            }
-                            renderInput={(params) => <TextField {...params} />}
+            <Grid container spacing={2} justifyContent="center" alignItems="center">
+                <Grid item xs={12} sm={6} md={6}>
+                    <Paper elevation={0} variant={"outlined"} style={{ width: '323px', height: '337px', backgroundColor: "rgba(255,255,255,0.65)" }}>
+                        <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={svLocale}>
+                            <StaticDatePicker<Date>
+                                orientation="landscape"
+                                displayStaticWrapperAs="desktop"
+                                openTo="day"
+                                showDaysOutsideCurrentMonth={true}
+                                views={['day']}
+                                showToolbar={false}
+                                value={selectedDate}
+                                toolbarTitle={"Valt Datum: "}
+                                onChange={async (date) => {
+                                    date && setSelectedDate(date);
+                                    updateBookings();
+                                }
 
-                            //DO NOT REMOVE
-                            renderDay={(day, _value, DayComponentProps) => {
+                                }
+                                renderInput={(params) => <TextField {...params} />}
+
+                                //DO NOT REMOVE
+                                renderDay={(day, _value, DayComponentProps) => {
 
 
-                                return (
-                                    <PickersDay sx={handleDayColor(day)} {...DayComponentProps} />
-                                );
+                                    return (
+                                        <PickersDay sx={handleDayColor(day)} {...DayComponentProps} />
+                                    );
 
-                            }}
-                        />
-                    </LocalizationProvider>
+                                }}
+                            />
+                        </LocalizationProvider>
+                    </Paper>
 
                 </Grid>
-                <Grid item xs={2} >
+                <Grid item xs={12} sm={6} >
                     {bookingButtonGroup}
                 </Grid>
             </Grid>

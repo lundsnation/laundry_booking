@@ -11,17 +11,13 @@ const Footer = () => {
             }}
         >
             <Grid item xs={12} sm={3} mx={4}>
-                <Box borderBottom={1}> Test</Box>
-                <Box>Test</Box>
-                <Box>Test</Box>
+                <Box borderBottom={1} sx={{ fontWeight: "bold" }}> LUNDS NATION </Box>
+                <Box>Agardhsgatan 1</Box>
+                <Box>hus@lundsnation.se</Box>
             </Grid>
             <Grid item xs={12} sm={3} mx={4}>
-                <Box borderBottom={1}> En till</Box>
-                <Box>Också</Box>
-            </Grid>
-            <Grid item xs={12} sm={3} mx={4}>
-                <Box borderBottom={1}> Sista</Box>
-                <Box>Japp!</Box>
+                <Box borderBottom={1} sx={{ fontWeight: "bold" }}>ÖPPETTIDER EXPEN</Box>
+                <Box>Måndagar & Torsdagar 17.00-18.00</Box>
             </Grid>
         </Grid >
 
