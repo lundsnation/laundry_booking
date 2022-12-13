@@ -125,8 +125,8 @@ const BookingCalendar = (props: Props) => {
 
     return (
         <div>
-            <Grid container spacing={2} justifyContent="center" alignItems="center">
-                <Grid item xs={12} sm={6} md={6}>
+            <Grid container spacing={2} sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+                <Grid item xs={12} sm={6} md={6} sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
                     <Paper elevation={0} variant={"outlined"} style={{ width: '323px', height: '337px', backgroundColor: "rgba(255,255,255,0.65)" }}>
                         <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={svLocale}>
                             <StaticDatePicker<Date>
