@@ -1,21 +1,19 @@
-
-
 export class getUsers {
 
 
     private token: Promise<string>;
-    private url : string;
+    private url: string;
 
     constructor() {
         this.token = this.setAuth0Token()
-        this.url  = (process.env.AUTH_ISSUER_BASE as string)
+        this.url = (process.env.AUTH_ISSUER_BASE as string)
     }
 
 
     private async setAuth0Token() {
         const id = (process.env.REACT_APP_ID as string)
         const secret = (process.env.REACT_APP_SECRET as string)
-        
+
 
         const options = {
             method: 'POST',
@@ -29,8 +27,7 @@ export class getUsers {
         return parsed
     }
 
-
-    downloadJSON = (json: string) => {
+    private downloadJSON = (json: string) => {
 
 
         const dataStr = 'data:application/json;charset=utf-8,' + json
@@ -81,17 +78,26 @@ export class getUsers {
 
     }
 
-    async checkForPrivliges(key: string, value: string) {
-        this.getUser(key, value)
+    //for learning
+    private async _checkForPrivliges(key: string, value: string) {
+        const currentUser = await this._getSpecificUser(key, (value as string))
+        const getDev: boolean = currentUser.app_metadata.isDev
+        let isDev = false
+        switch (getDev) {
+            case true:
+                isDev = true
+                break;
+        }
+        return isDev
     }
 
-    get getAllUsers() {
+    get downloadAllUsers() {
         return this._downloadAllUsers()
     }
 
-    getUser(key: string, value: string){
+    getUser(key: string, value: string) {
         if (!key || !value) {
-            return 
+            return
         }
         return this._getSpecificUser(key, value)
     }

@@ -3,8 +3,8 @@ import { connect } from "../../../utils/connection"
 import { logRequest } from "../../../utils/backendLogger"
 import { ResponseFuncs } from "../../../utils/types"
 import Booking from '../../../models/Booking'
-import { withApiAuthRequired, getSession} from '@auth0/nextjs-auth0';
-import {getUsers} from '../../../src/getAuth0Users'
+import { withApiAuthRequired, getSession } from '@auth0/nextjs-auth0';
+import { getUsers } from '../../../utils/getAuth0Users'
 
 const handler = withApiAuthRequired(async (req: NextApiRequest, res: NextApiResponse) => {
   const method: keyof ResponseFuncs = req.method as keyof ResponseFuncs
@@ -32,10 +32,10 @@ const handler = withApiAuthRequired(async (req: NextApiRequest, res: NextApiResp
     },
     // RESPONSE FOR DELETE REQUESTS WITH VALIDATION, CONFINED TO USER IN ACTIVE SESSION
     DELETE: async (req: NextApiRequest, res: NextApiResponse) => {
-      const query = await Booking.find({_id:id, userName:user }).catch(catcher)
-      if(!query){
-        res.status(400).send({error: 'No bookings for active user'})
-      }else{
+      const query = await Booking.find({ _id: id, userName: user }).catch(catcher)
+      if (!query) {
+        res.status(400).send({ error: 'No bookings for active user' })
+      } else {
         res.status(200).json(await Booking.findByIdAndRemove(id).catch(catcher))
       }
       logRequest('DELETE')
