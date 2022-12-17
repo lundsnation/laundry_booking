@@ -63,7 +63,7 @@ const BookingButton = (props: Props) => {
 
     return (
         <Container maxWidth="lg">
-            <Button style={{ maxWidth: "120px", minWidth: "120px" }} onClick={bookedTimeSlot && myTimeSlot ? handleCancel : handleBook} color={!bookedTimeSlot ? 'primary' : 'secondary'} disabled={(bookedTimeSlot && !myTimeSlot) || disabled} variant="contained"  > {props.timeSlot} </Button>
+            <Button style={{ maxWidth: "140px", minWidth: "140px", maxHeight: "33.5px" }} onClick={bookedTimeSlot && myTimeSlot ? handleCancel : handleBook} color={!bookedTimeSlot ? 'primary' : 'secondary'} disabled={(bookedTimeSlot && !myTimeSlot) || disabled} variant="contained"  > {props.timeSlot} </Button>
         </Container >
 
 

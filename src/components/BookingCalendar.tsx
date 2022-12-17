@@ -4,6 +4,7 @@ import AdapterDateFns from '@date-io/date-fns'
 import { Badge, Grid, SxProps, TextField, AlertColor, Typography, Paper } from "@mui/material";
 import svLocale from 'date-fns/locale/sv';
 import BookingButtonGroup from "./BookingButtonGroup";
+import BookedTimes from "./BookedTimes";
 import { Booking, timeSlots } from "../../utils/types";
 import { UserProfile } from "@auth0/nextjs-auth0";
 import { getDateBookings, compareDates } from "../../utils/bookingsAPI"
@@ -125,8 +126,8 @@ const BookingCalendar = (props: Props) => {
 
     return (
         <div>
-            <Grid container spacing={2} justifyContent="center" alignItems="center">
-                <Grid item xs={12} sm={6} md={6}>
+            <Grid container spacing={2} sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+                <Grid item xs={12} sm={6} md={6} sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
                     <Paper elevation={0} variant={"outlined"} style={{ width: '323px', height: '337px', backgroundColor: "rgba(255,255,255,0.65)" }}>
                         <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={svLocale}>
                             <StaticDatePicker<Date>
@@ -163,7 +164,12 @@ const BookingCalendar = (props: Props) => {
                 <Grid item xs={12} sm={6} >
                     {bookingButtonGroup}
                 </Grid>
+                
             </Grid>
+            <Grid sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+                <BookedTimes bookings={bookings} user = {user} updateBookings={updateBookings} snackTrigger={snackTrigger}/>
+            </Grid>
+           
             <Snack state={snack} handleClose={resetSnack} />
         </div>
     );
