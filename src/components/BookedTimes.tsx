@@ -78,7 +78,7 @@ const BookedTimes = (props: Props) => {
 
     
         {getUserTimes()?.map(bookedTime =>{
-                return <Chip 
+                return <Chip  key={stringify(bookedTime)}
                 color = "error" 
                 label = {stringify(bookedTime)} 
                 variant= "outlined" 
