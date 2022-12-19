@@ -1,16 +1,16 @@
 import * as React from 'react';
-import { NextPage } from "next";
-import { Container, Typography, Box, Button, Toolbar, AppBar, Fade, Collapse } from '@mui/material';
-import MenuIcon from "@mui/icons-material/Menu";
+import { Icon,Container, Typography, Box, Button, Toolbar, AppBar, Fade, Collapse } from '@mui/material';
 import Menu from '@mui/material/Menu';
 import IconButton from "@mui/material/IconButton";
 import { useUser } from '@auth0/nextjs-auth0/dist/frontend';
-import { AccountCircle } from '@mui/icons-material';
+import { AccountCircle, Scale } from '@mui/icons-material';
 import LoginButton from './LoginButton';
 import ProfileButton from './ProfileButton';
-
+//import Icon from '@material-ui/core/Icon';
 
 const Header = () => {
+    const home = process.env.AUTH0_BASE_URL
+    const img = home + "/LN24_w.svg"
     const { user, isLoading, error } = useUser()
     const [auth, setAuth] = React.useState(true);
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -27,18 +27,21 @@ const Header = () => {
 
 
     return (
-
+        
         <Box sx={{ alignItems: "top" }}>
             <AppBar position="fixed" color="primary">
                 <Toolbar>
                     <IconButton
+                        disableRipple
                         size="large"
                         edge="start"
                         color="inherit"
                         aria-label="menu"
                         sx={{ mr: 2 }}
-                    >
-                        <MenuIcon />
+                        href="/"
+                    >   
+                            <img src={img} style={{transform: "scale(3.5)"}}/>
+                        
                     </IconButton>
 
                     {user ?

@@ -27,8 +27,9 @@ const BookedTimes = (props: Props) => {
         let res;
         if(bookings){
             res = [];
+            const now = new Date()
             for(let i  = 0;i<bookings.length;i++){
-                if(bookings[i].userName == user.name){
+                if(bookings[i].userName == user.name && bookings[i].date>now){
                     res.push(bookings[i])
                 }
             }
@@ -57,7 +58,7 @@ const BookedTimes = (props: Props) => {
     }
 
     return (
-        <Card elevation={3} variant = {"outlined"} sx = {{minWidth: 300, minHeight: 220, maxHeight: 220}}>
+        <Card variant = {"outlined"} sx = {{minWidth: 300, minHeight: 220, maxHeight: 220}}>
       <Box sx={{ my: 1, mx: 2 }}>
         <Grid container alignItems="center">
           <Grid item xs>

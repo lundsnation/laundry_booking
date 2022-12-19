@@ -1,9 +1,10 @@
-import { Button, Container, AlertColor, Grid, IconButton } from "@mui/material"
+import { Button, Container, AlertColor, Grid, IconButton, Typography,Box } from "@mui/material"
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import { UserProfile } from "@auth0/nextjs-auth0";
-import { useState } from "react";
+import React, { useState } from "react";
 import { Booking, timeFromTimeSlot } from "../../utils/types"
 import BookingInfo from "./BookingInfo"
+import { timeSlots } from "../../utils/types";
 
 interface Props {
     user: UserProfile;
@@ -70,21 +71,29 @@ const BookingButton = (props: Props) => {
     }
 
     return (
-         <Container maxWidth="lg" sx = {{maxHeight: 34}}>
-            <Grid container direction="row" spacing={1}>
-                <Grid item xs={6}>
+         <Container sx = {{maxHeight: 34,width:250, paddingLeft: 0,paddingRight:0}}>
+            <Grid container direction="row"  alignItems="center"> 
+                <Grid item xs={2} md={2}>
+                    <Box style={{paddingRight: 10}}>
+                        <Typography align="center" style={{fontWeight: "bold"}}>{timeSlots.indexOf(timeSlot)+1}</Typography>
+                    </Box>
+                    
+                </Grid>
+                <Grid item xs={8} md ={8} >
                     <Button 
-                        style={{ maxWidth: "140px", minWidth: "140px", maxHeight: "33.5px" }} 
+                        style={{ height: "34px", width:"130px",paddingRight:10,paddingLeft:10}} 
                         onClick={bookedTimeSlot && myTimeSlot ? handleCancel : handleBook} 
                         color={!bookedTimeSlot ? 'primary' : 'secondary'} 
+                        // fullWidth = {true}
                         disabled={(bookedTimeSlot && !myTimeSlot) || disabled} variant="contained"  > 
                         {props.timeSlot} 
                     </Button>
                 </Grid>
-                    <Grid item xs={6} justifyContent="center" alignItems="center">
-                        {bookedTimeSlot && !myTimeSlot && 
-                        <Container>
-                            <IconButton onClick={()=>{showBookedTime(true)}}>
+                    <Grid item xs={2} md={2} >
+                    <Container style={{width:80,paddingLeft:0,paddingRight:0}}>
+                        {(bookedTimeSlot && !myTimeSlot)?
+                            <React.Fragment>
+                                   <IconButton onClick={()=>{showBookedTime(true)}}>
                                 <InfoOutlinedIcon color="action" fontSize = "small"/>
                             </IconButton>
                             <BookingInfo
@@ -92,7 +101,10 @@ const BookingButton = (props: Props) => {
                             showBookedTime={showBookedTime}
                             booking = {booking}   
                             />
-                        </Container>}
+                            </React.Fragment>
+                            : null
+                        }
+                        </Container>
                     </Grid>
             </Grid>
          </Container >
