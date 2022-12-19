@@ -22,7 +22,7 @@ const handler = withApiAuthRequired(async (req: NextApiRequest, res: NextApiResp
 
     POST: async (req: NextApiRequest, res: NextApiResponse) => {
       const userFinder = new getUsers()
-      const { date, timeSlot } = req.body
+      const { date, timeSlot, createdAt } = req.body
       // Initial  check if booking-request is in the past => invalid
       if (new Date(date).getTime() < Date.now()) {
         return res.status(406).json({ error: "You cant book slots that are in the past" })

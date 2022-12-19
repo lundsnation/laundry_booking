@@ -16,7 +16,9 @@ const [userInfo,setUserInfo] = useState<UserType>({name: "", email: "", app_meta
  const fetchUser = async ()=>{
         const response = await fetch("/api/user/"+booking.userName)
         if(response.ok){
+            console.log(response)
             const responseContent = await response.json()
+            
             setUserInfo({
             name: responseContent.name,
             email: responseContent.email,

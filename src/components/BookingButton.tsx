@@ -27,7 +27,7 @@ const BookingButton = (props: Props) => {
     const handleBook = async () => {
         setDisabled(true)
         const date = new Date(timeFromTimeSlot(selectedDate, timeSlot))
-        const jsonBooking = { userName: (user.name as string), date: date, timeSlot: timeSlot }
+        const jsonBooking = { userName: (user.name as string), date: date, timeSlot: timeSlot, createdAt: new Date()}
         const response = await fetch("/api/bookings", {
             method: "POST",
             headers: {
