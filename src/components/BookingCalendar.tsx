@@ -4,6 +4,7 @@ import AdapterDateFns from '@date-io/date-fns'
 import { Grid, SxProps, TextField, AlertColor, Paper } from "@mui/material";
 import svLocale from 'date-fns/locale/sv';
 import BookingButtonGroup from "./BookingButtonGroup";
+import BookedTimes from "./BookedTimes";
 import { Booking } from "../../utils/types";
 import { UserProfile } from "@auth0/nextjs-auth0";
 import { getDateBookings, compareDates } from "../../utils/bookingsAPI"
