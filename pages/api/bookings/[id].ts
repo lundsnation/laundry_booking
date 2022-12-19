@@ -4,7 +4,6 @@ import { logRequest } from "../../../utils/backendLogger"
 import { ResponseFuncs } from "../../../utils/types"
 import Booking from '../../../models/Booking'
 import { withApiAuthRequired, getSession } from '@auth0/nextjs-auth0';
-import { getUsers } from '../../../utils/getAuth0Users'
 
 const handler = withApiAuthRequired(async (req: NextApiRequest, res: NextApiResponse) => {
   const method: keyof ResponseFuncs = req.method as keyof ResponseFuncs
@@ -15,7 +14,6 @@ const handler = withApiAuthRequired(async (req: NextApiRequest, res: NextApiResp
   const id: string = req.query.id as string
   // connect to database
   await connect()
-
 
   // Potential Responses for /Bookings/:id
   const handleCase: ResponseFuncs = {

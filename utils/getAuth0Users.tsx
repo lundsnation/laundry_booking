@@ -7,14 +7,13 @@ export class getUsers {
     constructor() {
         this.token = this.setAuth0Token()
         this.url = (process.env.AUTH_ISSUER_BASE as string)
+
     }
 
 
     private async setAuth0Token() {
         const id = (process.env.REACT_APP_ID as string)
         const secret = (process.env.REACT_APP_SECRET as string)
-
-
         const options = {
             method: 'POST',
             url: 'https://lundsnation.eu.auth0.com/oauth/token',
@@ -28,7 +27,6 @@ export class getUsers {
     }
 
     private downloadJSON = (json: string) => {
-
 
         const dataStr = 'data:application/json;charset=utf-8,' + json
         const download = document.createElement('a')
@@ -51,7 +49,7 @@ export class getUsers {
         const response = await fetch(options.url, options)
         const data = await response.json()
         const parsed = JSON.stringify(data)
-
+        
 
         this.downloadJSON(parsed)
     }
@@ -73,7 +71,7 @@ export class getUsers {
         const response = await fetch(options.url + searchParams.toString(), options)
         const data = await response.json()
         const parser = JSON.parse(JSON.stringify(data))
-
+        
         return parser[0]
 
     }
