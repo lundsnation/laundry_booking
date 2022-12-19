@@ -8,16 +8,10 @@ interface Props {
     booking: Booking,
     showBookingInfo: boolean,
     showBookedTime: (state:boolean) => void,
-    selectedDate: Date
 }
 const BookingInfo = (props: Props) => {
-const {booking, showBookingInfo, selectedDate} = props
-const [userInfo,setUserInfo] = useState<UserType>({
-    name: "",
-    email: "",
-    app_metadata: {acceptedTerms: false, allowedSlots: 0, roles:[""]},
-    user_metadata: {telephone: ""}
-})
+const {booking, showBookingInfo} = props
+const [userInfo,setUserInfo] = useState<UserType>({name: "", email: "", app_metadata: {acceptedTerms: false, allowedSlots: 0, roles:[""]},user_metadata: {telephone: ""}})
 
  const fetchUser = async ()=>{
         const response = await fetch("/api/user/"+booking.userName)

@@ -1,5 +1,4 @@
 import { NextApiRequest, NextApiResponse } from "next"
-import { connect } from "../../../utils/connection"
 import { logRequest } from "../../../utils/backendLogger"
 import { ResponseFuncs } from "../../../utils/types"
 import { withApiAuthRequired, getSession } from '@auth0/nextjs-auth0';
@@ -8,20 +7,14 @@ import { getUsers } from '../../../utils/getAuth0Users'
 const handler = withApiAuthRequired(async (req: NextApiRequest, res: NextApiResponse) => {
   const method: keyof ResponseFuncs = req.method as keyof ResponseFuncs
   const catcher = (error: Error) => res.status(400).json({ error })
-  const session = getSession(req, res)
   const userFetcher = new getUsers()
-  // GRAB ID FROM req.query. ID will be desired username.
+  // Request is user.name (*/api/user/NH1111 for example)
   const id: string = req.query.id as string
-  // connect to database
-  await connect()
 
-
-  // Potential Responses for /Bookings/:id
   const handleCase: ResponseFuncs = {
-    
     GET: async (req: NextApiRequest, res: NextApiResponse) => {
       logRequest('GET_USER')
-      const result = await userFetcher.getUser("name",id)
+      const result = await userFetcher.getUser("name",id)?.catch(catcher)
       res.json(result)
     },
   }

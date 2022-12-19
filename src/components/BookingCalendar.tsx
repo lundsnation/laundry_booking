@@ -1,10 +1,10 @@
 import { StaticDatePicker, LocalizationProvider, PickersDay } from '@mui/x-date-pickers';
-import React, { useState, useEffect, forwardRef } from "react";
+import React, { useState, useEffect } from "react";
 import AdapterDateFns from '@date-io/date-fns'
-import { Badge, Grid, SxProps, TextField, AlertColor, Typography, Paper } from "@mui/material";
+import { Grid, SxProps, TextField, AlertColor, Paper } from "@mui/material";
 import svLocale from 'date-fns/locale/sv';
 import BookingButtonGroup from "./BookingButtonGroup";
-import { Booking, timeSlots } from "../../utils/types";
+import { Booking } from "../../utils/types";
 import { UserProfile } from "@auth0/nextjs-auth0";
 import { getDateBookings, compareDates } from "../../utils/bookingsAPI"
 import { Snack, SnackInterface } from "../components/Snack"

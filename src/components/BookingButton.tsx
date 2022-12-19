@@ -1,4 +1,4 @@
-import { List, Button, Container, AlertColor, Grid, IconButton, Dialog, DialogTitle, ListItem } from "@mui/material"
+import { Button, Container, AlertColor, Grid, IconButton } from "@mui/material"
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import { UserProfile } from "@auth0/nextjs-auth0";
 import { useState } from "react";
@@ -22,6 +22,7 @@ const BookingButton = (props: Props) => {
     const bookedTimeSlot = booking != null;
     let snackString;
     const myTimeSlot = user.name == booking?.userName ? bookedTimeSlot : null;
+    
     // Function for booking time
     const handleBook = async () => {
         setDisabled(true)
@@ -89,7 +90,7 @@ const BookingButton = (props: Props) => {
                             <BookingInfo
                             showBookingInfo={showBookingInfo}
                             showBookedTime={showBookedTime}
-                            booking = {booking}        
+                            booking = {booking}   
                             />
                         </Container>}
                     </Grid>
