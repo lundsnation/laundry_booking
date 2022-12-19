@@ -105,7 +105,6 @@ const BookingCalendar = (props: Props) => {
     //get initial bookings
     useEffect(() => {
         updateBookings()
-        console.log("useeffect being run to get initial bookings");
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
