@@ -12,14 +12,7 @@ export type Booking = {
   userName: string,
   date: Date,
   timeSlot: string,
-}
-// User object, as defined by 
-export type UserType = {
-    _id?: string,
-    name: string,
-    email: string,
-    app_metadata: {acceptedTerms: boolean, allowedSlots: number, roles: Array<string>},
-    user_metadata: {telephone: string},
+  
 }
 // ENUM to keep track of button state
 export const enum BUTTON_STATES {
