@@ -162,7 +162,12 @@ const BookingCalendar = (props: Props) => {
                 <Grid item xs={12} sm={6} >
                     {bookingButtonGroup}
                 </Grid>
+                
             </Grid>
+            <Grid sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+                <BookedTimes bookings={bookings} user = {user} updateBookings={updateBookings} snackTrigger={snackTrigger}/>
+            </Grid>
+           
             <Snack state={snack} handleClose={resetSnack} />
         </div>
     );
