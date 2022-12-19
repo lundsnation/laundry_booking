@@ -16,22 +16,23 @@ const [userInfo,setUserInfo] = useState<UserType>({name: "", email: "", app_meta
  const fetchUser = async ()=>{
         const response = await fetch("/api/user/"+booking.userName)
         if(response.ok){
-            console.log(response)
+            try{
             const responseContent = await response.json()
-            
             setUserInfo({
             name: responseContent.name,
             email: responseContent.email,
             app_metadata: responseContent.app_metadata,
             user_metadata: responseContent.user_metadata
-        })
-        console.log("User set: "+ responseContent.name)
+            })
+        }catch(error){
+            
+            console.log(error)
+        }
     }
 }
 
 useEffect(()=>{
     fetchUser()
-    console.log("Component mounted with prop: " + booking.userName)
 },[booking])
 
 return(
