@@ -13,10 +13,10 @@ const LoginButton: NextPage = () => {
                 <Box>
                     {user ? (
                         <Button fullWidth variant='outlined' href="api/auth/logout">
-                            Logout
+                            Logga Ut
                         </Button>) : (
                         <Button fullWidth variant='outlined' href="api/auth/login">
-                            Login
+                            Logga In
                         </Button>)
                 }
                 </Box>

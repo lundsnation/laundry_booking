@@ -90,7 +90,7 @@ const BookingButton = (props: Props) => {
                     </Button>
                 </Grid>
                     <Grid container xs={3}  justifyContent ="center">
-                                <IconButton onClick={()=>{showBookedTime(true)}} style={{padding:0, height:20, width:20}}>
+                                <IconButton onClick={()=>{showBookedTime(true)}} style={{padding:0, height:20, width:20, marginBottom:"-8px"}}>
                                 {(bookedTimeSlot && !myTimeSlot)?
                                         <InfoOutlinedIcon color="action" fontSize = "small" />
                                         : null}

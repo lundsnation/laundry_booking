@@ -2,9 +2,9 @@ import React, { useState, useEffect, forwardRef } from "react";
 import { Card,Box, Grid, Divider, Chip, AlertColor, Typography, Button, List, ListItem} from "@mui/material";
 import { Booking, timeSlots } from "../../utils/types";
 import { UserProfile } from "@auth0/nextjs-auth0";
-import { getDateBookings, compareDates } from "../../utils/bookingsAPI"
-import { Snack, SnackInterface } from "../components/Snack"
-import { minHeight, Stack } from "@mui/system";
+import DeleteIcon from '@mui/icons-material/DeleteOutlined';
+
+import  {Stack}  from "@mui/system";
 
 
 interface Props {
@@ -81,6 +81,7 @@ const BookedTimes = (props: Props) => {
         {getUserTimes()?.map(bookedTime =>{
                 return <Chip  key={stringify(bookedTime)}
                 color = "error" 
+                deleteIcon = {<DeleteIcon/>}
                 label = {stringify(bookedTime)} 
                 variant= "outlined" 
                 onDelete={() => {    
