@@ -74,7 +74,7 @@ const BookingButton = (props: Props) => {
             <Grid container spacing={1} direction="row" justifyContent ="center" alignItems="center"> 
                 <Grid item xs={3} >
                     <Box>
-                        <Typography align="center" style={{fontWeight: "bold"}}>{timeSlots.indexOf(timeSlot)+1}</Typography>
+                        <Typography align="center">{timeSlots.indexOf(timeSlot)+1}</Typography>
                     </Box>
                     
                 </Grid>

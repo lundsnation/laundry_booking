@@ -121,13 +121,13 @@ const BookingCalendar = (props: Props) => {
         <Grid container spacing={1} direction="row" sx={{margin:0}}>
             <Grid container>
                 <Grid item xs={3}>
-                    <Typography variant="body2" align='center' sx={{padding:1}}>Torkbås</Typography>
+                    <Typography variant="body2" style={{fontWeight:"bold"}} align='center' sx={{padding:1}}>Torkbås</Typography>
                 </Grid>
                 <Grid item xs={6}>
-                    <Typography variant="body2"  align='center' sx={{padding:1}}>Tid</Typography>
+                    <Typography variant="body2"  align='center' style={{fontWeight:"bold"}}sx={{padding:1}}>Tid</Typography>
                 </Grid>
                 <Grid item xs={3}>
-                <Typography variant="body2"  align='center' sx={{padding:1}}>Info</Typography>
+                <Typography variant="body2"  align='center' style={{fontWeight:"bold"}} sx={{padding:1}}>Info</Typography>
                 </Grid>
 
             </Grid>
