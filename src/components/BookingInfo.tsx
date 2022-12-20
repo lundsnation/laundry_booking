@@ -25,7 +25,7 @@ const [userInfo,setUserInfo] = useState<UserType>({name: "", email: "", app_meta
             user_metadata: responseContent.user_metadata
             })
         }catch(error){
-            
+
             console.log(error)
         }
     }
@@ -40,7 +40,7 @@ return(
                             open={showBookingInfo} fullWidth>
                                 <DialogTitle> Info om bokning </DialogTitle>
                                 <Divider variant="middle"/>
-                                <List sx={{ pt: 0 }}>
+                                <List >
                                     <ListItem >
                                         Tid bokad av   <Typography style={{paddingLeft: 5, fontWeight: 'bold'}}>{userInfo.name}</Typography>
                                     </ListItem>    
@@ -52,8 +52,8 @@ return(
                                     </ListItem>
                                 </List>   
                                 <DialogActions>
-                                    <Typography sx={{fontStyle: "italic", justifyContent: "center", padding: 1}} variant="caption" align= "left">Kom ihåg att hålla god ton mot andra hyrestagare</Typography>
-                                    <Box sx={{ mx: 3 }} /> 
+                                    <Typography sx={{fontStyle: "italic", justifyContent: "center", padding:2}} variant="caption" align= "left">Kom ihåg att hålla god ton mot andra hyrestagare</Typography>
+                                    <Box  /> 
                                     <Button onClick={()=>{props.showBookedTime(false)}}>Stäng</Button>
                                 </DialogActions>
                             </Dialog>

@@ -1,7 +1,7 @@
 import { StaticDatePicker, LocalizationProvider, PickersDay } from '@mui/x-date-pickers';
 import React, { useState, useEffect } from "react";
 import AdapterDateFns from '@date-io/date-fns'
-import { Grid, Box, SxProps, TextField, AlertColor, Paper } from "@mui/material";
+import { Grid, Box, SxProps, TextField, AlertColor, Paper, Typography } from "@mui/material";
 import svLocale from 'date-fns/locale/sv';
 import BookingButtonGroup from "./BookingButtonGroup";
 import BookedTimes from "./BookedTimes";
@@ -118,17 +118,30 @@ const BookingCalendar = (props: Props) => {
     }
 
     const bookingButtonGroup = (
-        <Grid container direction="row" justifyContent="center" alignItems="center">
-            <BookingButtonGroup timeSlots={timeSlots} bookedBookings={getDateBookings(bookings, selectedDate)} selectedDate={selectedDate} user={user} updateBookings={updateBookings} snackTrigger={snackTrigger} />
+        <Grid container spacing={1} direction="row" sx={{margin:0}}>
+            <Grid container>
+                <Grid item xs={3}>
+                    <Typography variant="body2" align='center' sx={{padding:1}}>Torkbås</Typography>
+                </Grid>
+                <Grid item xs={6}>
+                    <Typography variant="body2"  align='center' sx={{padding:1}}>Tid</Typography>
+                </Grid>
+                <Grid item xs={3}>
+                <Typography variant="body2"  align='center' sx={{padding:1}}>Info</Typography>
+                </Grid>
+
+            </Grid>
+            
+            <BookingButtonGroup  timeSlots={timeSlots} bookedBookings={getDateBookings(bookings, selectedDate)} selectedDate={selectedDate} user={user} updateBookings={updateBookings} snackTrigger={snackTrigger} />
         </Grid>
     )
 
     return (
         <div>
             <Snack state={snack} handleClose={resetSnack} />
-            <Grid container spacing = {5} sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
-                <Grid item xs={12} sm={6} md={6} sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
-                    <Paper elevation={0} variant={"outlined"} style={{ width: '323px', height: '350px',  backgroundColor: "rgba(255,255,255,0.65)" }}>
+            <Grid container spacing={2}>
+                <Grid item xs={12} sm={8}>
+                    <Paper elevation={0} variant={"outlined"}>
                         <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={svLocale}>
                             <StaticDatePicker<Date>
                                 orientation="landscape"
@@ -160,8 +173,8 @@ const BookingCalendar = (props: Props) => {
                     </Paper>
 
                 </Grid>
-                <Grid item xs={6} sm={6} >
-                    <Paper elevation={0} variant="outlined" style={{display:'flex', padding: 0,width: '250px', height: '350px', minWidth: '250px', minHeight: '342px',paddingRight: '0px',paddingLeft:'0px'}}>
+                <Grid item xs={12} sm={4}>
+                    <Paper elevation={0} variant="outlined" sx={{paddingBottom:1}}>
                         {bookingButtonGroup}
                     </Paper>
                     
