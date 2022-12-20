@@ -54,7 +54,7 @@ const BookedTimes = (props: Props) => {
     }
 
     const stringify = (bookedTime : Booking) =>{
-        return bookedTime.date.toLocaleDateString('sv-SE') + " " +bookedTime.timeSlot
+        return bookedTime.date.toLocaleDateString('sv-SE') + " " +bookedTime.timeSlot + ", Torkbås: "+ (timeSlots.indexOf(bookedTime.timeSlot)+1)
     }
 
     return (
@@ -62,9 +62,6 @@ const BookedTimes = (props: Props) => {
       <Box sx={{ my: 1, mx: 2 }}>
         <Grid container alignItems="center">
           <Grid item xs>
-            <Typography variant ="h6" sx={{fontWeight: 'bold'}}>
-            { user.name}
-            </Typography>
             <Typography  variant="h6" component="div">
               Bokade Tider: 
             </Typography>
