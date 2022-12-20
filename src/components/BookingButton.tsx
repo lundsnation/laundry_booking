@@ -71,43 +71,38 @@ const BookingButton = (props: Props) => {
     }
 
     return (
-         <Container sx = {{maxHeight: 34,width:250, paddingLeft: 0,paddingRight:0}}>
-            <Grid container direction="row"  alignItems="center"> 
-                <Grid item xs={2} md={2}>
-                    <Box style={{paddingRight: 10}}>
+            <Grid container spacing={1} direction="row" justifyContent ="center" alignItems="center"> 
+                <Grid item xs={3} >
+                    <Box>
                         <Typography align="center" style={{fontWeight: "bold"}}>{timeSlots.indexOf(timeSlot)+1}</Typography>
                     </Box>
                     
                 </Grid>
-                <Grid item xs={8} md ={8} >
+                <Grid item xs={6} >
                     <Button 
-                        style={{ height: "34px", width:"130px",paddingRight:10,paddingLeft:10}} 
+                        sx={{whiteSpace: "nowrap", minWidth: "auto"}}
+                        size="small"
+                        fullWidth={true}
                         onClick={bookedTimeSlot && myTimeSlot ? handleCancel : handleBook} 
                         color={!bookedTimeSlot ? 'primary' : 'secondary'} 
-                        // fullWidth = {true}
                         disabled={(bookedTimeSlot && !myTimeSlot) || disabled} variant="contained"  > 
                         {props.timeSlot} 
                     </Button>
                 </Grid>
-                    <Grid item xs={2} md={2} >
-                    <Container style={{width:80,paddingLeft:0,paddingRight:0}}>
-                        {(bookedTimeSlot && !myTimeSlot)?
-                            <React.Fragment>
-                                   <IconButton onClick={()=>{showBookedTime(true)}}>
-                                <InfoOutlinedIcon color="action" fontSize = "small"/>
-                            </IconButton>
-                            <BookingInfo
+                    <Grid container xs={3}  justifyContent ="center">
+                                <IconButton onClick={()=>{showBookedTime(true)}} style={{padding:0, height:20, width:20}}>
+                                {(bookedTimeSlot && !myTimeSlot)?
+                                        <InfoOutlinedIcon color="action" fontSize = "small" />
+                                        : null}
+                                </IconButton>
+                                {booking&&<BookingInfo
                             showBookingInfo={showBookingInfo}
                             showBookedTime={showBookedTime}
                             booking = {booking}   
-                            />
-                            </React.Fragment>
-                            : null
-                        }
-                        </Container>
+                            />}
                     </Grid>
             </Grid>
-         </Container >
+
     );
 };
 

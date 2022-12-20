@@ -2,7 +2,7 @@ import BookingButton from "./BookingButton";
 import ButtonGroup from '@mui/material/ButtonGroup';
 import { Booking } from "../../utils/types"
 import { UserProfile } from "@auth0/nextjs-auth0";
-import { AlertColor } from "@mui/material"
+import { AlertColor, Container } from "@mui/material"
 import { timeSlotToBooking } from "../../utils/bookingsAPI";
 
 interface Props {
@@ -37,7 +37,11 @@ const BookingButtonGroup = (props: Props) => {
 
 
     return (
-        <ButtonGroup orientation='vertical'> {buttons}  </ButtonGroup>
+        // <ButtonGroup  orientation='vertical'> {buttons}  </ButtonGroup>
+        <Container disableGutters>
+            {buttons}
+        </Container>
+        
     );
 }
 

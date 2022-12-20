@@ -12,10 +12,10 @@ const LoginButton: NextPage = () => {
             { isLoading ? (<Typography> Loading... </Typography>) : 
                 <Box>
                     {user ? (
-                        <Button variant='outlined' href="api/auth/logout">
+                        <Button fullWidth variant='outlined' href="api/auth/logout">
                             Logout
                         </Button>) : (
-                        <Button variant='outlined' href="api/auth/login">
+                        <Button fullWidth variant='outlined' href="api/auth/login">
                             Login
                         </Button>)
                 }
