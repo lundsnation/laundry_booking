@@ -8,7 +8,8 @@ import LoginButton from './LoginButton';
 import ProfileButton from './ProfileButton';
 import HomeButton from './HomeButton';
 import Image from "next/image"
-import { height } from '@mui/system';
+import {Fab} from "@mui/material"
+import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 
 const Header = () => {
     const home = process.env.AUTH0_BASE_URL
@@ -28,6 +29,7 @@ const Header = () => {
     const handleClose = () => {
         setAnchorEl(null);
     };
+
 
 
     return (
@@ -58,6 +60,10 @@ const Header = () => {
                             Du är utloggad
                         </Typography>
                     }
+                     {user?.name=="admin" && <Fab variant="extended" color="secondary" aria-label="add" href="/admin">
+                    <AdminPanelSettingsIcon/>
+                        Admin
+                    </Fab>}
                     {auth && (
                         <><IconButton
                             sx={{ borderRadius: 10 }}

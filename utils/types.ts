@@ -18,8 +18,8 @@ export type UserType = {
     _id?: string,
     name: string,
     email: string,
-    app_metadata: {acceptedTerms: boolean, allowedSlots: number, roles: Array<string>},
-    user_metadata: {telephone: string},
+    app_metadata?: {acceptedTerms: boolean, allowedSlots: number, roles: Array<string>},
+    user_metadata?: {telephone: string},
 }
 // ENUM to keep track of button state
 export const enum BUTTON_STATES {

@@ -8,6 +8,7 @@ import BookingCalendar from '../src/components/BookingCalendar';
 import { useRouter } from 'next/router'
 import Footer from '../src/components/Footer';
 
+
 const img = process.env.AUTH0_BASE_URL as string + "/logotyp02.png"
 const styles = {
   paperContainer: {
@@ -49,9 +50,11 @@ const Index = () => {
             opacity: "1"
           }}>
           {<BookingCalendar title="" user={user} />}
+        
         </Paper>
-      </Grid>
 
+      </Grid>
+      
       <Grid item xs={12}>
         <Footer />
       </Grid>

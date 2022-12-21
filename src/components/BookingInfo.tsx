@@ -45,7 +45,7 @@ return(
                                         Tid bokad av   <Typography style={{paddingLeft: 5, fontWeight: 'bold'}}>{userInfo.name}</Typography>
                                     </ListItem>    
                                     <ListItem>
-                                        <CallIcon fontSize = "small" /> <Typography style={{paddingLeft: 5}}>{userInfo.user_metadata.telephone}</Typography>
+                                        <CallIcon fontSize = "small" /> <Typography style={{paddingLeft: 5}}>{userInfo.user_metadata?.telephone}</Typography>
                                     </ListItem>
                                     <ListItem>
                                         <AlternateEmailIcon fontSize = "small"/> <Typography style={{paddingLeft: 5}}>{userInfo.email}</Typography>

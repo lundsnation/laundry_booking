@@ -1,3 +1,5 @@
+import { UserType } from "./types";
+
 export class getUsers {
 
 
@@ -50,9 +52,40 @@ export class getUsers {
         const data = await response.json()
         const parsed = JSON.stringify(data)
         
-
         this.downloadJSON(parsed)
+        
     }
+    private async _createUser(user:UserType){
+        const token = await this.token
+        const options = {
+            method: 'POST',
+            url: "https://lundsnation.eu.auth0.com/api/v2/users",
+            headers: { authorization: 'Bearer ' + token, 'content-type': 'application/json'},
+            body: `{"name": "${user.name}", "email": "${user.email}", "user_metadata": { "telephone": "${user.user_metadata?.telephone}"}, "app_metadata": { "acceptedTerms": ${user.app_metadata?.acceptedTerms} , "allowedSlots": ${user.app_metadata?.allowedSlots} , "roles": ["${user.app_metadata?.roles}"]}, "connection": "Username-Password-Authentication", "password": "1234"}`,
+        }
+        console.log(options)
+        const response = await fetch(options.url, options)
+        const data = await response.json()
+        
+        return data 
+        
+    }
+
+    private async _getAllUsers() {
+
+        const token = await this.token
+        const options = {
+            method: 'GET',
+            url: "https://lundsnation.eu.auth0.com/api/v2/users",
+            headers: { authorization: 'Bearer ' + token, 'content-type': 'application/json' }
+        }
+        const response = await fetch(options.url, options)
+        const data = await response.json()
+        
+        return data 
+        
+    }
+
 
     private async _getSpecificUser(key: string, value: string) {
 
@@ -89,8 +122,8 @@ export class getUsers {
         return isDev
     }
 
-    get downloadAllUsers() {
-        return this._downloadAllUsers()
+    getAllUsers() {
+        return this._getAllUsers()
     }
 
     getUser(key: string, value: string) {
@@ -100,5 +133,8 @@ export class getUsers {
         return this._getSpecificUser(key, value)
     }
 
+    createUser(newUser:UserType){
+        return this._createUser(newUser)
+    }
 
 }
