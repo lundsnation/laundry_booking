@@ -1,12 +1,13 @@
 import * as React from 'react';
 import { useEffect, useState } from "react";
 import type { NextPage } from 'next';
-import { Container, Typography, Box, Button, Grid, Paper } from '@mui/material';
+import { CircularProgress , Typography, Box, Button, Grid, Paper } from '@mui/material';
 import { useUser } from '@auth0/nextjs-auth0/dist/frontend';
 import Header from '../src/components/Header'
 import BookingCalendar from '../src/components/BookingCalendar';
 import { useRouter } from 'next/router'
 import Footer from '../src/components/Footer';
+
 
 
 const img = process.env.AUTH0_BASE_URL as string + "/logotyp02.png"
@@ -35,7 +36,6 @@ const Index = () => {
 
   return (user ?
     <Grid container rowSpacing={10}>
-
       <Grid item xs={12} sm={12} md={12} minHeight={100} flexGrow={1}>
         <Header />
       </Grid>
@@ -50,16 +50,26 @@ const Index = () => {
             opacity: "1"
           }}>
           {<BookingCalendar title="" user={user} />}
+        
         </Paper>
-      </Grid>
 
+      </Grid>
+      
       <Grid item xs={12}>
         <Footer />
       </Grid>
 
-    </Grid>
-    : <Typography>Laddar...</Typography>
-  )
+    </Grid>: <div
+      style={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: '100vh',
+      }}
+    >
+      <CircularProgress/>
+    </div>
+    )
 }
 
 export default Index;

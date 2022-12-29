@@ -1,16 +1,21 @@
 import * as React from 'react';
-import { NextPage } from "next";
-import { Container, Typography, Box, Button, Toolbar, AppBar, Fade, Collapse } from '@mui/material';
-import MenuIcon from "@mui/icons-material/Menu";
+import { Typography, Box,  Toolbar, AppBar, Fade, Collapse } from '@mui/material';
 import Menu from '@mui/material/Menu';
 import IconButton from "@mui/material/IconButton";
 import { useUser } from '@auth0/nextjs-auth0/dist/frontend';
-import { AccountCircle } from '@mui/icons-material';
+import { AccountCircle, Scale } from '@mui/icons-material';
 import LoginButton from './LoginButton';
 import ProfileButton from './ProfileButton';
-
+import HomeButton from './HomeButton';
+import Image from "next/image"
+import {Fab} from "@mui/material"
+import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 
 const Header = () => {
+    const home = process.env.AUTH0_BASE_URL
+    const HEADER_IMAGE_PATH = "/LN24_w.svg"
+    const HEADER_IMAGE_SCALE = 2
+    const HEADER_IMAGE_SIZE = 24 * HEADER_IMAGE_SCALE
     const { user, isLoading, error } = useUser()
     const [auth, setAuth] = React.useState(true);
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -26,24 +31,28 @@ const Header = () => {
     };
 
 
-    return (
 
-        <Box sx={{ alignItems: "top" }}>
-            <AppBar position="fixed" color="primary">
+    return (
+        <div>
+        <Box sx={{ alignItems: "top", height:80}}>
+            <AppBar position="sticky" color="primary">
                 <Toolbar>
                     <IconButton
+                        disableRipple
                         size="large"
                         edge="start"
                         color="inherit"
                         aria-label="menu"
                         sx={{ mr: 2 }}
-                    >
-                        <MenuIcon />
+                        href="/"
+                    >   
+                            <Image alt="header_button" width={HEADER_IMAGE_SIZE} height={HEADER_IMAGE_SIZE} src={HEADER_IMAGE_PATH}/>
+                        
                     </IconButton>
 
                     {user ?
                         <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-                            Välkommen!
+                            Tvättbokning NH&GH
                         </Typography>
 
                         :
@@ -51,6 +60,10 @@ const Header = () => {
                             Du är utloggad
                         </Typography>
                     }
+                     {user?.name=="admin" && <Fab variant="extended" color="secondary" aria-label="add" href="/admin">
+                    <AdminPanelSettingsIcon/>
+                        Admin
+                    </Fab>}
                     {auth && (
                         <><IconButton
                             sx={{ borderRadius: 10 }}
@@ -86,6 +99,7 @@ const Header = () => {
 
                                     <ProfileButton />
                                     <LoginButton />
+                                    <HomeButton/>
 
 
                                 </Menu>
@@ -97,6 +111,7 @@ const Header = () => {
                 </Toolbar>
             </AppBar>
         </Box>
+        </div>
     )
 
 };

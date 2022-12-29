@@ -4,6 +4,7 @@ export interface ResponseFuncs {
   POST?: Function
   PUT?: Function
   DELETE?: Function
+  PATCH?: Function
 }
 
 // Type to define our Todo model on the frontend
@@ -12,7 +13,16 @@ export type Booking = {
   userName: string,
   date: Date,
   timeSlot: string,
-  
+}
+// User object, as defined by 
+export type UserType = {
+    user_id?: string,
+    name: string,
+    email: string,
+    app_metadata?: {acceptedTerms?: boolean, allowedSlots?: number, roles?: Array<string>},
+    user_metadata?: {telephone: string},
+    connection : "Username-Password-Authentication",
+    password?: string
 }
 // ENUM to keep track of button state
 export const enum BUTTON_STATES {

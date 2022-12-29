@@ -1,10 +1,11 @@
 import { StaticDatePicker, LocalizationProvider, PickersDay } from '@mui/x-date-pickers';
-import React, { useState, useEffect, forwardRef } from "react";
+import React, { useState, useEffect } from "react";
 import AdapterDateFns from '@date-io/date-fns'
-import { Badge, Grid, SxProps, TextField, AlertColor, Typography, Paper } from "@mui/material";
+import { Grid, Box, SxProps, TextField, AlertColor, Paper, Typography } from "@mui/material";
 import svLocale from 'date-fns/locale/sv';
 import BookingButtonGroup from "./BookingButtonGroup";
-import { Booking, timeSlots } from "../../utils/types";
+import BookedTimes from "./BookedTimes";
+import { Booking } from "../../utils/types";
 import { UserProfile } from "@auth0/nextjs-auth0";
 import { getDateBookings, compareDates } from "../../utils/bookingsAPI"
 import { Snack, SnackInterface } from "../components/Snack"
@@ -87,6 +88,7 @@ const BookingCalendar = (props: Props) => {
     }
 
     const updateBookings = async () => {
+        console.log(user)
         //fetch bookings and update
         const res = await fetch("/api/bookings")
         const resBooking: Array<Booking> = await res.json();
@@ -105,7 +107,6 @@ const BookingCalendar = (props: Props) => {
     //get initial bookings
     useEffect(() => {
         updateBookings()
-        console.log("useeffect being run to get initial bookings");
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
@@ -118,16 +119,30 @@ const BookingCalendar = (props: Props) => {
     }
 
     const bookingButtonGroup = (
-        <Grid container direction="row" justifyContent="center" alignItems="left">
-            <BookingButtonGroup timeSlots={timeSlots} bookedBookings={getDateBookings(bookings, selectedDate)} selectedDate={selectedDate} user={user} updateBookings={updateBookings} snackTrigger={snackTrigger} />
+        <Grid container spacing={1} direction="row" sx={{margin:0}}>
+            <Grid container>
+                <Grid item xs={3}>
+                    <Typography variant="body2" style={{fontWeight:"bold"}} align='center' sx={{padding:1}}>Torkbås</Typography>
+                </Grid>
+                <Grid item xs={6}>
+                    <Typography variant="body2"  align='center' style={{fontWeight:"bold"}}sx={{padding:1}}>Tid</Typography>
+                </Grid>
+                <Grid item xs={3}>
+                <Typography variant="body2"  align='center' style={{fontWeight:"bold"}} sx={{padding:1}}>Info</Typography>
+                </Grid>
+
+            </Grid>
+            
+            <BookingButtonGroup  timeSlots={timeSlots} bookedBookings={getDateBookings(bookings, selectedDate)} selectedDate={selectedDate} user={user} updateBookings={updateBookings} snackTrigger={snackTrigger} />
         </Grid>
     )
 
     return (
         <div>
-            <Grid container spacing={2} sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
-                <Grid item xs={12} sm={6} md={6} sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
-                    <Paper elevation={0} variant={"outlined"} style={{ width: '323px', height: '337px', backgroundColor: "rgba(255,255,255,0.65)" }}>
+            <Snack state={snack} handleClose={resetSnack} />
+            <Grid container spacing={2}>
+                <Grid item xs={12} sm={8}>
+                    <Paper elevation={0} variant={"outlined"}>
                         <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={svLocale}>
                             <StaticDatePicker<Date>
                                 orientation="landscape"
@@ -142,7 +157,6 @@ const BookingCalendar = (props: Props) => {
                                     date && setSelectedDate(date);
                                     updateBookings();
                                 }
-
                                 }
                                 renderInput={(params) => <TextField {...params} />}
 
@@ -160,11 +174,20 @@ const BookingCalendar = (props: Props) => {
                     </Paper>
 
                 </Grid>
-                <Grid item xs={12} sm={6} >
-                    {bookingButtonGroup}
+                <Grid item xs={12} sm={4}>
+                    <Paper elevation={0} variant="outlined" sx={{paddingBottom:1}}>
+                        {bookingButtonGroup}
+                    </Paper>
+                    
                 </Grid>
+                
             </Grid>
-            <Snack state={snack} handleClose={resetSnack} />
+            <Box m={2}/>
+            <Grid item xs={12}>
+                <BookedTimes bookings={bookings} user = {user} updateBookings={updateBookings} snackTrigger={snackTrigger}/>
+            </Grid>
+           
+            
         </div>
     );
 }

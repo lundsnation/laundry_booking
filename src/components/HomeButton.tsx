@@ -1,15 +1,14 @@
-import { NextPage } from "next";
 import { Container, Typography, Box, Button } from '@mui/material';
 import { useUser } from '@auth0/nextjs-auth0/dist/frontend';
 
-const ProfileButton = () => {
+const HomeButton = () => {
     const { user, isLoading, error } = useUser()
     return (
         <Container maxWidth="lg">
             {user && (
                 <Box>
-                    <Button fullWidth href="/profile" variant="outlined">
-                        Profil
+                    <Button fullWidth href="/" variant="outlined">
+                        Hem
                     </Button>
                 </Box>
             )}
@@ -18,4 +17,4 @@ const ProfileButton = () => {
     )
 }
 
-export default ProfileButton
+export default HomeButton
