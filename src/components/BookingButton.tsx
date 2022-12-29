@@ -5,6 +5,7 @@ import React, { useState } from "react";
 import { Booking, timeFromTimeSlot } from "../../utils/types"
 import BookingInfo from "./BookingInfo"
 import { timeSlots } from "../../utils/types";
+import { UserType } from "../../utils/types";
 
 interface Props {
     user: UserProfile;
@@ -15,9 +16,10 @@ interface Props {
     snackTrigger: (severity: AlertColor, snackString: string) => void;
 }
 const BookingButton = (props: Props) => {
-    // Checking if the supplied timeslot is the users booking
     const [disabled, setDisabled] = useState<boolean>(false)
-    const [showBookingInfo,setShowBookingInfo] = useState<boolean>(false);
+    const [showBookingInfo,setShowBookingInfo] = useState<boolean>(false)
+    const [bookingUser, setBookingUser] = useState<UserType>({} as UserType)
+    const [loadingUser,setLoadingUser] = useState(false)
 
     const { user, booking, selectedDate, timeSlot, updateBookings, snackTrigger } = props
     const bookedTimeSlot = booking != null;
@@ -66,8 +68,24 @@ const BookingButton = (props: Props) => {
         }
     }
     // Function for showing info on booked time
-    const showBookedTime = (state:boolean)=>{
-        setShowBookingInfo(state);
+    const showBookedTime = async ()=>{
+        
+        if(!showBookingInfo){
+            setLoadingUser(true)
+            setShowBookingInfo(!showBookingInfo);
+            const response = await fetch("/api/user/"+booking?.userName)
+            if(response.ok){
+                try{
+                const responseContent = await response.json()
+                setBookingUser({...responseContent})
+            }catch(error){ 
+                console.log(error)
+            }
+        }
+        setLoadingUser(false)
+        return
+    }
+    setShowBookingInfo(!showBookingInfo);
     }
 
     return (
@@ -90,16 +108,18 @@ const BookingButton = (props: Props) => {
                     </Button>
                 </Grid>
                     <Grid container xs={3}  justifyContent ="center">
-                                <IconButton onClick={()=>{showBookedTime(true)}} style={{padding:0, height:20, width:20, marginBottom:"-8px"}}>
+                                <IconButton disabled={!(bookedTimeSlot && !myTimeSlot)} onClick={()=>{showBookedTime()}} style={{padding:0, height:20, width:20, marginBottom:"-8px"}}>
                                 {(bookedTimeSlot && !myTimeSlot)?
                                         <InfoOutlinedIcon color="action" fontSize = "small" />
                                         : null}
                                 </IconButton>
                                 {booking&&<BookingInfo
-                            showBookingInfo={showBookingInfo}
-                            showBookedTime={showBookedTime}
-                            booking = {booking}   
-                            />}
+                                    showBookingInfo={showBookingInfo}
+                                    showBookedTime={showBookedTime}
+                                    booking = {booking}
+                                    user = {bookingUser}  
+                                    loading = {loadingUser}
+                                />}
                     </Grid>
             </Grid>
 

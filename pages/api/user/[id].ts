@@ -17,6 +17,17 @@ const handler = withApiAuthRequired(async (req: NextApiRequest, res: NextApiResp
       const result = await userFetcher.getUser("name",id)?.catch(catcher)
       res.json(result)
     },
+    PATCH: async (req: NextApiRequest, res: NextApiResponse) => {
+      const modification = req.body
+      logRequest('PATCH_USERS')
+      const result = await userFetcher.modifyUser(modification, id).catch(catcher)
+      res.send(result)
+    },
+    DELETE: async (req: NextApiRequest, res: NextApiResponse) => {
+      logRequest('DELETE_USER')
+      const result = await userFetcher.deleteUser(id).catch(catcher)
+      res.send(result)
+    },
   }
 
   // Check if there is a response for the particular method, if so invoke it, if not response with an error

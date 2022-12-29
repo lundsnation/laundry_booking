@@ -88,6 +88,7 @@ const BookingCalendar = (props: Props) => {
     }
 
     const updateBookings = async () => {
+        console.log(user)
         //fetch bookings and update
         const res = await fetch("/api/bookings")
         const resBooking: Array<Booking> = await res.json();
