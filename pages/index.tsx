@@ -7,7 +7,6 @@ import Header from '../src/components/Header'
 import BookingCalendar from '../src/components/BookingCalendar';
 import { useRouter } from 'next/router'
 import Footer from '../src/components/Footer';
-import Terms from '../src/components/Terms';
 
 
 const img = process.env.AUTH0_BASE_URL as string + "/logotyp02.png"
@@ -36,7 +35,6 @@ const Index = () => {
 
   return (user ?
     <Grid container rowSpacing={10}>
-      <Terms/>
       <Grid item xs={12} sm={12} md={12} minHeight={100} flexGrow={1}>
         <Header />
       </Grid>
