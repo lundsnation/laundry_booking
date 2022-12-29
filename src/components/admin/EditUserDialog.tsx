@@ -1,5 +1,5 @@
 import {  Button, Container, Typography, Paper, Grid, Dialog, DialogActions, DialogTitle,List,ListItem,Divider, TextField,MenuItem,AlertColor} from "@mui/material";
-import { useEffect, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { UserType } from "../../../utils/types";
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import { SnackInterface } from "../Snack";
@@ -24,7 +24,12 @@ const EditUserDialog = (props: Props) => {
     const [newUserBulding, setNewUserBuilding] = useState("")
     const [wait, setWait] = useState(false);
 
-    const handleEditUser = async () =>{
+    useEffect(()=>{
+        setNewUser({...newUser, name: newUserBulding + newUserApt as string})
+    },[newUserApt,newUserBulding])
+
+    const handleEditUser = async (e : FormEvent) =>{
+        e.preventDefault()
         setWait(true);
         const selectedUsers = getSelectedUsers()
         const editedUsers = []
@@ -50,13 +55,17 @@ const EditUserDialog = (props: Props) => {
         fetchUsers()
         setWait(false);
         if(editedUsers.length==selectedUsers.length){
-            setSnack({show: true, snackString: "Ändrade "+ editedUsers.length+" användare:" + editedUsers as string, severity:'success'})
+            setSnack({show: true, snackString: "Ändrade "+ editedUsers.length+" användare: " + editedUsers as string, severity:'success'})
         }else if(editedUsers.length>0){
-            setSnack({show: true, snackString: "Ändrade "+ editedUsers.length+" användare:" + editedUsers as string, severity:'info'})
+            setSnack({show: true, snackString: "Ändrade "+ editedUsers.length+" användare: " + editedUsers as string, severity:'info'})
         }else{
             setSnack({show: true, snackString: "Borttagning misslyckad", severity:'error'})
         }
         setSelected([])
+        setNewUser({} as UserType)
+        setNewUserBuilding("")
+        setNewUserApt("")
+        setShowEditDialog(false)
     }
 
     const getSelectedUsers = () : Array<UserType> =>{
@@ -85,6 +94,7 @@ const EditUserDialog = (props: Props) => {
     <Dialog open={showEditDialog} onClose = {()=>{setShowEditDialog(false)}}>
                                 <DialogTitle> Ändra : {selected.length> 1 ? "Flera användare" : selected[0]   }</DialogTitle>
                                 <Divider variant="middle"/>
+                                <form onSubmit={(e)=>{handleEditUser(e)}}>
                                 <List >
                                     <ListItem >
                                         <TextField
@@ -110,7 +120,6 @@ const EditUserDialog = (props: Props) => {
                                         </ListItem>    
                                         <ListItem>
                                         <TextField
-                                            required
                                             onChange={(e)=>{
                                                 setNewUserApt(e.target.value as string)
                                             }}
@@ -124,7 +133,6 @@ const EditUserDialog = (props: Props) => {
                                         </ListItem>
                                         <ListItem>
                                         <TextField
-                                            required
                                             disabled = {selected.length>1}
                                             margin="dense"
                                             fullWidth
@@ -138,7 +146,6 @@ const EditUserDialog = (props: Props) => {
                                         </ListItem>
                                         <ListItem>
                                         <TextField
-                                            required
                                             margin="dense"
                                             fullWidth
                                             disabled = {selected.length>1}
@@ -151,7 +158,6 @@ const EditUserDialog = (props: Props) => {
                                         </ListItem>
                                     <ListItem>
                                     <TextField
-                                        required
                                         margin="dense"
                                         fullWidth
                                         type="number"
@@ -170,11 +176,12 @@ const EditUserDialog = (props: Props) => {
                                             <Button sx={{margin:"12px",marginTop:0}} color='warning' variant="outlined" onClick={()=>{setShowEditDialog(false)}}>Stäng</Button>
                                         </Grid>
                                         <Grid item>
-                                            <LoadingButton loading={wait} variant="outlined"  endIcon={<EditOutlinedIcon/>} sx={{margin:"12px",marginTop:0}}onClick={handleEditUser}>Ändra</LoadingButton>
+                                            <LoadingButton type="submit" loading={wait} variant="outlined"  endIcon={<EditOutlinedIcon/>} sx={{margin:"12px",marginTop:0}}>Ändra</LoadingButton>
                                         </Grid>
                                     </Grid>
                                     
                                 </DialogActions>
+                                </form>
                         </Dialog>
 
    )

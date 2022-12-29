@@ -8,6 +8,7 @@ const handler = withApiAuthRequired(async (req: NextApiRequest, res: NextApiResp
   const method: keyof ResponseFuncs = req.method as keyof ResponseFuncs
   const catcher = (error: Error) => res.status(400).json({ error })
   const userFetcher = new getUsers()
+  
 
   const handleCase: ResponseFuncs = {
     GET: async (req: NextApiRequest, res: NextApiResponse) => {
@@ -16,10 +17,16 @@ const handler = withApiAuthRequired(async (req: NextApiRequest, res: NextApiResp
       res.status(200).json(result)
     },
     POST: async (req: NextApiRequest, res: NextApiResponse) => {
-      const user = req.body
-      logRequest('POST_USERS')
-      const result = await userFetcher.createUser(user).catch(catcher)
-      res.status(200).json(result)
+      const userSession = getSession(req,res)
+      // Use of indexOf method to assert if user has role admin or not
+      if(userSession?.user.app_metadata.roles.indexOf("admin")>-1){
+        const user = req.body
+        logRequest('POST_USERS')
+        const result = await userFetcher.createUser(user).catch(catcher)
+        res.json(result)
+        return
+      }
+      res.status(401).json({error : "Not authorized"})
     },
   }
 
