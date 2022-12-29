@@ -1,6 +1,7 @@
-import { Skeleton, Button, Container, Typography, Paper, Grid, Dialog, DialogActions, DialogTitle,List,ListItem,Divider, TextField,MenuItem,AlertColor, CircularProgress, ButtonGroup} from "@mui/material";
+import { Skeleton, Button, Container,  Paper, Grid,  TextField,MenuItem,AlertColor, CircularProgress, ButtonGroup} from "@mui/material";
 import {Table, TableBody, TableHead, TableRow,TableContainer,TableCell, TablePagination} from "@mui/material"
 import { useUser } from '@auth0/nextjs-auth0/dist/frontend';
+import { Snack, SnackInterface } from "../Snack"
 import { useEffect, useState } from "react";
 import { UserType } from "../../../utils/types";
 import {Checkbox} from '@mui/material';
@@ -8,24 +9,16 @@ import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import PersonAddOutlinedIcon from '@mui/icons-material/PersonAddOutlined';
 import NewUserDialog from "./NewUserDialog";
 import EditUserDialog from "./EditUserDialog";
-import { SnackInterface } from "../Snack";
 import DeleteIcon from '@mui/icons-material/DeleteOutlined';
-import { TroubleshootTwoTone } from "@mui/icons-material";
 import DeleteUserDialog from "./DeleteUserDialog";
 
 interface Props {
-    users : Array<UserType>,
-    setUsers: (newUsers:Array<UserType>) => void,
-    snack : SnackInterface,
-    setSnack : (snackState:SnackInterface) => void
+
 }
 
 
 const UserGrid = (props: Props) => {
-    const NO_SKELETONS = 5;
     const { user, isLoading, error } = useUser()
-    // const [users, setUsers] = useState<Array<UserType>>([])
-    const {users, setUsers,snack, setSnack} = props;
     const [selected, setSelected] = useState<readonly string[]>([]);
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -33,9 +26,9 @@ const UserGrid = (props: Props) => {
     const [showDeleteUserDialog, setShowDeleteUserDialog] = useState(false)
     const [showAddDialog,setShowAddDialog] = useState(false)
     const [loadingData,setLoadingData] = useState(false)
-    const [showSnack,setShowSnack] = useState(false)
-    const [snackString, setSnackString] = useState("")
-
+    const [users, setUsers] = useState<Array<UserType>>([])
+    const [snack,setSnack] = useState<SnackInterface>({show:false,snackString:"",severity:"info"})
+    
     const fetchUsers= async () => {
         setLoadingData(true)
         const res = await fetch("/api/user")
@@ -107,6 +100,7 @@ const UserGrid = (props: Props) => {
 
     return(
         <Container>
+            <Snack handleClose={()=>{setSnack(snack =>({...snack,show:false}))}} state={snack}></Snack>
             <NewUserDialog 
                 showAddDialog={showAddDialog} 
                 setShowAddDialog={setShowAddDialog} 

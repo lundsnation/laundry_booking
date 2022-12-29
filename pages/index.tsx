@@ -9,6 +9,7 @@ import { useRouter } from 'next/router'
 import Footer from '../src/components/Footer';
 
 
+
 const img = process.env.AUTH0_BASE_URL as string + "/logotyp02.png"
 const styles = {
   paperContainer: {
