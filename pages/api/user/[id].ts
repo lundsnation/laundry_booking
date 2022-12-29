@@ -18,15 +18,26 @@ const handler = withApiAuthRequired(async (req: NextApiRequest, res: NextApiResp
       res.json(result)
     },
     PATCH: async (req: NextApiRequest, res: NextApiResponse) => {
-      const modification = req.body
-      logRequest('PATCH_USERS')
-      const result = await userFetcher.modifyUser(modification, id).catch(catcher)
-      res.send(result)
+      const userSession = getSession(req,res)
+      if(userSession?.user.app_metadata.roles.indexOf("admin")>-1){
+        const modification = req.body
+        logRequest('PATCH_USERS')
+        const result = await userFetcher.modifyUser(modification, id).catch(catcher)
+        res.send(result)
+      }else{
+        res.status(401).json({error:"Not Authorized"})
+      }
+      
     },
     DELETE: async (req: NextApiRequest, res: NextApiResponse) => {
-      logRequest('DELETE_USER')
-      const result = await userFetcher.deleteUser(id).catch(catcher)
-      res.send(result)
+      const userSession = getSession(req,res)
+      if(userSession?.user.app_metadata.roles.indexOf("admin")>-1){
+        logRequest('DELETE_USER')
+        const result = await userFetcher.deleteUser(id).catch(catcher)
+        res.send(result)
+      }else{
+        res.status(401).json({error: "Not Authorized"}) 
+      }
     },
   }
 

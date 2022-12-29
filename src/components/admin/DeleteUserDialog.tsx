@@ -20,6 +20,7 @@ interface Props{
 const DeleteUserDialog = (props: Props) =>{
     const {showDeleteUserDialog,setShowDeleteUserDialog,selected,users,fetchUsers,snack,setSnack,setSelected} = props 
     const [loading, setLoading] = useState(false)
+    
     const handleDeleteUser = async () =>{
         setLoading(true)
         const deletedUsers = []
@@ -30,7 +31,7 @@ const DeleteUserDialog = (props: Props) =>{
                 const response = await fetch("/api/user/"+selectedUsers[i].user_id, {method: "Delete"})
                 if(response.ok){
                     nbrOkDeletions ++
-                    deletedUsers.push(selectedUsers[i].name)
+                    deletedUsers.push(selectedUsers[i].name + " ")
                 }
             }catch(error){
                 console.log(error)
@@ -40,9 +41,9 @@ const DeleteUserDialog = (props: Props) =>{
         setLoading(false);
         setShowDeleteUserDialog(false)
         if(nbrOkDeletions==selectedUsers.length){
-            setSnack({show: true, snackString: "Tog bort "+ nbrOkDeletions+" användare:" + deletedUsers as string, severity:'success'})
+            setSnack({show: true, snackString: "Tog bort "+ nbrOkDeletions+" användare: " + deletedUsers as string, severity:'success'})
         }else if(nbrOkDeletions>0){
-            setSnack({show: true, snackString: "Tog bort "+ nbrOkDeletions+" användare:" + deletedUsers as string, severity:'info'})
+            setSnack({show: true, snackString: "Tog bort "+ nbrOkDeletions+" användare: " + deletedUsers as string, severity:'info'})
         }else{
             setSnack({show: true, snackString: "Borttagning misslyckad", severity:'error'})
         }
@@ -114,7 +115,7 @@ const DeleteUserDialog = (props: Props) =>{
                         <Button sx={{margin:"12px",marginTop:0}} color='warning' variant="outlined" onClick={()=>{setShowDeleteUserDialog(false)}}>Nej</Button>
                     </Grid>
                     <Grid item>
-                        <LoadingButton loading={loading} variant="outlined" color='error' endIcon={<DeleteOutlinedIcon/>} sx={{margin:"12px",marginTop:0}}onClick={handleDeleteUser}>Ja</LoadingButton>
+                        <LoadingButton type="submit" loading={loading} variant="outlined" color='error' endIcon={<DeleteOutlinedIcon/>} sx={{margin:"12px",marginTop:0}}onClick={handleDeleteUser}>Ja</LoadingButton>
                     </Grid>
                 </Grid>
                 
