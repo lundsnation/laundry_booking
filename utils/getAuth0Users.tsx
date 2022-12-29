@@ -1,6 +1,6 @@
+import { UserType } from "./types";
+
 export class getUsers {
-
-
     private token: Promise<string>;
     private url: string;
 
@@ -9,7 +9,6 @@ export class getUsers {
         this.url = (process.env.AUTH_ISSUER_BASE as string)
 
     }
-
 
     private async setAuth0Token() {
         const id = (process.env.REACT_APP_ID as string)
@@ -35,7 +34,6 @@ export class getUsers {
         document.body.appendChild(download)
         download.click()
         download.remove()
-
     }
 
     private async _downloadAllUsers() {
@@ -50,8 +48,54 @@ export class getUsers {
         const data = await response.json()
         const parsed = JSON.stringify(data)
         
-
         this.downloadJSON(parsed)
+        
+    }
+    private async _createUser(user:UserType){
+        const token = await this.token
+        const options = {
+            method: 'POST',
+            url: "https://lundsnation.eu.auth0.com/api/v2/users",
+            headers: { authorization: 'Bearer ' + token, 'content-type': 'application/json'},
+            body: `{"name": "${user.name}", "email": "${user.email}", "user_metadata": { "telephone": "${user.user_metadata?.telephone}"}, "app_metadata": { "acceptedTerms": ${user.app_metadata?.acceptedTerms} , "allowedSlots": ${user.app_metadata?.allowedSlots} , "roles": ["${user.app_metadata?.roles}"]}, "connection": "Username-Password-Authentication", "password": "${user.password}"}`,
+        }
+        return await fetch(options.url, options)
+    }
+
+    private async _modifyUser(modification : object, id : string ){
+        const token = await this.token
+        const options = {
+            method: 'PATCH',
+            url: 'https://lundsnation.eu.auth0.com/api/v2/users/' + id,
+            headers: { authorization: 'Bearer ' + token, 'content-type': 'application/json'},
+            body: JSON.stringify(modification)
+        }
+        return await fetch(options.url,options)
+    }
+
+    private async _deleteUser(id : string ){
+        const token = await this.token
+        const options = {
+            method: 'DELETE',
+            url: 'https://lundsnation.eu.auth0.com/api/v2/users/' + id,
+            headers: { authorization: 'Bearer ' + token},
+        }
+        return await fetch(options.url,options)
+        
+    }
+
+    private async _getAllUsers() {
+
+        const token = await this.token
+        const options = {
+            method: 'GET',
+            url: "https://lundsnation.eu.auth0.com/api/v2/users",
+            headers: { authorization: 'Bearer ' + token, 'content-type': 'application/json' }
+        }
+        const response = await fetch(options.url, options)
+        const data = await response.json()
+        
+        return data    
     }
 
     private async _getSpecificUser(key: string, value: string) {
@@ -89,8 +133,8 @@ export class getUsers {
         return isDev
     }
 
-    get downloadAllUsers() {
-        return this._downloadAllUsers()
+    getAllUsers() {
+        return this._getAllUsers()
     }
 
     getUser(key: string, value: string) {
@@ -100,5 +144,16 @@ export class getUsers {
         return this._getSpecificUser(key, value)
     }
 
+    createUser(newUser:UserType){
+        return this._createUser(newUser)
+    }
+
+    modifyUser(modification:object,id:string){
+        return this._modifyUser(modification,id)
+    }
+
+    deleteUser(id:string){
+        return this._deleteUser(id)
+    }
 
 }

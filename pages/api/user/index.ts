@@ -8,25 +8,18 @@ const handler = withApiAuthRequired(async (req: NextApiRequest, res: NextApiResp
   const method: keyof ResponseFuncs = req.method as keyof ResponseFuncs
   const catcher = (error: Error) => res.status(400).json({ error })
   const userFetcher = new getUsers()
-  // Request is user.name (*/api/user/NH1111 for example)
-  const id: string = req.query.id as string
 
   const handleCase: ResponseFuncs = {
     GET: async (req: NextApiRequest, res: NextApiResponse) => {
-      logRequest('GET_USER')
-      const result = await userFetcher.getUser("name",id)?.catch(catcher)
-      res.json(result)
+      logRequest('GET_ALL_USERS')
+      const result = await userFetcher.getAllUsers()?.catch(catcher)
+      res.status(200).json(result)
     },
-    PATCH: async (req: NextApiRequest, res: NextApiResponse) => {
-      const modification = req.body
-      logRequest('PATCH_USERS')
-      const result = await userFetcher.modifyUser(modification, id).catch(catcher)
-      res.send(result)
-    },
-    DELETE: async (req: NextApiRequest, res: NextApiResponse) => {
-      logRequest('DELETE_USER')
-      const result = await userFetcher.deleteUser(id).catch(catcher)
-      res.send(result)
+    POST: async (req: NextApiRequest, res: NextApiResponse) => {
+      const user = req.body
+      logRequest('POST_USERS')
+      const result = await userFetcher.createUser(user).catch(catcher)
+      res.status(200).json(result)
     },
   }
 
