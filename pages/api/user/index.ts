@@ -17,7 +17,7 @@ const handler = withApiAuthRequired(async (req: NextApiRequest, res: NextApiResp
       res.status(200).json(result)
     },
     POST: async (req: NextApiRequest, res: NextApiResponse) => {
-      const userSession = getSession(req,res)
+      const userSession = await getSession(req,res)
       // Use of indexOf method to assert if user has role admin or not
       if(userSession?.user.app_metadata.roles.indexOf("admin")>-1){
         const user = req.body

@@ -18,8 +18,9 @@ const handler = withApiAuthRequired(async (req: NextApiRequest, res: NextApiResp
       res.json(result)
     },
     PATCH: async (req: NextApiRequest, res: NextApiResponse) => {
-      const userSession = getSession(req,res)
-      if(userSession?.user.app_metadata.roles.indexOf("admin")>-1){
+      const userSession = await getSession(req,res)
+      // Allows partial modification of data if admin or users own account
+      if(userSession?.user.app_metadata.roles.indexOf("admin")>-1||userSession?.user.id == id){
         const modification = req.body
         logRequest('PATCH_USERS')
         const result = await userFetcher.modifyUser(modification, id).catch(catcher)
@@ -30,7 +31,7 @@ const handler = withApiAuthRequired(async (req: NextApiRequest, res: NextApiResp
       
     },
     DELETE: async (req: NextApiRequest, res: NextApiResponse) => {
-      const userSession = getSession(req,res)
+      const userSession = await getSession(req,res)
       if(userSession?.user.app_metadata.roles.indexOf("admin")>-1){
         logRequest('DELETE_USER')
         const result = await userFetcher.deleteUser(id).catch(catcher)

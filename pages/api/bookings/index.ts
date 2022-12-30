@@ -9,7 +9,7 @@ import { getUsers } from '../../../utils/getAuth0Users'
 const handler = withApiAuthRequired(async (req: NextApiRequest, res: NextApiResponse) => {
   //capture request method, we type it as a key of ResponseFunc to reduce typing later
   const method: keyof ResponseFuncs = req.method as keyof ResponseFuncs
-  const session = getSession(req, res)
+  const session = await getSession(req, res)
   const user = session?.user.name
   const catcher = (error: Error) => res.status(400).json({ error })
   await connect()

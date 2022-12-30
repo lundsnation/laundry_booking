@@ -5,14 +5,13 @@ import { Grid, Box, SxProps, TextField, AlertColor, Paper, Typography } from "@m
 import svLocale from 'date-fns/locale/sv';
 import BookingButtonGroup from "./BookingButtonGroup";
 import BookedTimes from "./BookedTimes";
-import { Booking } from "../../utils/types";
-import { UserProfile } from "@auth0/nextjs-auth0";
-import { getDateBookings, compareDates } from "../../utils/bookingsAPI"
-import { Snack, SnackInterface } from "../components/Snack"
+import { Booking,UserType } from "../../../utils/types";
+import { getDateBookings, compareDates } from "../../../utils/bookingsAPI"
+import { Snack, SnackInterface } from "../../components/Snack"
 
 interface Props {
     title: string;
-    user: UserProfile;
+    user: UserType;
 }
 
 
@@ -88,7 +87,6 @@ const BookingCalendar = (props: Props) => {
     }
 
     const updateBookings = async () => {
-        console.log(user)
         //fetch bookings and update
         const res = await fetch("/api/bookings")
         const resBooking: Array<Booking> = await res.json();

@@ -1,7 +1,6 @@
 import React, { useState, useEffect, forwardRef } from "react";
 import { Card,Box, Grid, Divider, Chip, AlertColor, Typography, Button, List, ListItem} from "@mui/material";
-import { Booking, timeSlots } from "../../utils/types";
-import { UserProfile } from "@auth0/nextjs-auth0";
+import { Booking, timeSlots, UserType } from "../../../utils/types";
 import DeleteIcon from '@mui/icons-material/DeleteOutlined';
 
 import  {Stack}  from "@mui/system";
@@ -9,7 +8,7 @@ import  {Stack}  from "@mui/system";
 
 interface Props {
     bookings: Array<Booking>,
-    user: UserProfile,
+    user: UserType,
     updateBookings: () => void,
     snackTrigger: (severity: AlertColor, snackString: string) => void
 }
