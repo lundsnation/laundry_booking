@@ -10,8 +10,6 @@ import Footer from '../src/components/Footer';
 import Terms from '../src/Terms';
 import { UserType } from '../utils/types';
 
-
-
 const img = process.env.AUTH0_BASE_URL as string + "/logotyp02.png"
 const styles = {
   paperContainer: {
@@ -38,21 +36,23 @@ const Index = () => {
 
   return (user ?
     
-    <Grid container rowSpacing={10}>
+    <Grid container rowSpacing={{xs : 14, sm: 0}}  justifyContent="flex-end" >
       <Terms user={user as UserType}/>
-      <Grid item xs={12} sm={12} md={12} minHeight={100} flexGrow={1}>
+      <Grid item xs={12}  minHeight={100} >
         <Header />
       </Grid>
 
-      <Grid item xs={12}>
+      <Grid item xs={12} flexGrow={1} >
         <Paper style={styles.paperContainer}
           sx={{
+            minHeight: 0,
             boxShadow: "none",
             justifyContent: "center",
             alignItems: "center",
             display: "flex",
             opacity: "1"
           }}>
+            
             {/* <Terms/> */}
           {<BookingCalendar title="" user={user as UserType} />}
         
@@ -60,7 +60,7 @@ const Index = () => {
 
       </Grid>
       
-      <Grid item xs={12}>
+      <Grid item xs={12}  >
         <Footer />
       </Grid>
 
