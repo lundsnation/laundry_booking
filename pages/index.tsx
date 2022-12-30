@@ -7,9 +7,9 @@ import Header from '../src/components/Header'
 import BookingCalendar from '../src/components/calendar/BookingCalendar';
 import { useRouter } from 'next/router'
 import Footer from '../src/components/Footer';
-import Terms from '../src/Terms';
+import Terms from '../src/components/Terms';
 import { UserType } from '../utils/types';
-import LNProgress from '../src/components/Loading';
+import Loading from '../src/components/Loading';
 
 const img = process.env.AUTH0_BASE_URL as string + "/logotyp02.png"
 const styles = {
@@ -65,7 +65,7 @@ const Index = () => {
         <Footer />
       </Grid>
 
-    </Grid>:<LNProgress/>
+    </Grid>:<Loading/>
     )
 }
 
