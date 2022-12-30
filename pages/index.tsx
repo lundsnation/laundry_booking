@@ -9,6 +9,7 @@ import { useRouter } from 'next/router'
 import Footer from '../src/components/Footer';
 import Terms from '../src/Terms';
 import { UserType } from '../utils/types';
+import LNProgress from '../src/components/Loading';
 
 const img = process.env.AUTH0_BASE_URL as string + "/logotyp02.png"
 const styles = {
@@ -64,16 +65,7 @@ const Index = () => {
         <Footer />
       </Grid>
 
-    </Grid>: <div
-      style={{
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        height: '100vh',
-      }}
-    >
-      <CircularProgress/>
-    </div>
+    </Grid>:<LNProgress/>
     )
 }
 
