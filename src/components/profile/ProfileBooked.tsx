@@ -1,7 +1,5 @@
 import { Box, Button, Container, Grid, Paper, Typography } from "@mui/material";
-import { UserProfile, useUser } from "@auth0/nextjs-auth0";
-import { getUsers } from "../../utils/getAuth0Users";
-import { useEffect, useState } from "react";
+import { useUser } from '@auth0/nextjs-auth0/client';
 
 const ProfileBooked = () => {
     const { user, error, isLoading } = useUser()

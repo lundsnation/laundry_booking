@@ -1,6 +1,6 @@
 import { Skeleton, Button, Container,  Paper, Grid,  TextField,MenuItem,AlertColor, CircularProgress, ButtonGroup} from "@mui/material";
 import {Table, TableBody, TableHead, TableRow,TableContainer,TableCell, TablePagination} from "@mui/material"
-import { useUser } from '@auth0/nextjs-auth0/dist/frontend';
+import { useUser } from '@auth0/nextjs-auth0/client';
 import { Snack, SnackInterface } from "../Snack"
 import { useEffect, useState } from "react";
 import { UserType } from "../../../utils/types";

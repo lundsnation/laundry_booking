@@ -1,14 +1,14 @@
 import { Button, Container, AlertColor, Grid, IconButton, Typography,Box } from "@mui/material"
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
-import { UserProfile } from "@auth0/nextjs-auth0";
+
 import React, { useState } from "react";
-import { Booking, timeFromTimeSlot } from "../../utils/types"
+import { Booking, timeFromTimeSlot } from "../../../utils/types"
 import BookingInfo from "./BookingInfo"
-import { timeSlots } from "../../utils/types";
-import { UserType } from "../../utils/types";
+import { timeSlots } from "../../../utils/types";
+import { UserType } from "../../../utils/types";
 
 interface Props {
-    user: UserProfile;
+    user: UserType;
     booking: Booking | null;
     selectedDate: Date;
     timeSlot: string;

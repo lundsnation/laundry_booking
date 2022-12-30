@@ -1,5 +1,5 @@
 import { Box, Container, Typography, Paper} from "@mui/material";
-import { useUser } from '@auth0/nextjs-auth0/dist/frontend';
+import { useUser } from '@auth0/nextjs-auth0/client';
 import NotLoggedIn from "../src/components/NotLoggedIn";
 import NotAuthorized from "../src/components/NotAuthorized";
 import Header from "../src/components/Header";

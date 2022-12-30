@@ -1,9 +1,9 @@
 import { Box, Button, Container, Grid, Paper, Typography } from "@mui/material";
-import { useUser } from '@auth0/nextjs-auth0/dist/frontend';
+import { useUser } from '@auth0/nextjs-auth0/client';
 import { NextPage } from "next";
 import NotLoggedIn from "../src/components/NotLoggedIn";
-import ProfileBox from "../src/components/ProfileBox";
-import ProfileBooked from "../src/components/ProfileBooked";
+import ProfileBox from "../src/components/profile/ProfileBox";
+import ProfileBooked from "../src/components/profile/ProfileBooked";
 import Header from "../src/components/Header";
 import Footer from "../src/components/Footer";
 
