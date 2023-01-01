@@ -27,14 +27,13 @@ const handler = withApiAuthRequired(async (req: NextApiRequest, res: NextApiResp
     },
 
     POST: async (req: NextApiRequest, res: NextApiResponse) => {
-      const userSession = await getSession(req,res)
       const { date, timeSlot, createdAt } = req.body
       // Initial  check if booking-request is in the past => invalid
       if (new Date(date).getTime() < Date.now()) {
         return res.status(406).json({ error: "You cant book slots that are in the past" })
       }
       // Fetching allowed slots from active user session. If undefined, defaults to 1
-      const allowedSlots = userSession?.user.app_metadata.allowedSlots || 1
+      const allowedSlots = user?.app_metadata.allowedSlots || 1
       // Checks if user has a booking in selected week, if now is greater than first day in week, adjusts the interval
       // const requestDate = req.body.date as Date
       // const weekStartDate = new Date(getMonday(requestDate,0))
