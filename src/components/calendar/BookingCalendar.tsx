@@ -1,6 +1,7 @@
 import { StaticDatePicker, LocalizationProvider, PickersDay } from '@mui/x-date-pickers';
 import React, { useState, useEffect } from "react";
 import AdapterDateFns from '@date-io/date-fns'
+import Pusher from "pusher-js"
 import { Grid, Box, SxProps, TextField, AlertColor, Paper, Typography } from "@mui/material";
 import svLocale from 'date-fns/locale/sv';
 import BookingButtonGroup from "./BookingButtonGroup";
@@ -102,9 +103,15 @@ const BookingCalendar = (props: Props) => {
         });
         setBookings(bookings);
     }
+
     //get initial bookings
     useEffect(() => {
         updateBookings()
+        const pusher = new Pusher(process.env.NEXT_PUBLIC_PUSHER_APP_KEY as string, {
+            cluster: process.env.NEXT_PUBLIC_PUSHER_CLUSTER as string
+          })
+          const channel = pusher.subscribe("laundry-RT")
+          channel.bind("booking-event", () => {updateBookings()})
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
