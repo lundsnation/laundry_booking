@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useEffect, useState } from "react";
-import type { NextPage } from 'next';
+
 import { CircularProgress , Typography, Box, Button, Grid, Paper } from '@mui/material';
 import { useUser } from '@auth0/nextjs-auth0/client';
 import Header from '../src/components/Header'

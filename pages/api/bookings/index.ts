@@ -4,6 +4,14 @@ import { logRequest } from "../../../utils/backendLogger"
 import { ResponseFuncs } from "../../../utils/types"
 import Booking from '../../../models/Booking'
 import { withApiAuthRequired, getSession } from "@auth0/nextjs-auth0"
+import Pusher from "pusher"
+
+export const pusher = new Pusher({
+  appId: process.env.PUSHER_APP_ID as string,
+  key: process.env.NEXT_PUBLIC_PUSHER_APP_KEY as string,
+  secret: process.env.PUSHER_SECRET as string,
+  cluster: process.env.NEXT_PUBLIC_PUSHER_CLUSTER as string,
+});
 
 function getMonday(d : Date, weeksAhead : number) {
   d = new Date(d);
@@ -45,7 +53,10 @@ const handler = withApiAuthRequired(async (req: NextApiRequest, res: NextApiResp
       const slotCheck = await Booking.find({userName: user?.name, date: {$gte: new Date()}})
       if (!slotCheck || slotCheck.length < allowedSlots) {
         logRequest('POST');
-        return res.status(201).json(await Booking.create(req.body).catch(catcher))
+
+        const result = res.status(201).json(await Booking.create(req.body).catch(catcher))
+        const pusherRes = await pusher.trigger("laundry-RT","booking-event",req.body);
+        return result 
       }
       return res.status(400).json({ error: "User has max number of slots booked" })
 
