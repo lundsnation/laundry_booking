@@ -42,8 +42,8 @@ const handler = withApiAuthRequired(async (req: NextApiRequest, res: NextApiResp
         await pusherBackend.trigger('bookingUpdates', 'bookingUpdate', {
           userName,
           date,
-          timeSlot
-          
+          timeSlot,
+          request: 'delete'
         })
 
         res.status(200).json(json)
