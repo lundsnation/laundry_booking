@@ -53,7 +53,7 @@ const BookedTimes = (props: Props) => {
             body: JSON.stringify(jsonBooking)
         });
 
-        props.updateBookings();
+        //props.updateBookings();
         if (response.ok) {
             snackString = "Du har avbokat tiden"
             props.snackTrigger("success", snackString, alignment)
