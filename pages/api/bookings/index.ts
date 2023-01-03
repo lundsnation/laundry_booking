@@ -5,6 +5,7 @@ import { ResponseFuncs } from "../../../utils/types"
 import Booking from '../../../models/Booking'
 import { withApiAuthRequired, getSession } from "@auth0/nextjs-auth0"
 import { getUsers } from '../../../utils/getAuth0Users'
+import { pusherBackend } from "../../../utils/pusherAPI"
 
 const handler = withApiAuthRequired(async (req: NextApiRequest, res: NextApiResponse) => {
   //capture request method, we type it as a key of ResponseFunc to reduce typing later
@@ -22,7 +23,7 @@ const handler = withApiAuthRequired(async (req: NextApiRequest, res: NextApiResp
 
     POST: async (req: NextApiRequest, res: NextApiResponse) => {
       const userFinder = new getUsers()
-      const { date, timeSlot, createdAt } = req.body
+      const { date, timeSlot, userName } = req.body
       // Initial  check if booking-request is in the past => invalid
       if (new Date(date).getTime() < Date.now()) {
         return res.status(406).json({ error: "You cant book slots that are in the past" })
@@ -33,7 +34,15 @@ const handler = withApiAuthRequired(async (req: NextApiRequest, res: NextApiResp
       logRequest('POST');
       // Checks if user has no bookings or have less than allowed slots already booked in DB
       if (!slotCheck || slotCheck.length < allowedSlots) {
-        return res.status(201).json(await Booking.create(req.body).catch(catcher))
+        const json = await Booking.create(req.body).catch(catcher)
+        console.log("TRIGGER RUNNING")
+        await pusherBackend.trigger('bookingUpdates', 'bookingUpdate', {
+          userName,
+          date,
+          timeSlot
+        })
+
+        return res.status(201).json(json)
       }
       return res.status(400).json({ error: "User has max number of slots booked" })
 
