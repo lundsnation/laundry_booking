@@ -45,12 +45,18 @@ const BookingCalendar = (props: Props) => {
         const pusherChannel = pusherClient .subscribe("bookingUpdates");
         pusherChannel.bind('bookingUpdate', (data: any) => {
             updateBookings();
-            const snackString = data.userName + " booked timeSlot " + data.timeSlot + " on " + data.date
-            const severity = "error"
+            const {userName, date, timeSlot } = data
+            const isPostRequest = data.request == 'post'
+            const tmpDate = new Date(date);
+            const dateString = tmpDate.getFullYear() + "/" + (tmpDate.getMonth()+1) + "/" + tmpDate.getDay()
+            console.log(dateString);
+            const snackString = isPostRequest ? userName + ' bokade ' + dateString + ', ' + timeSlot  : userName + ' avbokade ' + dateString + ', ' + timeSlot
+
+            
+            const severity = isPostRequest ? "error" : "success"
             const alignment: SnackbarOrigin = {vertical: 'bottom', horizontal: 'right'}
-            const myBooking = data.userName == user.name
+            const myBooking = userName == user.name
             console.log("this should print every event")
-            console.log
 
             !myBooking && setSnack({ show: true, snackString: snackString, severity: severity, alignment: alignment })
     

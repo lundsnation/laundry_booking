@@ -75,6 +75,7 @@ const BookingButton = (props: Props) => {
         }
     }
     // Function for showing info on booked time
+    // Behövs denna?
     const showBookedTime = async ()=>{
         
         if(!showBookingInfo){
