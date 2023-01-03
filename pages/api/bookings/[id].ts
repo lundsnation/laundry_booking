@@ -46,8 +46,6 @@ const handler = withApiAuthRequired(async (req: NextApiRequest, res: NextApiResp
           
         })
 
-        res.status(201).json(req.body)
-
         res.status(200).json(json)
       }
       logRequest('DELETE')
