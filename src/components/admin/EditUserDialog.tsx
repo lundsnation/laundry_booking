@@ -23,6 +23,7 @@ const EditUserDialog = (props: Props) => {
     const [newUserApt, setNewUserApt] = useState("") 
     const [newUserBulding, setNewUserBuilding] = useState("")
     const [wait, setWait] = useState(false);
+    const alignment: SnackbarOrigin = {vertical: 'bottom', horizontal: 'left' }
 
     useEffect(()=>{
         setNewUser({...newUser, name: newUserBulding + newUserApt as string})
@@ -55,11 +56,11 @@ const EditUserDialog = (props: Props) => {
         fetchUsers()
         setWait(false);
         if(editedUsers.length==selectedUsers.length){
-            setSnack({show: true, snackString: "Ändrade "+ editedUsers.length+" användare: " + editedUsers as string, severity:'success'})
+            setSnack({show: true, snackString: "Ändrade "+ editedUsers.length+" användare: " + editedUsers as string, severity:'success', alignment: alignment})
         }else if(editedUsers.length>0){
-            setSnack({show: true, snackString: "Ändrade "+ editedUsers.length+" användare: " + editedUsers as string, severity:'info'})
+            setSnack({show: true, snackString: "Ändrade "+ editedUsers.length+" användare: " + editedUsers as string, severity:'info', alignment: alignment})
         }else{
-            setSnack({show: true, snackString: "Borttagning misslyckad", severity:'error'})
+            setSnack({show: true, snackString: "Borttagning misslyckad", severity:'error', alignment: alignment})
         }
         setSelected([])
         setNewUser({} as UserType)

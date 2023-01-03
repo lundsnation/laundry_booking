@@ -1,4 +1,4 @@
-import { Skeleton, Button, Container,  Paper, Grid,  TextField,MenuItem,AlertColor, CircularProgress, ButtonGroup} from "@mui/material";
+import { Skeleton, Button, Container,  Paper, Grid,  TextField,MenuItem,AlertColor, CircularProgress, ButtonGroup, SnackbarOrigin} from "@mui/material";
 import {Table, TableBody, TableHead, TableRow,TableContainer,TableCell, TablePagination} from "@mui/material"
 import { useUser } from '@auth0/nextjs-auth0/dist/frontend';
 import { Snack, SnackInterface } from "../Snack"
@@ -27,7 +27,8 @@ const UserGrid = (props: Props) => {
     const [showAddDialog,setShowAddDialog] = useState(false)
     const [loadingData,setLoadingData] = useState(false)
     const [users, setUsers] = useState<Array<UserType>>([])
-    const [snack,setSnack] = useState<SnackInterface>({show:false,snackString:"",severity:"info"})
+    const alignment: SnackbarOrigin = {vertical: 'bottom', horizontal: 'left' }
+    const [snack, setSnack] = useState<SnackInterface>({show:false,snackString:"",severity:"info", alignment: alignment})
     
     const fetchUsers= async () => {
         setLoadingData(true)
