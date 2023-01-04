@@ -21,9 +21,10 @@ const BookingCalendar = (props: Props) => {
     const [firstRender, setFirstRender] = useState(true);
     const [selectedDate, setSelectedDate] = useState<Date>(new Date());
     const [bookings, setBookings] = useState<Array<Booking>>([]);
-    const [snack, setSnack] = useState<SnackInterface>({ show: false, snackString: "", severity: "success", alignment: {vertical: "bottom", horizontal: "right"} })
+    const [snack, setSnack] = useState<SnackInterface>({ show: false, snackString: "", severity: "success", alignment: {vertical: "bottom", horizontal: "left"} })
+    const [realtimeSnack, setRealtimeSnack] = useState<SnackInterface>({ show: false, snackString: "", severity: "success", alignment: {vertical: "bottom", horizontal: "right"} })
     const { user } = props;
-
+    
     const updateBookings = async () => {
         //fetch bookings and update
         const res = await fetch("/api/bookings")
@@ -53,12 +54,16 @@ const BookingCalendar = (props: Props) => {
             const snackString = isPostRequest ? userName + ' bokade ' + dateString + ', ' + timeSlot  : userName + ' avbokade ' + dateString + ', ' + timeSlot
 
             
-            const severity = isPostRequest ? "error" : "success"
-            const alignment: SnackbarOrigin = {vertical: 'bottom', horizontal: 'right'}
+            const severity = "info"
+            //const alignment: SnackbarOrigin = {vertical: 'bottom', horizontal: 'right'}
             const myBooking = userName == user.name
             console.log("this should print every event")
 
-            !myBooking && setSnack({ show: true, snackString: snackString, severity: severity, alignment: alignment })
+            console.log("window.innerWidt: " + window.innerWidth)
+
+            const alignment: SnackbarOrigin = window.innerWidth > 600 ? {vertical: 'bottom', horizontal: 'right'} : {vertical: 'top', horizontal: 'right'}
+
+            !myBooking && setRealtimeSnack({ show: true, snackString: snackString, severity: severity, alignment: alignment })
     
         })
 
@@ -150,6 +155,10 @@ const BookingCalendar = (props: Props) => {
         setSnack({ show: false, snackString: snack.snackString, severity: snack.severity, alignment: snack.alignment })
     }
 
+    const resetRealtimeSnack = () => {
+        setRealtimeSnack({ show: false, snackString: realtimeSnack.snackString, severity: realtimeSnack.severity, alignment: realtimeSnack.alignment })
+    }
+
     const bookingButtonGroup = (
         <Grid container spacing={1} direction="row" sx={{margin:0}}>
             <Grid container>
@@ -171,6 +180,7 @@ const BookingCalendar = (props: Props) => {
 
     return (
         <div>
+            <Snack state={realtimeSnack} handleClose={resetRealtimeSnack} />
             <Snack state={snack} handleClose={resetSnack} />
             <Grid container spacing={2}>
                 <Grid item xs={12} sm={8}>
