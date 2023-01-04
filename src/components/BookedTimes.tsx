@@ -1,6 +1,6 @@
 import React, { useState, useEffect, forwardRef } from "react";
 import { Card,Box, Grid, Divider, Chip, AlertColor, Typography, Button, List, ListItem, SnackbarOrigin} from "@mui/material";
-import { Booking, timeFromTimeSlot, timeSlots } from "../../../utils/types";
+import { Booking, timeFromTimeSlot, timeSlots } from "../../utils/types";
 import { UserProfile } from "@auth0/nextjs-auth0";
 import DeleteIcon from '@mui/icons-material/DeleteOutlined';
 

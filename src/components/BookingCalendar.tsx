@@ -5,11 +5,11 @@ import { Grid, Box, SxProps, TextField, AlertColor, Paper, Typography, SnackbarO
 import svLocale from 'date-fns/locale/sv';
 import BookingButtonGroup from "./BookingButtonGroup";
 import BookedTimes from "./BookedTimes";
-import { Booking } from "../../../utils/types";
+import { Booking } from "../../utils/types";
 import { UserProfile } from "@auth0/nextjs-auth0";
-import { getDateBookings, compareDates } from "../../../utils/bookingsAPI"
-import { Snack, SnackInterface } from "../Snack"
-import { pusherClient } from '../../../utils/pusherAPI'
+import { getDateBookings, compareDates } from "../../utils/bookingsAPI"
+import { Snack, SnackInterface } from "../components/Snack"
+import { pusherClient } from '../../utils/pusherAPI'
 
 interface Props {
     title: string;

@@ -4,7 +4,7 @@ import type { NextPage } from 'next';
 import { CircularProgress , Typography, Box, Button, Grid, Paper } from '@mui/material';
 import { useUser } from '@auth0/nextjs-auth0/dist/frontend';
 import Header from '../src/components/Header'
-import BookingCalendar from '../src/components/calendar/BookingCalendar';
+import BookingCalendar from '../src/components/BookingCalendar';
 import { useRouter } from 'next/router'
 import Footer from '../src/components/Footer';
 

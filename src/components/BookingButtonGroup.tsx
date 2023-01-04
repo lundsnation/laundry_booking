@@ -1,9 +1,9 @@
 import BookingButton from "./BookingButton";
 import ButtonGroup from '@mui/material/ButtonGroup';
-import { Booking } from "../../../utils/types"
+import { Booking } from "../../utils/types"
 import { UserProfile } from "@auth0/nextjs-auth0";
 import { AlertColor, Container, SnackbarOrigin } from "@mui/material"
-import { timeSlotToBooking } from "../../../utils/bookingsAPI";
+import { timeSlotToBooking } from "../../utils/bookingsAPI";
 
 interface Props {
     bookedBookings: Set<Booking>;
