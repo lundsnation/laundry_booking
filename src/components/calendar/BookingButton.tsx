@@ -50,7 +50,6 @@ const BookingButton = (props: Props) => {
             snackTrigger("error", snackString)
         }
         setDisabled(false)
-
     }
     // Function for deleting already aquired time
     const handleCancel = async () => {
