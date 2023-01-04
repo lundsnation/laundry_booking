@@ -1,11 +1,13 @@
-import { Box, Button, Container, Grid, Paper, Typography } from "@mui/material";
-import { useUser } from '@auth0/nextjs-auth0/dist/frontend';
+import { TextField, Button, List, Grid, Paper, ListItem, Typography } from "@mui/material";
+import { useUser } from '@auth0/nextjs-auth0/client';
 import { NextPage } from "next";
 import NotLoggedIn from "../src/components/NotLoggedIn";
-import ProfileBox from "../src/components/ProfileBox";
-import ProfileBooked from "../src/components/ProfileBooked";
+import ProfileBox from "../src/components/profile/ProfileBox";
+import ProfileBooked from "../src/components/profile/ProfileBooked";
 import Header from "../src/components/Header";
 import Footer from "../src/components/Footer";
+import { LoadingButton } from "@mui/lab";
+import { useState } from "react";
 
 const img = process.env.AUTH0_BASE_URL as string + "/logotyp02.png"
 const styles = {
@@ -22,10 +24,11 @@ const styles = {
 
 const Profile: NextPage = () => {
     const { user, isLoading, error } = useUser()
+    const [loading, setLoading] = useState()
     return (
-        <Grid container rowSpacing={4}>
+        <Grid container>
 
-            <Grid item xs={12} sm={12} md={12} minHeight={100} flexGrow={1}>
+            <Grid item xs={12} minHeight={100} flexGrow={1}>
                 <Header />
             </Grid>
 
@@ -37,18 +40,42 @@ const Profile: NextPage = () => {
                         alignItems: "center",
                         display: "flex",
                     }}>
-                    <Grid container columns={2} maxWidth={"65%"} spacing={2}>
-
-                        <Grid item xs={2} md={2} sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
-                            <Typography variant="h2">NH0000</Typography>
+                    <Paper sx={{minWidth : "50%"}}>
+                        <Typography sx={{margin: "16px",mb:0}}variant="h4" >
+                            Ändra {user?.name}
+                        </Typography>
+                        <List>
+                            <ListItem>
+                            <TextField
+                                fullWidth
+                                label="E-Post"
+                                type="email"
+                                variant="outlined"
+                                margin="dense"
+                            />
+                            </ListItem>
+                            <ListItem>
+                            <TextField
+                                fullWidth
+                                label="Telefon"
+                                type="tel"
+                                variant="outlined"
+                                margin="dense"
+                            />
+                            </ListItem>
+                        </List>
+                        <Grid container justifyContent="flex-end">
+                            <Grid item>
+                                <LoadingButton color="warning" variant="outlined" >
+                                    Tillbaka
+                                </LoadingButton>
+                                <LoadingButton variant="outlined" sx={{margin: "16px"}}type="submit" >
+                                    Spara
+                                </LoadingButton>
+                            </Grid>
                         </Grid>
-                        <Grid item xs={2} md={1} sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
-                            <ProfileBox />
-                        </Grid>
-                        <Grid item xs={2} md={1} sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
-                            <ProfileBooked />
-                        </Grid>
-                    </Grid>
+                        
+                        </Paper>
                 </Paper>
             </Grid>
 

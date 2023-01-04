@@ -38,16 +38,21 @@ const EditUserDialog = (props: Props) => {
             let tempUser : UserType
             let userID : string | undefined
             let response : Response
-            console.log(newUser)
             for(let i = 0;i<selectedUsers.length;i++){
-     
-                tempUser = {...selectedUsers[i],...newUser}
+                console.log(selectedUsers[i])
+                tempUser = {...selectedUsers[i],...newUser, app_metadata:{...selectedUsers[i].app_metadata,...newUser.app_metadata}}
+                if(tempUser.name == ""){
+                    tempUser.name = selectedUsers[i].name
+                }
+                console.log(tempUser)
                 userID = selectedUsers[i].user_id
                 response = await fetch("/api/user/" + userID, {
                     method: "PATCH",
                     headers: {"Content-Type": "application/json"},
                     body: JSON.stringify(newUser)
                 })
+                console.log(response)
+                console.log(await response.json())
                 if(response.ok){
                     editedUsers.push(selectedUsers[i].name)
                 }
@@ -137,6 +142,7 @@ const EditUserDialog = (props: Props) => {
                                             disabled = {selected.length>1}
                                             margin="dense"
                                             fullWidth
+                                            defaultValue={selected.length === 1 ? getSelectedUsers()[0].user_metadata?.telephone : null}
                                             onChange={(e)=>{
                                                 setNewUser({...newUser, user_metadata : {...newUser.user_metadata, telephone: e.target.value}})
                                             }}
@@ -149,6 +155,7 @@ const EditUserDialog = (props: Props) => {
                                         <TextField
                                             margin="dense"
                                             fullWidth
+                                            defaultValue={selected.length === 1 ? getSelectedUsers()[0].email : null}
                                             disabled = {selected.length>1}
                                             onChange={(e)=>{
                                                 setNewUser({...newUser, email:e.target.value})
@@ -161,6 +168,7 @@ const EditUserDialog = (props: Props) => {
                                     <TextField
                                         margin="dense"
                                         fullWidth
+                                        defaultValue={selected.length === 1 ? getSelectedUsers()[0].app_metadata?.allowedSlots : null}
                                         type="number"
                                         onChange={(e)=>{
                                             setNewUser({...newUser,app_metadata:{...newUser.app_metadata, allowedSlots: +e.target.value}})

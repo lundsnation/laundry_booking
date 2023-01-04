@@ -9,7 +9,7 @@ import { pusherBackend } from '../../../utils/pusherAPI'
 const handler = withApiAuthRequired(async (req: NextApiRequest, res: NextApiResponse) => {
   const method: keyof ResponseFuncs = req.method as keyof ResponseFuncs
   const catcher = (error: Error) => res.status(400).json({ error })
-  const session = getSession(req, res)
+  const session = await getSession(req, res)
   const user = session?.user.name
   
   // GRAB ID FROM req.query (where next stores params)

@@ -5,15 +5,14 @@ import { Grid, Box, SxProps, TextField, AlertColor, Paper, Typography, SnackbarO
 import svLocale from 'date-fns/locale/sv';
 import BookingButtonGroup from "./BookingButtonGroup";
 import BookedTimes from "./BookedTimes";
-import { Booking } from "../../../utils/types";
-import { UserProfile } from "@auth0/nextjs-auth0";
+import { Booking,UserType } from "../../../utils/types";
 import { getDateBookings, compareDates } from "../../../utils/bookingsAPI"
 import { Snack, SnackInterface } from "../Snack"
 import { pusherClient } from '../../../utils/pusherAPI'
 
 interface Props {
     title: string;
-    user: UserProfile;
+    user: UserType;
 }
 
 
@@ -74,7 +73,7 @@ const BookingCalendar = (props: Props) => {
 
     console.log(firstRender);
     console.log("-----!!!!!!!!-_-----_____!!!")
-    
+   
 
     const timeSlots: Array<string> = ["07:00-08:30",
         "08:30-10:00",
@@ -139,7 +138,7 @@ const BookingCalendar = (props: Props) => {
             }
         }
     }
-
+    
     //get initial bookings
     useEffect(() => {
         updateBookings()
@@ -226,7 +225,9 @@ const BookingCalendar = (props: Props) => {
             </Grid>
             <Box m={2}/>
             <Grid item xs={12}>
+
                 <BookedTimes bookings={bookings} user = {user} selectedDate = {selectedDate} updateBookings={updateBookings} snackTrigger={snackTrigger}/>
+
             </Grid>
            
             

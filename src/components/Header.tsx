@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Typography, Box,  Toolbar, AppBar, Fade, Collapse } from '@mui/material';
 import Menu from '@mui/material/Menu';
 import IconButton from "@mui/material/IconButton";
-import { useUser } from '@auth0/nextjs-auth0/dist/frontend';
+import { useUser } from '@auth0/nextjs-auth0/client';
 import { AccountCircle, Scale } from '@mui/icons-material';
 import LoginButton from './LoginButton';
 import ProfileButton from './ProfileButton';

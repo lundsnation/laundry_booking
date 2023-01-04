@@ -9,7 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@auth0/nextjs-auth0": "^1.9.2",
+    "@auth0/nextjs-auth0": "^2.0.1",
     "@date-io/date-fns": "^2.16.0",
     "@emotion/react": "^11.10.5",
     "@emotion/server": "^11.10.0",
@@ -25,8 +25,9 @@
     "@types/react-dom": "18.0.9",
     "date-fns": "^2.29.3",
     "dotenv": "^16.0.3",
-    "eslint": "8.28.0",
-    "eslint-config-next": "13.0.4",
+    "eslint": "8.30.0",
+    "eslint-config-next": "13.1.1",
+    "json5": "^2.2.2",
     "mongoose": "^6.7.2",
     "next": "^13.0.5",
     "pusher": "^5.1.2",

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, forwardRef } from "react";
 import { Card,Box, Grid, Divider, Chip, AlertColor, Typography, Button, List, ListItem, SnackbarOrigin} from "@mui/material";
-import { Booking, timeFromTimeSlot, timeSlots } from "../../../utils/types";
+import { Booking, timeFromTimeSlot, timeSlots, userType } from "../../../utils/types";
 import { UserProfile } from "@auth0/nextjs-auth0";
 import DeleteIcon from '@mui/icons-material/DeleteOutlined';
 
@@ -25,6 +25,7 @@ const BookedTimes = (props: Props) => {
     let snackString = ""
     const alignment: SnackbarOrigin = {vertical: 'bottom', horizontal: 'left'}
 
+
     const getUserTimes = ()=> {
         let res;
         if(bookings){
@@ -40,7 +41,6 @@ const BookedTimes = (props: Props) => {
         return null;
     }
 
-    
     const handleCancel = async (bookedTime: Booking ) => {
         const api_url = "/api/bookings" + "/" + (bookedTime?._id);
         const date = new Date(timeFromTimeSlot(bookedTime.date, bookedTime.timeSlot))

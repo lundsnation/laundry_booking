@@ -8,7 +8,8 @@ import { timeSlots } from "../../../utils/types";
 import { UserType } from "../../../utils/types";
 
 interface Props {
-    user: UserProfile;
+    //user: UserProfile;
+    user: UserType;
     booking: Booking | null;
     selectedDate: Date;
     timeSlot: string;
@@ -38,6 +39,7 @@ const BookingButton = (props: Props) => {
             },
             body: JSON.stringify(jsonBooking)
         });
+
         //updateBookings();
         if (response.ok) {
             snackString = "Du har bokat: " + String(timeSlot)
@@ -50,7 +52,6 @@ const BookingButton = (props: Props) => {
             snackTrigger("error", snackString, snackAlignment)
         }
         setDisabled(false)
-
     }
     // Function for deleting already aquired time
     const handleCancel = async () => {
@@ -75,7 +76,6 @@ const BookingButton = (props: Props) => {
         }
     }
     // Function for showing info on booked time
-    // Behövs denna?
     const showBookedTime = async ()=>{
         
         if(!showBookingInfo){
