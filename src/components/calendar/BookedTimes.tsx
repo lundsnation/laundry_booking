@@ -1,6 +1,7 @@
 import React, { useState, useEffect, forwardRef } from "react";
-import { Card,Box, Grid, Divider, Chip, AlertColor, Typography, Button, List, ListItem} from "@mui/material";
-import { Booking, timeSlots, UserType } from "../../../utils/types";
+import { Card,Box, Grid, Divider, Chip, AlertColor, Typography, Button, List, ListItem, SnackbarOrigin} from "@mui/material";
+import { Booking, timeFromTimeSlot, timeSlots, userType } from "../../../utils/types";
+import { UserProfile } from "@auth0/nextjs-auth0";
 import DeleteIcon from '@mui/icons-material/DeleteOutlined';
 
 import  {Stack}  from "@mui/system";
@@ -8,9 +9,10 @@ import  {Stack}  from "@mui/system";
 
 interface Props {
     bookings: Array<Booking>,
-    user: UserType,
+    user: UserProfile,
+    selectedDate: Date;
     updateBookings: () => void,
-    snackTrigger: (severity: AlertColor, snackString: string) => void
+    snackTrigger: (severity: AlertColor, snackString: string, alignment: SnackbarOrigin) => void
 }
 
 
@@ -19,8 +21,10 @@ interface Props {
 
 
 const BookedTimes = (props: Props) => {
-    const {bookings, user,} = props;
+    const {bookings, user} = props;
     let snackString = ""
+    const alignment: SnackbarOrigin = {vertical: 'bottom', horizontal: 'left'}
+
 
     const getUserTimes = ()=> {
         let res;
@@ -38,17 +42,24 @@ const BookedTimes = (props: Props) => {
     }
 
     const handleCancel = async (bookedTime: Booking ) => {
-        const api_url = "/api/bookings" + "/" + (bookedTime._id);
+        const api_url = "/api/bookings" + "/" + (bookedTime?._id);
+        const date = new Date(timeFromTimeSlot(bookedTime.date, bookedTime.timeSlot))
+        const jsonBooking = { userName: (user.name as string), date: date, timeSlot: bookedTime.timeSlot, createdAt: new Date()}
         const response = await fetch(api_url, {
             method: "DELETE",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(jsonBooking)
         });
-        props.updateBookings();
+
+        //props.updateBookings();
         if (response.ok) {
             snackString = "Du har avbokat tiden"
-            props.snackTrigger("success", snackString)
+            props.snackTrigger("success", snackString, alignment)
         } else {
             snackString = "Internt fel"
-            props.snackTrigger("error", snackString)
+            props.snackTrigger("error", snackString, alignment)
         }
     }
 

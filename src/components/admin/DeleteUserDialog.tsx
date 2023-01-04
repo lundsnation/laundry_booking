@@ -1,4 +1,4 @@
-import {  Button, Typography,  Grid, Dialog, DialogActions, DialogTitle,List,ListItem,Divider, ListItemIcon, DialogContent} from "@mui/material";
+import {  Button, Typography,  Grid, Dialog, DialogActions, DialogTitle,List,ListItem,Divider, ListItemIcon, DialogContent, SnackbarOrigin} from "@mui/material";
 import { useState } from "react";
 import { UserType } from "../../../utils/types";
 import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
@@ -20,6 +20,7 @@ interface Props{
 const DeleteUserDialog = (props: Props) =>{
     const {showDeleteUserDialog,setShowDeleteUserDialog,selected,users,fetchUsers,snack,setSnack,setSelected} = props 
     const [loading, setLoading] = useState(false)
+    const alignment: SnackbarOrigin = {vertical: 'bottom', horizontal: 'left' }
     
     const handleDeleteUser = async () =>{
         setLoading(true)
@@ -41,11 +42,11 @@ const DeleteUserDialog = (props: Props) =>{
         setLoading(false);
         setShowDeleteUserDialog(false)
         if(nbrOkDeletions==selectedUsers.length){
-            setSnack({show: true, snackString: "Tog bort "+ nbrOkDeletions+" användare: " + deletedUsers as string, severity:'success'})
+            setSnack({show: true, snackString: "Tog bort "+ nbrOkDeletions+" användare: " + deletedUsers as string, severity:'success', alignment: alignment})
         }else if(nbrOkDeletions>0){
-            setSnack({show: true, snackString: "Tog bort "+ nbrOkDeletions+" användare: " + deletedUsers as string, severity:'info'})
+            setSnack({show: true, snackString: "Tog bort "+ nbrOkDeletions+" användare: " + deletedUsers as string, severity:'info', alignment: alignment})
         }else{
-            setSnack({show: true, snackString: "Borttagning misslyckad", severity:'error'})
+            setSnack({show: true, snackString: "Borttagning misslyckad", severity:'error', alignment: alignment})
         }
             setSelected([])
         }

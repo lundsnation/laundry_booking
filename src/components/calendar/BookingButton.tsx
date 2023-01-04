@@ -1,6 +1,6 @@
-import { Button, Container, AlertColor, Grid, IconButton, Typography,Box } from "@mui/material"
+import { Button, Container, AlertColor, Grid, IconButton, Typography,Box, SnackbarOrigin } from "@mui/material"
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
-
+import { UserProfile } from "@auth0/nextjs-auth0";
 import React, { useState } from "react";
 import { Booking, timeFromTimeSlot } from "../../../utils/types"
 import BookingInfo from "./BookingInfo"
@@ -8,23 +8,24 @@ import { timeSlots } from "../../../utils/types";
 import { UserType } from "../../../utils/types";
 
 interface Props {
+    //user: UserProfile;
     user: UserType;
     booking: Booking | null;
     selectedDate: Date;
     timeSlot: string;
     updateBookings: () => void;
-    snackTrigger: (severity: AlertColor, snackString: string) => void;
+    snackTrigger: (severity: AlertColor, snackString: string, alignment: SnackbarOrigin) => void;
 }
 const BookingButton = (props: Props) => {
     const [disabled, setDisabled] = useState<boolean>(false)
     const [showBookingInfo,setShowBookingInfo] = useState<boolean>(false)
     const [bookingUser, setBookingUser] = useState<UserType>({} as UserType)
     const [loadingUser,setLoadingUser] = useState(false)
-
     const { user, booking, selectedDate, timeSlot, updateBookings, snackTrigger } = props
     const bookedTimeSlot = booking != null;
-    let snackString;
     const myTimeSlot = user.name == booking?.userName ? bookedTimeSlot : null;
+    let snackString;
+    const snackAlignment: SnackbarOrigin = {vertical: 'bottom', horizontal: 'left'}
     
     // Function for booking time
     const handleBook = async () => {
@@ -38,32 +39,40 @@ const BookingButton = (props: Props) => {
             },
             body: JSON.stringify(jsonBooking)
         });
-        updateBookings();
+
+        //updateBookings();
         if (response.ok) {
             snackString = "Du har bokat: " + String(timeSlot)
-            snackTrigger("success", snackString)
+            snackTrigger("success", snackString, snackAlignment)
         } else if (response.status == 400) {
             snackString = "Du kan inte boka flera tider"
-            snackTrigger("error", snackString)
+            snackTrigger("error", snackString, snackAlignment)
         } else if (response.status == 406) {
             snackString = "Du kan inte boka tider som redan varit"
-            snackTrigger("error", snackString)
+            snackTrigger("error", snackString, snackAlignment)
         }
         setDisabled(false)
     }
     // Function for deleting already aquired time
     const handleCancel = async () => {
         const api_url = "/api/bookings" + "/" + (booking?._id);
+        const date = new Date(timeFromTimeSlot(selectedDate, timeSlot))
+        const jsonBooking = { userName: (user.name as string), date: date, timeSlot: timeSlot, createdAt: new Date()}
         const response = await fetch(api_url, {
             method: "DELETE",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(jsonBooking)
         });
-        updateBookings();
+
+        //updateBookings();
         if (response.ok) {
             snackString = "Du har avbokat tiden"
-            snackTrigger("success", snackString)
+            snackTrigger("success", snackString, snackAlignment)
         } else {
             snackString = "Internt fel"
-            snackTrigger("error", snackString)
+            snackTrigger("error", snackString, snackAlignment)
         }
     }
     // Function for showing info on booked time

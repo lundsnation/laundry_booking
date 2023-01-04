@@ -4,6 +4,8 @@ import { logRequest } from "../../../utils/backendLogger"
 import { ResponseFuncs } from "../../../utils/types"
 import Booking from '../../../models/Booking'
 import { withApiAuthRequired, getSession } from "@auth0/nextjs-auth0"
+import { getUsers } from '../../../utils/getAuth0Users'
+import { pusherBackend } from "../../../utils/pusherAPI"
 
 function getMonday(d : Date, weeksAhead : number) {
   d = new Date(d);
@@ -27,7 +29,9 @@ const handler = withApiAuthRequired(async (req: NextApiRequest, res: NextApiResp
     },
 
     POST: async (req: NextApiRequest, res: NextApiResponse) => {
-      const { date, timeSlot, createdAt } = req.body
+      const userFinder = new getUsers()
+      const { date, timeSlot, userName, createdAt } = req.body
+
       // Initial  check if booking-request is in the past => invalid
       if (new Date(date).getTime() < Date.now()) {
         return res.status(406).json({ error: "You cant book slots that are in the past" })
@@ -44,8 +48,17 @@ const handler = withApiAuthRequired(async (req: NextApiRequest, res: NextApiResp
       // const slotCheck = await Booking.find({ userName: user, date: { $gte: minDate,$lt: maxDate} }).catch(catcher)
       const slotCheck = await Booking.find({userName: user?.name, date: {$gte: new Date()}})
       if (!slotCheck || slotCheck.length < allowedSlots) {
+        const json = await Booking.create(req.body).catch(catcher)
+        console.log("TRIGGER RUNNING")
+        await pusherBackend.trigger('bookingUpdates', 'bookingUpdate', {
+          userName,
+          date,
+          timeSlot,
+          request: 'post'
+        })
+
+        return res.status(201).json(json)
         logRequest('POST');
-        return res.status(201).json(await Booking.create(req.body).catch(catcher))
       }
       return res.status(400).json({ error: "User has max number of slots booked" })
 

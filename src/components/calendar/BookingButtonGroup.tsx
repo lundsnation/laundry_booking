@@ -1,7 +1,8 @@
 import BookingButton from "./BookingButton";
 import ButtonGroup from '@mui/material/ButtonGroup';
+
+import { AlertColor, Container, SnackbarOrigin } from "@mui/material"
 import { Booking,UserType } from "../../../utils/types"
-import { AlertColor, Container } from "@mui/material"
 import { timeSlotToBooking } from "../../../utils/bookingsAPI";
 
 interface Props {
@@ -10,7 +11,7 @@ interface Props {
     selectedDate: Date;
     user: UserType;
     updateBookings: () => void;
-    snackTrigger: (severity: AlertColor, snackString: string) => void;
+    snackTrigger: (severity: AlertColor, snackString: string, alignment: SnackbarOrigin) => void;
 }
 
 const BookingButtonGroup = (props: Props) => {

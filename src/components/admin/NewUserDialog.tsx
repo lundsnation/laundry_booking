@@ -1,4 +1,4 @@
-import {  Button, Grid, Dialog, DialogActions, DialogTitle,List,ListItem,Divider, TextField,MenuItem} from "@mui/material";
+import {  Button, Grid, Dialog, DialogActions, DialogTitle,List,ListItem,Divider, TextField,MenuItem, SnackbarOrigin} from "@mui/material";
 import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import { UserType } from "../../../utils/types";
 import AddIcon from '@mui/icons-material/Add';
@@ -19,6 +19,8 @@ const NewUserDialog = (props: Props) => {
     const [newUserApt, setNewUserApt] = useState("")
     const [newUserBulding, setNewUserBuilding] = useState("")
     const [wait, setWait] = useState(false);
+    const alignment: SnackbarOrigin = {vertical: 'bottom', horizontal: 'left' }
+
 
     const handleAddUser = async (event : FormEvent) =>{
         event.preventDefault();
@@ -38,7 +40,7 @@ const NewUserDialog = (props: Props) => {
         if(response.ok){
             const test = await response.json()
             console.log(test)
-            setSnack({show: true, snackString : "Skapade "+ newUser.name, severity :  'success'})
+            setSnack({show: true, snackString : "Skapade "+ newUser.name, severity :  'success', alignment: alignment})
             setNewUser({} as UserType)
             setNewUserBuilding("")
             setNewUserApt("")
@@ -46,7 +48,7 @@ const NewUserDialog = (props: Props) => {
             fetchUsers()
             return
         }
-        setSnack({show: true, snackString :"Det gick inte att skapa användaren", severity : "error"})
+        setSnack({show: true, snackString :"Det gick inte att skapa användaren", severity : "error", alignment: alignment})
     }
 
     // Updates newUser object whenever newUserApt or newUserBuilding changes

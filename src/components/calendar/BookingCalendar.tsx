@@ -1,13 +1,14 @@
 import { StaticDatePicker, LocalizationProvider, PickersDay } from '@mui/x-date-pickers';
 import React, { useState, useEffect } from "react";
 import AdapterDateFns from '@date-io/date-fns'
-import { Grid, Box, SxProps, TextField, AlertColor, Paper, Typography } from "@mui/material";
+import { Grid, Box, SxProps, TextField, AlertColor, Paper, Typography, SnackbarOrigin } from "@mui/material";
 import svLocale from 'date-fns/locale/sv';
 import BookingButtonGroup from "./BookingButtonGroup";
 import BookedTimes from "./BookedTimes";
 import { Booking,UserType } from "../../../utils/types";
 import { getDateBookings, compareDates } from "../../../utils/bookingsAPI"
-import { Snack, SnackInterface } from "../../components/Snack"
+import { Snack, SnackInterface } from "../Snack"
+import { pusherClient } from '../../../utils/pusherAPI'
 
 interface Props {
     title: string;
@@ -16,11 +17,63 @@ interface Props {
 
 
 const BookingCalendar = (props: Props) => {
+    const [firstRender, setFirstRender] = useState(true);
     const [selectedDate, setSelectedDate] = useState<Date>(new Date());
     const [bookings, setBookings] = useState<Array<Booking>>([]);
-    const [snack, setSnack] = useState<SnackInterface>({ show: false, snackString: "", severity: "success" })
+    const [snack, setSnack] = useState<SnackInterface>({ show: false, snackString: "", severity: "success", alignment: {vertical: "bottom", horizontal: "left"} })
+    const [realtimeSnack, setRealtimeSnack] = useState<SnackInterface>({ show: false, snackString: "", severity: "success", alignment: {vertical: "bottom", horizontal: "right"} })
     const { user } = props;
+    
+    const updateBookings = async () => {
+        //fetch bookings and update
+        const res = await fetch("/api/bookings")
+        const resBooking: Array<Booking> = await res.json();
+        const bookings: Array<Booking> = [];
+        resBooking.forEach(booking => {
+            const tmpBooking = {
+                _id: booking._id,
+                userName: booking.userName,
+                date: new Date(booking.date),
+                timeSlot: booking.timeSlot,
+            }
+            bookings.push(tmpBooking);
+        });
+        setBookings(bookings);
+    }
 
+    if(firstRender) {
+        const pusherChannel = pusherClient .subscribe("bookingUpdates");
+        pusherChannel.bind('bookingUpdate', (data: any) => {
+            updateBookings();
+            const {userName, date, timeSlot } = data
+            const isPostRequest = data.request == 'post'
+            const tmpDate = new Date(date);
+            const dateString = tmpDate.getFullYear() + "/" + (tmpDate.getMonth()+1) + "/" + tmpDate.getDay()
+            console.log(dateString);
+            const snackString = isPostRequest ? userName + ' bokade ' + dateString + ', ' + timeSlot  : userName + ' avbokade ' + dateString + ', ' + timeSlot
+
+            
+            const severity = "info"
+            //const alignment: SnackbarOrigin = {vertical: 'bottom', horizontal: 'right'}
+            const myBooking = userName == user.name
+            console.log("this should print every event")
+
+            console.log("window.innerWidt: " + window.innerWidth)
+
+            const alignment: SnackbarOrigin = window.innerWidth > 600 ? {vertical: 'bottom', horizontal: 'right'} : {vertical: 'top', horizontal: 'right'}
+
+            !myBooking && setRealtimeSnack({ show: true, snackString: snackString, severity: severity, alignment: alignment })
+    
+        })
+
+        console.log("HOPEFULLY THIS ONLY EXECUTES ONCE ")
+
+        setFirstRender(false);
+    }
+
+    console.log(firstRender);
+    console.log("-----!!!!!!!!-_-----_____!!!")
+   
 
     const timeSlots: Array<string> = ["07:00-08:30",
         "08:30-10:00",
@@ -85,35 +138,24 @@ const BookingCalendar = (props: Props) => {
             }
         }
     }
-
-    const updateBookings = async () => {
-        //fetch bookings and update
-        const res = await fetch("/api/bookings")
-        const resBooking: Array<Booking> = await res.json();
-        const bookings: Array<Booking> = [];
-        resBooking.forEach(booking => {
-            const tmpBooking = {
-                _id: booking._id,
-                userName: booking.userName,
-                date: new Date(booking.date),
-                timeSlot: booking.timeSlot,
-            }
-            bookings.push(tmpBooking);
-        });
-        setBookings(bookings);
-    }
+    
     //get initial bookings
     useEffect(() => {
         updateBookings()
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    const snackTrigger = (severity: AlertColor, snackString: string) => {
-        setSnack({ show: true, snackString: snackString, severity: severity })
+    const snackTrigger = (severity: AlertColor, snackString: string, alignment: SnackbarOrigin) => {
+        setSnack({ show: true, snackString: snackString, severity: severity, alignment: alignment })
+        
     }
 
     const resetSnack = () => {
-        setSnack({ show: false, snackString: snack.snackString, severity: snack.severity })
+        setSnack({ show: false, snackString: snack.snackString, severity: snack.severity, alignment: snack.alignment })
+    }
+
+    const resetRealtimeSnack = () => {
+        setRealtimeSnack({ show: false, snackString: realtimeSnack.snackString, severity: realtimeSnack.severity, alignment: realtimeSnack.alignment })
     }
 
     const bookingButtonGroup = (
@@ -137,6 +179,7 @@ const BookingCalendar = (props: Props) => {
 
     return (
         <div>
+            <Snack state={realtimeSnack} handleClose={resetRealtimeSnack} />
             <Snack state={snack} handleClose={resetSnack} />
             <Grid container spacing={2}>
                 <Grid item xs={12} sm={8}>
@@ -153,7 +196,7 @@ const BookingCalendar = (props: Props) => {
                                 toolbarTitle={"Valt Datum: "}
                                 onChange={async (date) => {
                                     date && setSelectedDate(date);
-                                    updateBookings();
+                                    //updateBookings();
                                 }
                                 }
                                 renderInput={(params) => <TextField {...params} />}
@@ -182,7 +225,9 @@ const BookingCalendar = (props: Props) => {
             </Grid>
             <Box m={2}/>
             <Grid item xs={12}>
-                <BookedTimes bookings={bookings} user = {user} updateBookings={updateBookings} snackTrigger={snackTrigger}/>
+
+                <BookedTimes bookings={bookings} user = {user} selectedDate = {selectedDate} updateBookings={updateBookings} snackTrigger={snackTrigger}/>
+
             </Grid>
            
             

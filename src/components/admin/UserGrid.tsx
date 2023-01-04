@@ -1,4 +1,5 @@
-import {IconButton,InputAdornment, Skeleton, Button, Container,  Paper, Grid,  TextField,MenuItem,AlertColor, CircularProgress, ButtonGroup, Typography} from "@mui/material";
+import { Skeleton, Button, Container,  Paper, Grid,  TextField,MenuItem,AlertColor, CircularProgress, ButtonGroup, SnackbarOrigin} from "@mui/material";
+import {IconButton,InputAdornment, Skeleton, Button, Container,  Paper, Grid,  TextField,MenuItem,AlertColor, CircularProgress, ButtonGroup, Typography, SnackbarOrigin} from "@mui/material";
 import {Table, TableBody, TableHead, TableRow,TableContainer,TableCell, TablePagination} from "@mui/material"
 import { useUser } from '@auth0/nextjs-auth0/client';
 import { Snack, SnackInterface } from "../Snack"
@@ -24,11 +25,10 @@ const UserGrid = () => {
     const [showAddDialog,setShowAddDialog] = useState(false)
     const [loadingData,setLoadingData] = useState(false)
     const [users, setUsers] = useState<Array<UserType>>([])
-    const [snack,setSnack] = useState<SnackInterface>({show:false,snackString:"",severity:"info"})
+    const alignment: SnackbarOrigin = {vertical: 'bottom', horizontal: 'left' }
+    const [snack, setSnack] = useState<SnackInterface>({show:false,snackString:"",severity:"info", alignment: alignment})
     const [searchString, setSearchString] = useState("")
     const [searchedUsers, setSearchedUsers] = useState<Array<UserType>>([])
-
-
     const fetchUsers= async () => {
         setLoadingData(true)
         const res = await fetch("/api/user")
