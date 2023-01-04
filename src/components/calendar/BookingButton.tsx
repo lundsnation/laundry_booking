@@ -1,6 +1,5 @@
 import { Button, Container, AlertColor, Grid, IconButton, Typography,Box, SnackbarOrigin } from "@mui/material"
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
-import { UserProfile } from "@auth0/nextjs-auth0";
 import React, { useState } from "react";
 import { Booking, timeFromTimeSlot } from "../../../utils/types"
 import BookingInfo from "./BookingInfo"
