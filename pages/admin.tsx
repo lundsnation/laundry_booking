@@ -20,12 +20,7 @@ const Admin = () => {
             <Grid item xs={12}>
                 <Box>
                     {user.name == "admin" ?  
-                    <Paper>
-                        
-                        <Typography variant="h5" sx={{paddingLeft:5}}>Användare:</Typography>
                             <UserGrid/>
-                        </Paper>
-                        
                         :<NotAuthorized/>
                     }</Box></Grid>:<NotLoggedIn />
                 

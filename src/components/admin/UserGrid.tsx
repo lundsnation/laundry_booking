@@ -1,8 +1,8 @@
-import { Skeleton, Button, Container,  Paper, Grid,  TextField,MenuItem,AlertColor, CircularProgress, ButtonGroup} from "@mui/material";
+import {IconButton,InputAdornment, Skeleton, Button, Container,  Paper, Grid,  TextField,MenuItem,AlertColor, CircularProgress, ButtonGroup, Typography} from "@mui/material";
 import {Table, TableBody, TableHead, TableRow,TableContainer,TableCell, TablePagination} from "@mui/material"
 import { useUser } from '@auth0/nextjs-auth0/client';
 import { Snack, SnackInterface } from "../Snack"
-import { useEffect, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { UserType } from "../../../utils/types";
 import {Checkbox} from '@mui/material';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
@@ -11,13 +11,10 @@ import NewUserDialog from "./NewUserDialog";
 import EditUserDialog from "./EditUserDialog";
 import DeleteIcon from '@mui/icons-material/DeleteOutlined';
 import DeleteUserDialog from "./DeleteUserDialog";
-
-interface Props {
-
-}
+import SearchIcon from '@mui/icons-material/Search';
 
 
-const UserGrid = (props: Props) => {
+const UserGrid = () => {
     const { user, isLoading, error } = useUser()
     const [selected, setSelected] = useState<readonly string[]>([]);
     const [page, setPage] = useState(0);
@@ -28,7 +25,10 @@ const UserGrid = (props: Props) => {
     const [loadingData,setLoadingData] = useState(false)
     const [users, setUsers] = useState<Array<UserType>>([])
     const [snack,setSnack] = useState<SnackInterface>({show:false,snackString:"",severity:"info"})
-    
+    const [searchString, setSearchString] = useState("")
+    const [searchedUsers, setSearchedUsers] = useState<Array<UserType>>([])
+
+
     const fetchUsers= async () => {
         setLoadingData(true)
         const res = await fetch("/api/user")
@@ -86,6 +86,13 @@ const UserGrid = (props: Props) => {
         setSelected(newSelected);
       }
 
+      // SEARCH
+      useEffect(()=>{
+        console.log("searchTriggered")
+        let searchRes = users.filter(user => user.name.includes(searchString))
+        setSearchedUsers(searchRes)
+    },[searchString])
+
       const handleChangePage = (event: unknown, newPage: number) => {
         setPage(newPage);
       }
@@ -98,8 +105,43 @@ const UserGrid = (props: Props) => {
 
       const isSelected = (name: string) => selected.indexOf(name) !== -1;
 
+      const getContent = ()=>{
+        let display : Array<UserType>  = searchString != "" ? searchedUsers : users
+        return ( 
+            display.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((userEntry,index) =>{ 
+                    const isItemSelected = isSelected(userEntry.name)
+                    const labelId = `enhanced-table-checkbox-${index}`;
+                        return (
+                            <TableRow
+                                hover
+                                role="checkbox"
+                                onClick={(event) => handleClick(event, userEntry.name)}
+                                key={userEntry.name}
+                                tabIndex={-1}
+                                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                                selected={isItemSelected}
+                            ><TableCell padding="checkbox">
+                                    <Checkbox color="primary" checked={isItemSelected} inputProps={{'aria-labelledby': labelId,}}/>
+                            </TableCell>
+                                <TableCell component="th" scope="row" id={labelId} padding="none">
+                                {userEntry.name}
+                                </TableCell>
+                                <TableCell align="right">{userEntry.email}</TableCell>
+                                <TableCell align="right">{userEntry.app_metadata?.allowedSlots}</TableCell>
+                                <TableCell align="right">{userEntry.user_metadata?.telephone}</TableCell>
+                            </TableRow> 
+                                )
+                            }
+                        )
+                    )
+      }
+
     return(
-        <Container>
+        <Container disableGutters>
+            <Paper elevation={0} variant={"outlined"}>
+                <Grid xs={12}>
+                    <Typography variant="h5" sx={{m:2}}> Redigera Användare</Typography>
+                </Grid>
             <Snack handleClose={()=>{setSnack(snack =>({...snack,show:false}))}} state={snack}></Snack>
             <NewUserDialog 
                 showAddDialog={showAddDialog} 
@@ -140,47 +182,46 @@ const UserGrid = (props: Props) => {
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                    {users.length>0||!loadingData ? users.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                    .map((userEntry,index) =>{ 
-                        const isItemSelected = isSelected(userEntry.name)
-                        const labelId = `enhanced-table-checkbox-${index}`;
-                        return (
-                    <TableRow
-                        hover
-                        role="checkbox"
-                        onClick={(event) => handleClick(event, userEntry.name)}
-                        key={userEntry.name}
-                        tabIndex={-1}
-                        sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                        selected={isItemSelected}
-                    ><TableCell padding="checkbox">
-                            <Checkbox color="primary" checked={isItemSelected} inputProps={{'aria-labelledby': labelId,}}/>
-                    </TableCell>
-                        <TableCell component="th" scope="row" id={labelId} padding="none">
-                        {userEntry.name}
-                        </TableCell>
-                        <TableCell align="right">{userEntry.email}</TableCell>
-                        <TableCell align="right">{userEntry.app_metadata?.allowedSlots}</TableCell>
-                        <TableCell align="right">{userEntry.user_metadata?.telephone}</TableCell>
-                    </TableRow>
-                    )}
-                    ): getTableContentSkelton()
-                    }
+                    {users.length>0||!loadingData ? getContent():getTableContentSkelton()}
                     {emptyRows > 0 && (
                         <TableRow
-                        style={{
-                            height: 33 * emptyRows,
-                        }}
+                            style={{
+                                height: 33 * emptyRows,
+                             }}
                         >
-                        <TableCell colSpan={6} />
+                            <TableCell colSpan={6} />
                         </TableRow>
                     )}
                 </TableBody>
                 </Table>
             </TableContainer>
-            <Grid container alignItems='center' justifyContent='flex-end'>
-                <Grid item>
-                    <ButtonGroup variant="outlined">
+            <Grid container alignItems='center' justifyContent="stretch">
+                
+                <Grid item xs={6} md={3}>
+                    <TextField
+                        fullWidth
+                        size="small"
+                        sx={{mt:"4%"}}
+                        variant="outlined"
+                        label="Sök efte användare"
+                        onChange={(e)=>{
+                            console.log(e.target.value)
+                            setSearchString(e.target.value)
+                        }}
+                        InputProps={{
+                            endAdornment: (
+                            <InputAdornment position="end">
+                                <IconButton>
+                                    <SearchIcon />
+                                </IconButton>
+                            </InputAdornment>
+                            )
+                        }}
+                        />
+                </Grid>
+                <Grid item xs={3}>
+
+                    <ButtonGroup size ="large" variant="outlined" sx={{height:"105%"}}>
                         <Button fullWidth onClick={() =>{setShowDeleteUserDialog(true)}} disabled = {selected.length == 0} size= 'small' color="error" ><DeleteIcon/> Ta Bort</Button>  
                         <Button fullWidth onClick={() =>{setShowEditDialog(true)}} disabled = {selected.length == 0} size= 'small'  color="warning" ><EditOutlinedIcon/> Ändra</Button> 
                         <Button fullWidth onClick={()=>{setShowAddDialog(true)}} size = 'small'  color="primary"><PersonAddOutlinedIcon/> Lägg Till</Button>  
@@ -191,7 +232,7 @@ const UserGrid = (props: Props) => {
                     
 
                
-                <Grid item xs={6}>
+                <Grid item xs={12}md={6}>
                     <TablePagination
                         rowsPerPageOptions={[10,25,50]}
                         component="div"
@@ -205,6 +246,7 @@ const UserGrid = (props: Props) => {
                 </Grid>
 
             </Grid>
+            </Paper>
             </Container>
     )
 }
