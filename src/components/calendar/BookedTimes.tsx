@@ -21,7 +21,7 @@ interface Props {
 
 const BookedTimes = (props: Props) => {
     const {bookings, user} = props;
-    let snackString = ""
+    let snackString;
     const alignment: SnackbarOrigin = {vertical: 'bottom', horizontal: 'left'}
 
 
@@ -52,12 +52,12 @@ const BookedTimes = (props: Props) => {
             body: JSON.stringify(jsonBooking)
         });
 
-        //props.updateBookings();
         if (response.ok) {
             snackString = "Du har avbokat tiden"
             props.snackTrigger("success", snackString, alignment)
         } else {
-            snackString = "Internt fel"
+            let responseContent = await response.json()
+            snackString = responseContent.error
             props.snackTrigger("error", snackString, alignment)
         }
     }
