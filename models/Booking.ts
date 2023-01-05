@@ -12,6 +12,6 @@ const Booking = mongoose.models.Booking || mongoose.model("Booking", BookingSche
 
 //print header for logger here
 //console.log("RUNNING ADDEVENTLOGGING");
-addEventLogging();
+//addEventLogging();
 
 export default Booking;

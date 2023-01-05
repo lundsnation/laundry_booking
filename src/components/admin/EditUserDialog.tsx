@@ -1,4 +1,4 @@
-import {  Button, Container, Typography, Paper, Grid, Dialog, DialogActions, DialogTitle,List,ListItem,Divider, TextField,MenuItem,AlertColor} from "@mui/material";
+import {  Button, Container, Typography, Paper, Grid, Dialog, DialogActions, DialogTitle,List,ListItem,Divider, TextField,MenuItem,AlertColor, SnackbarOrigin} from "@mui/material";
 import { FormEvent, useEffect, useState } from "react";
 import { UserType } from "../../../utils/types";
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
@@ -23,6 +23,7 @@ const EditUserDialog = (props: Props) => {
     const [newUserApt, setNewUserApt] = useState("") 
     const [newUserBulding, setNewUserBuilding] = useState("")
     const [wait, setWait] = useState(false);
+    const alignment: SnackbarOrigin = {vertical: 'bottom', horizontal: 'left' }
 
     useEffect(()=>{
         setNewUser({...newUser, name: newUserBulding + newUserApt as string})
@@ -37,16 +38,21 @@ const EditUserDialog = (props: Props) => {
             let tempUser : UserType
             let userID : string | undefined
             let response : Response
-            console.log(newUser)
             for(let i = 0;i<selectedUsers.length;i++){
-     
-                tempUser = {...selectedUsers[i],...newUser}
+                console.log(selectedUsers[i])
+                tempUser = {...selectedUsers[i],...newUser, app_metadata:{...selectedUsers[i].app_metadata,...newUser.app_metadata}}
+                if(tempUser.name == ""){
+                    tempUser.name = selectedUsers[i].name
+                }
+                console.log(tempUser)
                 userID = selectedUsers[i].user_id
                 response = await fetch("/api/user/" + userID, {
                     method: "PATCH",
                     headers: {"Content-Type": "application/json"},
                     body: JSON.stringify(newUser)
                 })
+                console.log(response)
+                console.log(await response.json())
                 if(response.ok){
                     editedUsers.push(selectedUsers[i].name)
                 }
@@ -55,11 +61,11 @@ const EditUserDialog = (props: Props) => {
         fetchUsers()
         setWait(false);
         if(editedUsers.length==selectedUsers.length){
-            setSnack({show: true, snackString: "Ändrade "+ editedUsers.length+" användare: " + editedUsers as string, severity:'success'})
+            setSnack({show: true, snackString: "Ändrade "+ editedUsers.length+" användare: " + editedUsers as string, severity:'success', alignment: alignment})
         }else if(editedUsers.length>0){
-            setSnack({show: true, snackString: "Ändrade "+ editedUsers.length+" användare: " + editedUsers as string, severity:'info'})
+            setSnack({show: true, snackString: "Ändrade "+ editedUsers.length+" användare: " + editedUsers as string, severity:'info', alignment: alignment})
         }else{
-            setSnack({show: true, snackString: "Borttagning misslyckad", severity:'error'})
+            setSnack({show: true, snackString: "Borttagning misslyckad", severity:'error', alignment: alignment})
         }
         setSelected([])
         setNewUser({} as UserType)
@@ -136,6 +142,7 @@ const EditUserDialog = (props: Props) => {
                                             disabled = {selected.length>1}
                                             margin="dense"
                                             fullWidth
+                                            defaultValue={selected.length === 1 ? getSelectedUsers()[0].user_metadata?.telephone : null}
                                             onChange={(e)=>{
                                                 setNewUser({...newUser, user_metadata : {...newUser.user_metadata, telephone: e.target.value}})
                                             }}
@@ -148,6 +155,7 @@ const EditUserDialog = (props: Props) => {
                                         <TextField
                                             margin="dense"
                                             fullWidth
+                                            defaultValue={selected.length === 1 ? getSelectedUsers()[0].email : null}
                                             disabled = {selected.length>1}
                                             onChange={(e)=>{
                                                 setNewUser({...newUser, email:e.target.value})
@@ -160,6 +168,7 @@ const EditUserDialog = (props: Props) => {
                                     <TextField
                                         margin="dense"
                                         fullWidth
+                                        defaultValue={selected.length === 1 ? getSelectedUsers()[0].app_metadata?.allowedSlots : null}
                                         type="number"
                                         onChange={(e)=>{
                                             setNewUser({...newUser,app_metadata:{...newUser.app_metadata, allowedSlots: +e.target.value}})

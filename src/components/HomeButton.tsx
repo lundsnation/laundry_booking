@@ -1,5 +1,5 @@
 import { Container, Typography, Box, Button } from '@mui/material';
-import { useUser } from '@auth0/nextjs-auth0/dist/frontend';
+import { useUser } from '@auth0/nextjs-auth0/client';
 
 const HomeButton = () => {
     const { user, isLoading, error } = useUser()
