@@ -30,12 +30,7 @@ const BookingCalendar = (props: Props) => {
         const resBooking: Array<Booking> = await res.json();
         const bookings: Array<Booking> = [];
         resBooking.forEach(booking => {
-            const tmpBooking = {
-                _id: booking._id,
-                userName: booking.userName,
-                date: new Date(booking.date),
-                timeSlot: booking.timeSlot,
-            }
+            const tmpBooking = {...booking, date:new Date(booking.date)}
             bookings.push(tmpBooking);
         });
         setBookings(bookings);
