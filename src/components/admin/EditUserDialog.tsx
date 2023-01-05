@@ -39,7 +39,6 @@ const EditUserDialog = (props: Props) => {
             let userID : string | undefined
             let response : Response
             for(let i = 0;i<selectedUsers.length;i++){
-                console.log(selectedUsers[i])
                 tempUser = {...selectedUsers[i],...newUser, app_metadata:{...selectedUsers[i].app_metadata,...newUser.app_metadata}}
                 if(tempUser.name == ""){
                     tempUser.name = selectedUsers[i].name
@@ -65,7 +64,7 @@ const EditUserDialog = (props: Props) => {
         }else if(editedUsers.length>0){
             setSnack({show: true, snackString: "Ändrade "+ editedUsers.length+" användare: " + editedUsers as string, severity:'info', alignment: alignment})
         }else{
-            setSnack({show: true, snackString: "Borttagning misslyckad", severity:'error', alignment: alignment})
+            setSnack({show: true, snackString: "Ändring misslyckad", severity:'error', alignment: alignment})
         }
         setSelected([])
         setNewUser({} as UserType)

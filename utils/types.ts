@@ -71,11 +71,20 @@ const convTimes: Array<number> = [25200000,
   // Error messages
 export const enum ERROR_MSG {
   // General error
-  GENERAL = "Internt fel, Ladda om sidan",
+  GENERAL = "Internt fel",
   // User tries to exceed allowedSlots
   TOOMANYSLOTS = "Max antal slottar bokade",
-  // Time has been booked by someone else
-  ALREADYBOOKED = "Tidsslot redan bokad, Ladda om sidan"
+  // User tries to book slot in the past
+  SLOTINPAST = "Du kan inte boka en tid som passerat",
+  // No response for this request
+  NOAPIRESPONSE = "Felaktigt anrop",
+  // User tried to delete booking that doesn't exist
+  NOBOOKING = "Bokningen existerar ej",
+  // User is not authorized
+  NOTAUTHORIZED = "Du är ej behörig",
+  // Error recieved from Auth0 
+  AUTH0RESPONSEERROR = "Kunde inte updatera användaren"
+
 }
 
   

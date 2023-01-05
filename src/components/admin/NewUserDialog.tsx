@@ -1,6 +1,6 @@
 import {  Button, Grid, Dialog, DialogActions, DialogTitle,List,ListItem,Divider, TextField,MenuItem, SnackbarOrigin} from "@mui/material";
 import { ChangeEvent, FormEvent, useEffect, useState } from "react";
-import { UserType } from "../../../utils/types";
+import { ERROR_MSG, UserType } from "../../../utils/types";
 import AddIcon from '@mui/icons-material/Add';
 import { SnackInterface } from "../Snack";
 import { LoadingButton } from "@mui/lab";
@@ -48,7 +48,7 @@ const NewUserDialog = (props: Props) => {
             fetchUsers()
             return
         }
-        setSnack({show: true, snackString :"Det gick inte att skapa användaren", severity : "error", alignment: alignment})
+        setSnack({show: true, snackString :ERROR_MSG.AUTH0RESPONSEERROR, severity : "error", alignment: alignment})
     }
 
     // Updates newUser object whenever newUserApt or newUserBuilding changes
