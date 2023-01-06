@@ -12,6 +12,7 @@ import Image from "next/image"
 import {Fab} from "@mui/material"
 import { Spin as Hamburger } from 'hamburger-react'
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
+import { useRouter } from 'next/router';
 
 const Header = () => {
     const home = process.env.AUTH0_BASE_URL
@@ -25,6 +26,7 @@ const Header = () => {
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setAuth(event.target.checked);
     };
+    const router = useRouter()
 
     const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorEl(event.currentTarget);
@@ -38,8 +40,8 @@ const Header = () => {
 
 
     return (
-        <div style={{paddingRight:0}}>
-        <Box sx={{ alignItems: "top", height:80,paddingRight:0}}>
+        <div >
+        <Box sx={{ alignItems: "top", height:80}}>
             <AppBar position="sticky" color="primary">
                 <Toolbar>
                     <IconButton
@@ -48,24 +50,19 @@ const Header = () => {
                         color="inherit"
                         aria-label="menu"
                         sx={{ mr: 2 }}
-                        href="/"
+                        onClick={()=>{router.push("/")}}
                     >   
                             <Image alt="header_button" width={HEADER_IMAGE_SIZE} height={HEADER_IMAGE_SIZE} src={HEADER_IMAGE_PATH}/>
                         
                     </IconButton>
 
-                    {user ?
-                        <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+                        <Typography variant="h6"  onClick={()=>{router.push("/")}} component="div" sx={{ flexGrow: 1 }}>
                             Tvättbokning NH&GH
                         </Typography>
 
-                        :
-                        <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-                            Du är utloggad
-                        </Typography>
-                    }
-                     {user?.name=="admin" && <Fab variant="extended" color="secondary" aria-label="add" href="/admin">
-                    <AdminPanelSettingsIcon/>
+
+                     {user?.name=="admin" && <Fab variant="extended" color="secondary" aria-label="add"  onClick={()=>{router.push("/admin")}}>
+                    <AdminPanelSettingsIcon />
                         <Typography sx={{display : {xs : "none", sm:"block"}}}>Admin</Typography>
                     </Fab>}
                     {auth && (
