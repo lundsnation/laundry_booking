@@ -39,16 +39,20 @@ const EditUserDialog = (props: Props) => {
             let userID : string | undefined
             let response : Response
             for(let i = 0;i<selectedUsers.length;i++){
-                tempUser = {...selectedUsers[i],...newUser, app_metadata:{...selectedUsers[i].app_metadata,...newUser.app_metadata}}
+                tempUser = {...newUser, app_metadata:{...selectedUsers[i].app_metadata,...newUser.app_metadata}}
                 if(tempUser.name == ""){
                     tempUser.name = selectedUsers[i].name
+                }
+                // If e-mail has changed, set acceptedTerms = false
+                if(tempUser.email!=selectedUsers[i].email){
+                    tempUser = {...tempUser,app_metadata:{...tempUser.app_metadata, acceptedTerms : false}}
                 }
                 console.log(tempUser)
                 userID = selectedUsers[i].user_id
                 response = await fetch("/api/user/" + userID, {
                     method: "PATCH",
                     headers: {"Content-Type": "application/json"},
-                    body: JSON.stringify(newUser)
+                    body: JSON.stringify(tempUser)
                 })
                 console.log(response)
                 console.log(await response.json())
