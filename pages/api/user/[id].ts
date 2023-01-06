@@ -23,9 +23,7 @@ const handler = withApiAuthRequired(async (req: NextApiRequest, res: NextApiResp
       // Allows partial modification of data if admin or users own account
       if(userSession?.user.app_metadata.roles.indexOf("admin")>-1||userSession?.user.id == id){
         const modification = req.body
-        console.log(modification)
         const result = await userFetcher.modifyUser(modification, id).catch(catcher)
-        console.log(await result?.json())
         if(result?.ok){
           res.status(200).json(result)
           return

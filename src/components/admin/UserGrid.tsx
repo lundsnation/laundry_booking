@@ -194,13 +194,12 @@ const UserGrid = () => {
                 </TableBody>
                 </Table>
             </TableContainer>
-            <Grid container alignItems='center' justifyContent="stretch">
+            <Grid container alignItems='flex-end' justifyContent="stretch">
                 
-                <Grid item xs={6} md={3}>
+                <Grid item xs={12} sm={6} md ={3}>
                     <TextField
                         fullWidth
                         size="small"
-                        sx={{mt:"4%"}}
                         variant="outlined"
                         label="Sök efte användare"
                         onChange={(e)=>{
@@ -218,7 +217,7 @@ const UserGrid = () => {
                         }}
                         />
                 </Grid>
-                <Grid item xs={3}>
+                <Grid item xs={12} sm={6} md ={3}>
 
                     <ButtonGroup size ="large" variant="outlined" sx={{height:"105%"}}>
                         <Button fullWidth onClick={() =>{setShowDeleteUserDialog(true)}} disabled = {selected.length == 0} size= 'small' color="error" ><DeleteIcon/> Ta Bort</Button>  
@@ -231,7 +230,7 @@ const UserGrid = () => {
                     
 
                
-                <Grid item xs={12}md={6}>
+                <Grid item xs={12} sm={12} md={6}>
                     <TablePagination
                         rowsPerPageOptions={[10,25,50]}
                         component="div"

@@ -57,7 +57,8 @@ export class getUsers {
             method: 'POST',
             url: "https://lundsnation.eu.auth0.com/api/v2/users",
             headers: { authorization: 'Bearer ' + token, 'content-type': 'application/json'},
-            body: `{"name": "${user.name}", "email": "${user.email}", "user_metadata": { "telephone": "${user.user_metadata?.telephone}"}, "app_metadata": { "acceptedTerms": ${user.app_metadata?.acceptedTerms} , "allowedSlots": ${user.app_metadata?.allowedSlots} , "roles": ["${user.app_metadata?.roles}"]}, "connection": "Username-Password-Authentication", "password": "${user.password}"}`,
+            body : JSON.stringify({...user,connection: "Username-Password-Authentication",email_verified : true })
+            // body: `{"name": "${user.name}", "email": "${user.email}", "user_metadata": { "telephone": "${user.user_metadata?.telephone}"}, "app_metadata": { "acceptedTerms": ${user.app_metadata?.acceptedTerms} , "allowedSlots": ${user.app_metadata?.allowedSlots} , "roles": ["${user.app_metadata?.roles}"]}, "connection": "Username-Password-Authentication", "password": "${user.password}"}`,
         }
         return await fetch(options.url, options)
     }
@@ -118,19 +119,6 @@ export class getUsers {
         
         return parser[0]
 
-    }
-
-    //for learning
-    private async _checkForPrivliges(key: string, value: string) {
-        const currentUser = await this._getSpecificUser(key, (value as string))
-        const getDev: boolean = currentUser.app_metadata.isDev
-        let isDev = false
-        switch (getDev) {
-            case true:
-                isDev = true
-                break;
-        }
-        return isDev
     }
 
     getAllUsers() {

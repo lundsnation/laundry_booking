@@ -1,6 +1,6 @@
 import {  Button, Container, Typography, Paper, Grid, Dialog, DialogActions, DialogTitle,List,ListItem,Divider, TextField,MenuItem,AlertColor, SnackbarOrigin} from "@mui/material";
 import { FormEvent, useEffect, useState } from "react";
-import { UserType } from "../../../utils/types";
+import { UserType, assertBuilding } from "../../../utils/types";
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import { SnackInterface } from "../Snack";
 import { LoadingButton } from "@mui/lab";
@@ -14,20 +14,23 @@ interface Props {
     selected : readonly string[],
     setSelected : (input: string[]) => void,
     users : Array<UserType>,
-
 }
 
 const EditUserDialog = (props: Props) => {
     const {showEditDialog, setShowEditDialog,snack,setSnack, fetchUsers,selected, setSelected ,users} = props 
     const [newUser,setNewUser] = useState<UserType>({} as UserType)
     const [newUserApt, setNewUserApt] = useState("") 
-    const [newUserBulding, setNewUserBuilding] = useState("")
+    const [newUserBuldingName, setNewUserBuildingName] = useState("")
     const [wait, setWait] = useState(false);
     const alignment: SnackbarOrigin = {vertical: 'bottom', horizontal: 'left' }
 
     useEffect(()=>{
-        setNewUser({...newUser, name: newUserBulding + newUserApt as string})
-    },[newUserApt,newUserBulding])
+        setNewUser({...newUser, 
+            name: newUserBuldingName + newUserApt as string,
+            app_metadata : {...newUser.app_metadata, building : assertBuilding(newUserBuldingName)}
+        })
+       
+    },[newUserApt,newUserBuldingName])
 
     const handleEditUser = async (e : FormEvent) =>{
         e.preventDefault()
@@ -72,7 +75,7 @@ const EditUserDialog = (props: Props) => {
         }
         setSelected([])
         setNewUser({} as UserType)
-        setNewUserBuilding("")
+        setNewUserBuildingName("")
         setNewUserApt("")
         setShowEditDialog(false)
     }
@@ -95,9 +98,7 @@ const EditUserDialog = (props: Props) => {
         )
         return selectedUsers      
     }
-    useEffect(()=>{
-        setNewUser({...newUser, name: newUserBulding + newUserApt as string})
-    },[newUserBulding,newUserBulding])
+    
 
    return(
     <Dialog open={showEditDialog} onClose = {()=>{setShowEditDialog(false)}}>
@@ -112,9 +113,9 @@ const EditUserDialog = (props: Props) => {
                                             select
                                             disabled = {selected.length>1}
                                             fullWidth
-                                            value = {newUserBulding}
+                                            value = {newUserBuldingName}
                                             onChange={(e)=>{
-                                                setNewUserBuilding(e.target.value)
+                                                setNewUserBuildingName(e.target.value)
                                             }}
                                             label="Välj Byggnad"
                                             helperText="Välj Byggnad"
@@ -124,6 +125,18 @@ const EditUserDialog = (props: Props) => {
                                         </MenuItem>
                                         <MenuItem key={"GH"} value={"GH"}>
                                                 GH
+                                        </MenuItem>
+                                        <MenuItem key={"Arkivet-A"} value={"A"}>
+                                                A
+                                        </MenuItem>
+                                        <MenuItem key={"Arkivet-B"} value={"B"}>
+                                                B
+                                        </MenuItem>
+                                        <MenuItem key={"Arkivet-C"} value={"C"}>
+                                                C
+                                        </MenuItem>
+                                        <MenuItem key={"Arkivet-D"} value={"D"}>
+                                                D
                                         </MenuItem>
                                         </TextField>
                                         </ListItem>    
