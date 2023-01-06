@@ -97,17 +97,9 @@ const BookingButton = (props: Props) => {
 
     return (
             <Grid container spacing={1} direction="row" justifyContent ="center" alignItems="center"> 
-                <Grid item xs={3} >
-                    <Box>
-                        <Typography align="center">{timeSlots.indexOf(timeSlot)+1}</Typography>
-                    </Box>
-                    
-                </Grid>
                 <Grid item xs={6} >
-                    <Button 
-                        sx={{whiteSpace: "nowrap", minWidth: "auto"}}
-                        size="small"
-                        fullWidth={true}
+                    <Button
+                        sx={{width: 175}}
                         onClick={bookedTimeSlot && myTimeSlot ? handleCancel : handleBook} 
                         color={!bookedTimeSlot ? 'primary' : 'secondary'} 
                         disabled={(bookedTimeSlot && !myTimeSlot) || disabled} variant="contained"  > 

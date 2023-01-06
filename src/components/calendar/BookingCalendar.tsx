@@ -153,7 +153,7 @@ const BookingCalendar = (props: Props) => {
         setRealtimeSnack({ show: false, snackString: realtimeSnack.snackString, severity: realtimeSnack.severity, alignment: realtimeSnack.alignment })
     }
 
-    const bookingButtonGroup = (
+    /*const bookingButtonGroup = (
         <Grid container spacing={1} direction="row" sx={{margin:0}}>
             <Grid container>
                 <Grid item xs={3}>
@@ -170,6 +170,10 @@ const BookingCalendar = (props: Props) => {
             
             <BookingButtonGroup  timeSlots={timeSlots} bookedBookings={getDateBookings(bookings, selectedDate)} selectedDate={selectedDate} user={user} updateBookings={updateBookings} snackTrigger={snackTrigger} />
         </Grid>
+    )*/
+
+    const bookingButtonGroup = (
+        <BookingButtonGroup timeSlots={timeSlots} bookedBookings={getDateBookings(bookings, selectedDate)} selectedDate={selectedDate} user={user} updateBookings={updateBookings} snackTrigger={snackTrigger} />
     )
 
     return (
@@ -211,21 +215,17 @@ const BookingCalendar = (props: Props) => {
 
                 </Grid>
                 <Grid item xs={12} sm={4}>
-                    <Paper elevation={0} variant="outlined" sx={{paddingBottom:1}}>
+                    {/*<Paper elevation={0} variant="outlined" sx={{paddingBottom:1}}>*/}
                         {bookingButtonGroup}
-                    </Paper>
+                    {/*</Paper>*/}
                     
                 </Grid>
                 
             </Grid>
             <Box m={2}/>
             <Grid item xs={12}>
-
                 <BookedTimes bookings={bookings} user = {user} selectedDate = {selectedDate} updateBookings={updateBookings} snackTrigger={snackTrigger}/>
-
             </Grid>
-           
-            
         </div>
     );
 }
