@@ -13,6 +13,7 @@ import {Fab} from "@mui/material"
 import { Spin as Hamburger } from 'hamburger-react'
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import { useRouter } from 'next/router';
+import Link from 'next/link';
 
 const Header = () => {
     const home = process.env.AUTH0_BASE_URL
@@ -53,13 +54,11 @@ const Header = () => {
                         onClick={()=>{router.push("/")}}
                     >   
                             <Image alt="header_button" width={HEADER_IMAGE_SIZE} height={HEADER_IMAGE_SIZE} src={HEADER_IMAGE_PATH}/>
-                        
                     </IconButton>
 
                         <Typography variant="h6"  onClick={()=>{router.push("/")}} component="div" sx={{ flexGrow: 1 }}>
-                            Tvättbokning NH&GH
+                           <Link style={{ textDecoration: 'none',color:"white" }} href="/">Tvättbokning NH&GH</Link>
                         </Typography>
-
 
                      {user?.name=="admin" && <Fab variant="extended" color="secondary" aria-label="add"  onClick={()=>{router.push("/admin")}}>
                     <AdminPanelSettingsIcon />
