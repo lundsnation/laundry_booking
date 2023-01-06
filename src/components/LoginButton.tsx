@@ -1,28 +1,27 @@
 import { NextPage } from "next";
-import {Container, Typography, Box, Button} from '@mui/material';
+import {Container, Typography, Box, Button, MenuItem, Grid} from '@mui/material';
 import { useUser } from '@auth0/nextjs-auth0/client';
-import Header from './Header';
+import LogoutIcon from '@mui/icons-material/Logout';
+import { useRouter } from "next/router";
 
 
 
 const LoginButton: NextPage = () => {
     const {user, isLoading, error} = useUser()
+    const pusher = useRouter() 
     return(
-        <Container maxWidth="lg">
-            { isLoading ? (<Typography> Loading... </Typography>) : 
-                <Box>
-                    {user ? (
-                        <Button fullWidth variant='outlined' href="api/auth/logout">
-                            Logga Ut
-                        </Button>) : (
-                        <Button fullWidth variant='outlined' href="api/auth/login">
-                            Logga In
-                        </Button>)
-                }
-                </Box>
-            }
-                
-        </Container>
+            <MenuItem onClick={()=>{pusher.push("api/auth/logout")}}>
+                <Grid container justifyContent="center">
+                    <Grid item xs={10}>
+                        <Grid container justifyContent="center">
+                            <Typography variant="button">Logga ut</Typography>
+                        </Grid>
+                    </Grid>
+                    <Grid item xs={2}>
+                        <LogoutIcon />
+                    </Grid> 
+                </Grid>   
+            </MenuItem>
     )
 };
 

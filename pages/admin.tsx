@@ -6,6 +6,7 @@ import Header from "../src/components/Header";
 import UserGrid from "../src/components/admin/UserGrid";
 
 import {Grid} from "@mui/material";
+import Loading from "../src/components/Loading";
 
 const Admin = () => {
     const { user, isLoading, error } = useUser()
@@ -22,7 +23,7 @@ const Admin = () => {
                     {user.name == "admin" ?  
                             <UserGrid/>
                         :<NotAuthorized/>
-                    }</Box></Grid>:<NotLoggedIn />
+                    }</Box></Grid>:<Loading/>
                 
             }
         </Grid>
