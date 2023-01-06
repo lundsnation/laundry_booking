@@ -37,7 +37,7 @@ const Index = () => {
 
   return (user ?
     
-    <Grid container rowSpacing={{xs : 14, sm: 0}}  justifyContent="flex-end" >
+    <Grid container rowSpacing={{xs : 14, sm: 0}}  sx={{paddingRight:0}}justifyContent="flex-end" >
       <Terms user={user as UserType}/>
       <Grid item xs={12}  minHeight={100} >
         <Header />

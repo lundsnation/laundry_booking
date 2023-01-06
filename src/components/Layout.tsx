@@ -17,6 +17,8 @@ const styles = {
 }
 
 export default function Layout({ children }: { children: React.ReactNode }) {
+    
+    
     return (
         <>
             <Grid container rowSpacing={4}>
