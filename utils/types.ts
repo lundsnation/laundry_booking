@@ -19,7 +19,11 @@ export type UserType = {
     user_id?: string,
     name: string,
     email: string,
-    app_metadata?: {acceptedTerms?: boolean, allowedSlots?: number, roles?: Array<string>},
+    app_metadata?: {
+      acceptedTerms?: boolean, 
+      allowedSlots?: number, 
+      roles?: Array<string>, 
+      building? : Building},
     user_metadata?: {telephone: string},
     connection : "Username-Password-Authentication",
     password?: string
@@ -67,6 +71,33 @@ const convTimes: Array<number> = [25200000,
                                   73800000]  
                           
 
+
+
+export type Building = "ARKIVET" | "GH" |" NH" | "NYA" | null
+
+// Returns an object of type building bsed on inputstring
+export function assertBuilding(buildingName : string) : Building {
+  if(arkivetBuildingNames.indexOf(buildingName)>-1){
+    return "ARKIVET"
+  }else if(isBuilding(buildingName)){
+    return buildingName
+  }
+  return null
+}
+// Manual check is object is of type Building
+function isBuilding(obj: any): obj is Building{
+  switch(obj){
+    case "ARKIVET":
+    case "GH":
+    case "NH":
+    case "NYA":
+      return true;
+    default:
+      return false;
+  }
+}
+// Lettering of 
+const arkivetBuildingNames = ["A","B","C","D"]
 
   // Error messages
 export const enum ERROR_MSG {

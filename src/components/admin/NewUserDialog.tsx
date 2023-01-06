@@ -1,6 +1,6 @@
 import {  Button, Grid, Dialog, DialogActions, DialogTitle,List,ListItem,Divider, TextField,MenuItem, SnackbarOrigin} from "@mui/material";
 import { ChangeEvent, FormEvent, useEffect, useState } from "react";
-import { ERROR_MSG, UserType } from "../../../utils/types";
+import { ERROR_MSG, UserType, assertBuilding } from "../../../utils/types";
 import AddIcon from '@mui/icons-material/Add';
 import { SnackInterface } from "../Snack";
 import { LoadingButton } from "@mui/lab";
@@ -25,6 +25,7 @@ const NewUserDialog = (props: Props) => {
     const handleAddUser = async (event : FormEvent) =>{
         event.preventDefault();
         setWait(true)
+        console.log({...newUser, app_metadata : {...newUser.app_metadata, acceptedTerms: false, roles:['user']}})
         const response = await fetch("/api/user", {
             method: "POST",
             headers: {
@@ -39,7 +40,6 @@ const NewUserDialog = (props: Props) => {
         
         if(response.ok){
             const test = await response.json()
-            console.log(test)
             setSnack({show: true, snackString : "Skapade "+ newUser.name, severity :  'success', alignment: alignment})
             setNewUser({} as UserType)
             setNewUserBuilding("")
@@ -53,7 +53,10 @@ const NewUserDialog = (props: Props) => {
 
     // Updates newUser object whenever newUserApt or newUserBuilding changes
     useEffect(()=>{
-        setNewUser({...newUser, name: newUserBulding + newUserApt as string})
+        setNewUser({...newUser, 
+            name: newUserBulding + newUserApt as string,
+            app_metadata : {...newUser.app_metadata, building : assertBuilding(newUserBulding)}  
+        })
     },[newUserApt,newUserBulding])
 
    return(
@@ -76,10 +79,22 @@ const NewUserDialog = (props: Props) => {
                         helperText="Välj Byggnad"
                         >
                         <MenuItem key={"NH"} value={"NH"}>
-                            NH
+                                NH
                         </MenuItem>
                         <MenuItem key={"GH"} value={"GH"}>
-                            GH
+                                GH
+                        </MenuItem>
+                        <MenuItem key={"Arkivet-A"} value={"A"}>
+                                A
+                        </MenuItem>
+                        <MenuItem key={"Arkivet-B"} value={"B"}>
+                                B
+                        </MenuItem>
+                        <MenuItem key={"Arkivet-C"} value={"C"}>
+                                C
+                        </MenuItem>
+                        <MenuItem key={"Arkivet-D"} value={"D"}>
+                                D
                         </MenuItem>
                         </TextField>
                     </ListItem>    
