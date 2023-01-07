@@ -35,10 +35,22 @@ const Rules = (props: Props) => {
         <Box>
             {!drawerOpen && <Tooltip
                 placement={'right'}
-                sx={{ zIndex: 'tooltip', left: 0, top: '40%', position: 'fixed' }}
                 title={<> <KeyboardDoubleArrowRightIcon /></>}
             >
-                <Button variant={'text'} onClick={toggleDrawer}>
+                <Button
+                    variant={'outlined'}
+                    onClick={toggleDrawer}
+                    sx={{
+                        hoverColor: 'red',
+                        color: '#000000a6',
+                        borderColor: '#000000a6',
+                        zIndex: 'tooltip',
+                        padding: 1,
+                        minWidth: 40,
+                        left: 0,
+                        top: '40%',
+                        position: 'fixed'
+                    }}>
                     {ruleText}
                 </Button>
             </Tooltip>}
