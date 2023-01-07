@@ -41,7 +41,6 @@ const Rules = (props: Props) => {
                     variant={'outlined'}
                     onClick={toggleDrawer}
                     sx={{
-                        hoverColor: 'red',
                         color: '#000000a6',
                         borderColor: '#000000a6',
                         zIndex: 'tooltip',
