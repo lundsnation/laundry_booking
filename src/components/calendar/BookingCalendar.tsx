@@ -37,7 +37,7 @@ const BookingCalendar = (props: Props) => {
     }
 
     if(firstRender) {
-        const pusherChannel = pusherClient .subscribe("bookingUpdates");
+        const pusherChannel = pusherClient.subscribe("bookingUpdates");
         pusherChannel.bind('bookingUpdate', (data: any) => {
             updateBookings();
             const {userName, date, timeSlot } = data
@@ -220,9 +220,7 @@ const BookingCalendar = (props: Props) => {
             </Grid>
             <Box m={2}/>
             <Grid item xs={12}>
-
-                <BookedTimes bookings={bookings} user = {user} selectedDate = {selectedDate} snackTrigger={snackTrigger}/>
-
+                <BookedTimes bookings={bookings} user = {user} snackTrigger={snackTrigger}/>
             </Grid>
            
             

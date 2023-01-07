@@ -36,7 +36,7 @@ const Index = () => {
   }, [user, isLoading])
 
   return (user ?
-    
+    // Mobile compability hack
     <Grid container rowSpacing={{xs : 14, sm: 0}}  sx={{paddingRight:0}}justifyContent="flex-end" >
       <Terms user={user as UserType}/>
       <Grid item xs={12}  minHeight={100} >
@@ -54,7 +54,6 @@ const Index = () => {
             opacity: "1"
           }}>
             
-            {/* <Terms/> */}
           {<BookingCalendar title="" user={user as UserType} />}
         
         </Paper>
