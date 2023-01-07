@@ -4,7 +4,7 @@ import AdapterDateFns from '@date-io/date-fns'
 import { Grid, Box, SxProps, TextField, AlertColor, Paper, Typography, SnackbarOrigin } from "@mui/material";
 import svLocale from 'date-fns/locale/sv';
 import BookingButtonGroup from "./BookingButtonGroup";
-import BookedTimes from "./BookedTimes";
+import BookedTimes from "../BookedTimes";
 import { Booking,UserType } from "../../../utils/types";
 import { getDateBookings, compareDates } from "../../../utils/bookingsAPI"
 import { Snack, SnackInterface } from "../Snack"
@@ -37,7 +37,7 @@ const BookingCalendar = (props: Props) => {
     }
 
     if(firstRender) {
-        const pusherChannel = pusherClient .subscribe("bookingUpdates");
+        const pusherChannel = pusherClient.subscribe("bookingUpdates");
         pusherChannel.bind('bookingUpdate', (data: any) => {
             updateBookings();
             const {userName, date, timeSlot } = data
@@ -220,9 +220,7 @@ const BookingCalendar = (props: Props) => {
             </Grid>
             <Box m={2}/>
             <Grid item xs={12}>
-
-                <BookedTimes bookings={bookings} user = {user} selectedDate = {selectedDate} updateBookings={updateBookings} snackTrigger={snackTrigger}/>
-
+                <BookedTimes bookings={bookings} user = {user} snackTrigger={snackTrigger}/>
             </Grid>
            
             
