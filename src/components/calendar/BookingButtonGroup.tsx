@@ -1,8 +1,8 @@
 import BookingButton from "./BookingButton";
 import ButtonGroup from '@mui/material/ButtonGroup';
 
-import { AlertColor, Box, Container, SnackbarOrigin } from "@mui/material"
-import { Booking,UserType } from "../../../utils/types"
+import { AlertColor, Box, Container, SnackbarOrigin, Typography } from "@mui/material"
+import { Booking, UserType } from "../../../utils/types"
 import { timeSlotToBooking, timeSlotToDryingBooth } from "../../../utils/bookingsAPI";
 
 interface Props {
@@ -28,25 +28,25 @@ const BookingButtonGroup = (props: Props) => {
 
         const dryingBoothNbr = timeToDryingBooth.get(timeSlot);
 
-        return <BookingButton 
-        key={timeSlot} 
-        timeSlot={`${timeSlot} (Bås ${dryingBoothNbr})`}
-        booking={booking != null ? booking : null} 
-        selectedDate={selectedDate}
-        user={user} 
-        updateBookings={updateBookings} 
-        snackTrigger={snackTrigger} 
+        return <BookingButton
+            key={timeSlot}
+            timeSlot={`${timeSlot} - Bås ${dryingBoothNbr}`}
+            booking={booking != null ? booking : null}
+            selectedDate={selectedDate}
+            user={user}
+            updateBookings={updateBookings}
+            snackTrigger={snackTrigger}
         />
     });
     //Kan vara fel här
 
 
     return (
-            <ButtonGroup fullWidth={true} size='medium' orientation='vertical'> {buttons}  </ButtonGroup>
+        <ButtonGroup sx={{ zIndex: 'modal' }} fullWidth size='medium' orientation='vertical'> {buttons}  </ButtonGroup>
         /*<Container disableGutters>
             {buttons}
         </Container>*/
-        
+
     );
 }
 
