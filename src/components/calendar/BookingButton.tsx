@@ -6,9 +6,10 @@ import BookingInfo from "./BookingInfo"
 import { timeSlots } from "../../../utils/types";
 import { UserType } from "../../../utils/types";
 import { textTransform } from "@mui/system";
+import { timeSlotToDryingBooth } from "../../../utils/bookingsAPI";
 
 interface Props {
-    //user: UserProfile;
+    boothIndex: number,
     user: UserType;
     booking: Booking | null;
     selectedDate: Date;
@@ -21,7 +22,7 @@ const BookingButton = (props: Props) => {
     const [showBookingInfo, setShowBookingInfo] = useState<boolean>(false)
     const [bookingUser, setBookingUser] = useState<UserType>({} as UserType)
     const [loadingUser, setLoadingUser] = useState(false)
-    const { user, booking, selectedDate, timeSlot, updateBookings, snackTrigger } = props
+    const { boothIndex,user, booking, selectedDate, timeSlot, updateBookings, snackTrigger } = props
     const bookedTimeSlot = booking != null;
     const myTimeSlot = user.name == booking?.userName ? bookedTimeSlot : null;
     let snackString;
@@ -30,7 +31,9 @@ const BookingButton = (props: Props) => {
     // Function for booking time
     const handleBook = async () => {
         setDisabled(true)
+        console.log(selectedDate+timeSlot)
         const date = new Date(timeFromTimeSlot(selectedDate, timeSlot))
+        
         const jsonBooking = { userName: (user.name as string), date: date, timeSlot: timeSlot, createdAt: new Date() }
         const response = await fetch("/api/bookings", {
             method: "POST",
@@ -109,11 +112,15 @@ const BookingButton = (props: Props) => {
                     onClick={bookedTimeSlot && myTimeSlot ? handleCancel : handleBook}
                     color={!bookedTimeSlot ? 'primary' : 'secondary'}
                     disabled={(bookedTimeSlot && !myTimeSlot) || disabled} variant="contained"
-
-                >
-
-                    {props.timeSlot}
-
+                    >
+                        <Grid container>
+                            <Grid item xs={8} >
+                                <Typography variant="button" align="left">{timeSlot}</Typography>
+                            </Grid>
+                            <Grid item xs={4}>
+                                <Typography variant="button" align="right" sx={{textTransform:"none"}}>Bås {" "+ boothIndex}</Typography>
+                            </Grid>
+                        </Grid>
                 </Button>
             </Grid>
             {/* <Grid container xs={3} justifyContent="center">
