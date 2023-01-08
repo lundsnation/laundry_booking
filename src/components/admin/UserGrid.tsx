@@ -107,6 +107,9 @@ const UserGrid = () => {
 
       const getContent = ()=>{
         let display : Array<UserType>  = searchString != "" ? searchedUsers : users
+        display = display.sort((a,b) => {
+            return a.name.localeCompare(b.name, 'sv');
+        });
         return ( 
             display.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((userEntry,index) =>{ 
                     const isItemSelected = isSelected(userEntry.name)

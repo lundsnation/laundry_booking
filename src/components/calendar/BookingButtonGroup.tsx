@@ -1,9 +1,9 @@
 import BookingButton from "./BookingButton";
 import ButtonGroup from '@mui/material/ButtonGroup';
 
-import { AlertColor, Container, SnackbarOrigin } from "@mui/material"
-import { Booking,UserType } from "../../../utils/types"
-import { timeSlotToBooking } from "../../../utils/bookingsAPI";
+import { AlertColor, Box, Container, SnackbarOrigin, Typography } from "@mui/material"
+import { Booking, UserType } from "../../../utils/types"
+import { timeSlotToBooking, timeSlotToDryingBooth } from "../../../utils/bookingsAPI";
 
 interface Props {
     bookedBookings: Set<Booking>;
@@ -17,31 +17,36 @@ interface Props {
 const BookingButtonGroup = (props: Props) => {
     const { bookedBookings, timeSlots, selectedDate, user, updateBookings, snackTrigger } = props
     const timeToBooking: Map<string, Booking> = timeSlotToBooking(bookedBookings);
+    const timeToDryingBooth: Map<string, number> = timeSlotToDryingBooth(timeSlots);
+
+
     const buttons = timeSlots.map(timeSlot => {
         let booking: null | Booking = null;
         if (timeToBooking.has(timeSlot)) {
             booking = timeToBooking.get(timeSlot) as Booking;
         }
 
-        return <BookingButton 
-        key={timeSlot} 
-        timeSlot={timeSlot} 
-        booking={booking != null ? booking : null} 
-        selectedDate={selectedDate}
-        user={user} 
-        updateBookings={updateBookings} 
-        snackTrigger={snackTrigger} 
+        const dryingBoothNbr = timeToDryingBooth.get(timeSlot);
+
+        return <BookingButton
+            key={timeSlot}
+            timeSlot={`${timeSlot} - Bås ${dryingBoothNbr}`}
+            booking={booking != null ? booking : null}
+            selectedDate={selectedDate}
+            user={user}
+            updateBookings={updateBookings}
+            snackTrigger={snackTrigger}
         />
     });
     //Kan vara fel här
 
 
     return (
-        // <ButtonGroup  orientation='vertical'> {buttons}  </ButtonGroup>
-        <Container disableGutters>
+        <ButtonGroup sx={{ zIndex: 'modal' }} fullWidth size='medium' orientation='vertical'> {buttons}  </ButtonGroup>
+        /*<Container disableGutters>
             {buttons}
-        </Container>
-        
+        </Container>*/
+
     );
 }
 
