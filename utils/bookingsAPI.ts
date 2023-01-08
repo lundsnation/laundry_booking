@@ -28,15 +28,22 @@ export const getDateBookings = (bookings: Array<Booking>, selectedDate: Date) =>
 }
 
 //This function needs to be changed if the mappings fron timeSlots -> Drying booths change.
-export const timeSlotToDryingBooth = (timeSlots: Array<string>) => {
-    const map: Map<string, number> = new Map<string, number>();
 
-    timeSlots.forEach((timeSlot, idx) => {
-        map.set(timeSlot, (idx + 1));
-    })
+export const timeSlotToDryingBooth = new Map([
+    ["07:00-08:30", 1],
+    ["08:30-10:00", 2],
+    ["10:00-11:30", 3],
+    ["11:30-13:00", 4],
+    ["13:00-14:30", 5],
+    ["14:30-16:00", 6],
+    ["16:00-17:30", 7],
+    ["17:30-19:00", 8],
+    ["19:00-20:30", 9],
+    ["20:30-22:00", 10]
+]
+)
 
-    return map;
-}
+
 
 
 export const timeSlotToTime = new Map([
@@ -52,6 +59,13 @@ export const timeSlotToTime = new Map([
     ["20:30-22:00", 73800000]
 ]
 )
+
+export const dateFromTimeSlot = (date: Date, timeSlot: string) => {
+    // Aquire date, generates date at 00:00
+    const tempDate = new Date(date.getFullYear(), date.getMonth(), date.getDate())
+    const newTime = tempDate.getTime() + (timeSlotToTime.get(timeSlot) as number);
+    return new Date(newTime)
+}
 
 //The method timeSlotToBooking and and dateToNbrOfBookingsMap can be combined for further optimization.
 //By combining them, both maps can be created in one iteration instead of two. And since they are both created
