@@ -37,6 +37,7 @@ const Index = () => {
   }, [user, isLoading])
 
   return (user ?
+
       <Grid container rowSpacing={{xs : 14, sm: 0}}  justifyContent="flex-end" >
         <Terms user={user as UserType}/>
         <Grid item xs={12}  minHeight={100} >
@@ -55,10 +56,6 @@ const Index = () => {
               display: "flex",
               opacity: "1"
             }}>
-
-
-
-            
               
               {/* <Terms/> */}
             {<BookingCalendar title="" user={user as UserType} />}

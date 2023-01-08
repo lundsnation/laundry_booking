@@ -39,18 +39,14 @@ const BookingButton = (props: Props) => {
             },
             body: JSON.stringify(jsonBooking)
         });
-
-        //updateBookings();
         if (response.ok) {
             snackString = "Du har bokat: " + String(timeSlot)
             snackTrigger("success", snackString, snackAlignment)
-        } else if (response.status == 400) {
-            snackString = "Du kan inte boka flera tider"
+        } else{
+            let responseContent = await response.json()
+            snackString = responseContent.error
             snackTrigger("error", snackString, snackAlignment)
-        } else if (response.status == 406) {
-            snackString = "Du kan inte boka tider som redan varit"
-            snackTrigger("error", snackString, snackAlignment)
-        }
+        } 
         setDisabled(false)
     }
     // Function for deleting already aquired time
@@ -71,14 +67,17 @@ const BookingButton = (props: Props) => {
             snackString = "Du har avbokat tiden"
             snackTrigger("success", snackString, snackAlignment)
         } else {
-            snackString = "Internt fel"
+            let responseContent = await response.json()
+            snackString = responseContent.error
             snackTrigger("error", snackString, snackAlignment)
         }
     }
     // Function for showing info on booked time
+
     const showBookedTime = async () => {
 
         if (!showBookingInfo) {
+
             setLoadingUser(true)
             setShowBookingInfo(!showBookingInfo);
             const response = await fetch("/api/user/" + booking?.userName)

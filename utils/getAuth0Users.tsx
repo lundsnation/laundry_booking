@@ -3,16 +3,20 @@ import { UserType } from "./types";
 export class getUsers {
     private token: Promise<string>;
     private url: string;
+    private id: string;
 
     constructor() {
         this.token = this.setAuth0Token()
-        this.url = (process.env.AUTH_ISSUER_BASE as string)
+        this.url = (process.env.AUTH0_ISSUER_BASE as string)
+        this.id = (process.env.REACT_APP_ID as string)
 
     }
 
     private async setAuth0Token() {
-        const id = (process.env.REACT_APP_ID as string)
+        
         const secret = (process.env.REACT_APP_SECRET as string)
+        const id = (process.env.REACT_APP_ID as string)
+        console.log(this.id)
         const options = {
             method: 'POST',
             url: 'https://lundsnation.eu.auth0.com/oauth/token',
@@ -57,7 +61,8 @@ export class getUsers {
             method: 'POST',
             url: "https://lundsnation.eu.auth0.com/api/v2/users",
             headers: { authorization: 'Bearer ' + token, 'content-type': 'application/json'},
-            body: `{"name": "${user.name}", "email": "${user.email}", "user_metadata": { "telephone": "${user.user_metadata?.telephone}"}, "app_metadata": { "acceptedTerms": ${user.app_metadata?.acceptedTerms} , "allowedSlots": ${user.app_metadata?.allowedSlots} , "roles": ["${user.app_metadata?.roles}"]}, "connection": "Username-Password-Authentication", "password": "${user.password}"}`,
+            body : JSON.stringify({...user,connection: "Username-Password-Authentication",email_verified : true })
+            // body: `{"name": "${user.name}", "email": "${user.email}", "user_metadata": { "telephone": "${user.user_metadata?.telephone}"}, "app_metadata": { "acceptedTerms": ${user.app_metadata?.acceptedTerms} , "allowedSlots": ${user.app_metadata?.allowedSlots} , "roles": ["${user.app_metadata?.roles}"]}, "connection": "Username-Password-Authentication", "password": "${user.password}"}`,
         }
         return await fetch(options.url, options)
     }
@@ -94,7 +99,7 @@ export class getUsers {
         }
         const response = await fetch(options.url, options)
         const data = await response.json()
-        
+        console.log(data)
         return data    
     }
 
@@ -104,7 +109,7 @@ export class getUsers {
         const specified = `${key} : "${value}"`
         const options = {
             method: 'GET',
-            url: "https://lundsnation.eu.auth0.com/api/v2/users?",
+            url: "https://lundsnation.eu.auth0.com/o",
             headers: { authorization: 'Bearer ' + token }
         }
 
@@ -120,40 +125,59 @@ export class getUsers {
 
     }
 
-    //for learning
-    private async _checkForPrivliges(key: string, value: string) {
-        const currentUser = await this._getSpecificUser(key, (value as string))
-        const getDev: boolean = currentUser.app_metadata.isDev
-        let isDev = false
-        switch (getDev) {
-            case true:
-                isDev = true
-                break;
+    private async _changePassword(email:string){
+        const token = await this.token
+        const options = {
+            method: 'POST',
+            url: 'https://lundsnation.eu.auth0.com/dbconnections/change_password',
+            // headers: { authorization: 'Bearer ' + token, 'content-type': 'application/json' },
+            headers: { 'content-type': 'application/json' },
+            body: JSON.stringify({client_id:this.id,email:email,connection: "Username-Password-Authentication"})
         }
-        return isDev
+        console.log("Skickade: " + options.body)
+        return await fetch(options.url, options)
     }
-
+    /**
+    * Fetches all users
+    */
     getAllUsers() {
         return this._getAllUsers()
     }
-
+    /**
+    * Fetches the desired user using the supplied key-value pair
+    */
     getUser(key: string, value: string) {
         if (!key || !value) {
             return
         }
         return this._getSpecificUser(key, value)
     }
-
+    /**
+    * Creates new user from supplied UserType
+    */
     createUser(newUser:UserType){
         return this._createUser(newUser)
     }
 
+    /**
+    * Function for modifying user with user_id 'id' properties in modification-object. 
+    */
     modifyUser(modification:object,id:string){
         return this._modifyUser(modification,id)
     }
 
+    /**
+    * Function deleting user with user_id
+    */
     deleteUser(id:string){
         return this._deleteUser(id)
+    }
+
+    /**
+    * Function triggering the change password-flow in auth0. 
+    */
+    changePassword(email:string){
+        return this._changePassword(email)
     }
 
 }

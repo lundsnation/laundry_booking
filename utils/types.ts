@@ -19,8 +19,12 @@ export type UserType = {
     user_id?: string,
     name: string,
     email: string,
-    app_metadata?: {acceptedTerms?: boolean, allowedSlots?: number, roles?: Array<string>},
-    user_metadata?: {telephone: string},
+    app_metadata?: {
+      acceptedTerms?: boolean, 
+      allowedSlots?: number, 
+      roles?: Array<string>, 
+      building? : Building},
+    user_metadata?: {telephone?: string},
     connection : "Username-Password-Authentication",
     password?: string
 }
@@ -33,15 +37,19 @@ export const enum BUTTON_STATES {
   // Time can be cancelled by user == Occurence in DB from this user
   EDITABLE = 2
 }
-
-// Function used for setting the correct time in the booking in DB
+/**
+ * Function used for setting the correct time in the booking in DB
+ */
 export function timeFromTimeSlot(date: Date, timeSlot: string){
   // Aquire date, generates date at 00:00
   const tempDate = new Date(date.getFullYear(),date.getMonth(),date.getDate())
   const newTime = tempDate.getTime() + convTimes[timeSlots.indexOf(timeSlot)]
   return new Date(newTime)
 }
-// Slottimes, displayed in the bookable slots
+
+/**
+ * Array containing the desired timeslots
+ */
 export const timeSlots: Array<string> = ["07:00-08:30",
                                     "08:30-10:00",
                                     "10:00-11:30",
@@ -68,14 +76,49 @@ const convTimes: Array<number> = [25200000,
                           
 
 
+
+export type Building = "ARKIVET" | "GH" |" NH" | "NYA" | null
+
+// Returns an object of type building bsed on inputstring
+export function assertBuilding(buildingName : string) : Building {
+  if(arkivetBuildingNames.indexOf(buildingName)>-1){
+    return "ARKIVET"
+  }else if(isBuilding(buildingName)){
+    return buildingName
+  }
+  return null
+}
+// Manual check is object is of type Building
+function isBuilding(obj: any): obj is Building{
+  switch(obj){
+    case "ARKIVET":
+    case "GH":
+    case "NH":
+    case "NYA":
+      return true;
+    default:
+      return false;
+  }
+}
+// Lettering of 
+const arkivetBuildingNames = ["A","B","C","D"]
+
   // Error messages
 export const enum ERROR_MSG {
   // General error
-  GENERAL = "Internt fel, Ladda om sidan",
+  GENERAL = "Internt fel",
   // User tries to exceed allowedSlots
-  TOOMANYSLOTS = "Max antal slottar bokade",
-  // Time has been booked by someone else
-  ALREADYBOOKED = "Tidsslot redan bokad, Ladda om sidan"
+  TOOMANYSLOTS = "Max antal tider bokade",
+  // User tries to book slot in the past
+  SLOTINPAST = "Du kan inte boka en tid som passerat",
+  // No response for this request
+  NOAPIRESPONSE = "Felaktigt anrop",
+  // User tried to delete booking that doesn't exist
+  NOBOOKING = "Bokningen existerar ej",
+  // User is not authorized
+  NOTAUTHORIZED = "Du är ej behörig",
+  // Error recieved from Auth0 
+  AUTH0RESPONSEERROR = "Kunde inte updatera användaren"
 }
 
   

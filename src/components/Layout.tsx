@@ -17,10 +17,11 @@ const styles = {
 }
 
 export default function Layout({ children }: { children: React.ReactNode }) {
+    
+    
     return (
-        <>
             <Grid container rowSpacing={4}>
-                <Grid item xs={12} sm={12} md={12} minHeight={100} flexGrow={1}>
+                <Grid item xs={12} minHeight={100} >
                     <Header />
                 </Grid>
                 <Grid item xs={12} sm={12} md={12}>
@@ -41,7 +42,5 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 </Grid>
             </Grid>
 
-
-        </>
     )
 }
