@@ -10,7 +10,7 @@ const USER_AGREEMENT_TEXT_1 = "Välkommen till Lunds Nations tvättbokningssyste
 const USER_AGREEMENT_TEXT_2 = "För att använda systemet måste du godkänna att vi sparar följande personuppgifter: namn, telefonnummer, lägenhetsnummer och e-post i våra system. För att öka transparensen visar systemet andra hyrestagares kontaktuppgifter, ifall tvätt skulle vara kvarlämnad eller dyliktkan användare på eget initiativ kontakta varandra. Vi understryker att hålla god ton gentemot andra hyresgäster och ifall det framkommer att funktionen inte fungerar som avsett, kommer den att inaktiveras. Accepterar du följande?"
 
 const style = {
-    position: "relative",
+    position: {xs:"relative",sm:"relative",md:"abolute"},
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
