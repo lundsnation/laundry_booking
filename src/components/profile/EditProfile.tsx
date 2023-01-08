@@ -70,7 +70,7 @@ const EditProfile = (props:props)=>{
                         </Typography>
                         
                         <List>
-                            <Typography paddingLeft={2} variant="button" >Ändra lösenord</Typography>
+                        <Typography paddingLeft={2} variant="button" >Ändra lösenord</Typography>
                                 <ListItem>
                                 <Grid container>
                                     <Grid item xs={12}>
@@ -112,6 +112,7 @@ const EditProfile = (props:props)=>{
                                     margin="dense"
                                 />
                             </ListItem>
+                            
                             <ListItem>
                                 <Grid container justifyContent="flex-end">
                                     <Grid item>

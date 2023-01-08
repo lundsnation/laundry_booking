@@ -26,12 +26,12 @@ const BookingButtonGroup = (props: Props) => {
             booking = timeToBooking.get(timeSlot) as Booking;
         }
 
-        const dryingBoothNbr : number = timeToDryingBooth.get(timeSlot);
+        const dryingBoothNbr = timeToDryingBooth.get(timeSlot);
 
         return <BookingButton
             key={timeSlot}
             timeSlot={timeSlot}
-            boothIndex={dryingBoothNbr}
+            boothIndex={dryingBoothNbr as number}
             booking={booking != null ? booking : null}
             selectedDate={selectedDate}
             user={user}
