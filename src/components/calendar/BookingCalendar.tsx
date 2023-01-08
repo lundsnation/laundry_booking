@@ -231,9 +231,9 @@ const BookingCalendar = (props: Props) => {
                         </Grid>
                     </Grid>
                 </Grid>
-                
+
                 <Grid item xs={12}>
-                    //<Box m={2}/>
+                    {/*<Box m={2}/>*/}
                     <BookedTimes bookings={bookings} user={user} selectedDate={selectedDate} updateBookings={updateBookings} snackTrigger={snackTrigger} />
                 </Grid>
 
