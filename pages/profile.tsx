@@ -56,12 +56,13 @@ const Profile: NextPage = () => {
     }
 
     return (
-        <Grid container>
+        <Grid container rowSpacing={10}>
             <Snack state={snack} handleClose={resetSnack}/>
             <Grid item xs={12} minHeight={100} flexGrow={1}>
                 <Header />
             </Grid>
             <Grid item xs={12} flexGrow={1} sx={{ display: "flex", justifyContent: "center", alignItems: "flex-end" }}>
+                <Grid container alignItems="flex-end">
                 <Paper style={styles.paperContainer}
                     sx={{
                         minHeight: 0,
@@ -73,7 +74,7 @@ const Profile: NextPage = () => {
                     }}>
                 <Grid container alignItems="flex-end" rowSpacing={2} sx={{width:{xs:"100%",sm:"75%",md:"50%"}}}>
                     <Grid item xs={12}>
-                        <EditProfile user={user as UserType} setSnack={setSnack}/>
+                        <EditProfile user={user as UserType}setSnack={setSnack}/>
                     </Grid>
                     <Grid item xs={12}>
                         <BookedTimes 
@@ -83,6 +84,7 @@ const Profile: NextPage = () => {
                     </Grid> 
                     </Grid>
                 </Paper>
+                </Grid>
             </Grid>
             <Grid item xs={12} sm={12} md={12}>
                 <Footer />

@@ -39,7 +39,8 @@ const UserGrid = () => {
                     tempUsers.push(element)
                     setUsers(tempUsers)
                 })
-            }catch(error){
+            }catch(error : any){
+                setSnack({show:true, severity:'error', snackString:String(error)})
                 console.log(error)
             }
         }

@@ -3,16 +3,20 @@ import { UserType } from "./types";
 export class getUsers {
     private token: Promise<string>;
     private url: string;
+    private id: string;
 
     constructor() {
         this.token = this.setAuth0Token()
-        this.url = (process.env.AUTH_ISSUER_BASE as string)
+        this.url = (process.env.AUTH0_ISSUER_BASE as string)
+        this.id = (process.env.REACT_APP_ID as string)
 
     }
 
     private async setAuth0Token() {
-        const id = (process.env.REACT_APP_ID as string)
+        
         const secret = (process.env.REACT_APP_SECRET as string)
+        const id = (process.env.REACT_APP_ID as string)
+        console.log(this.id)
         const options = {
             method: 'POST',
             url: 'https://lundsnation.eu.auth0.com/oauth/token',
@@ -95,7 +99,7 @@ export class getUsers {
         }
         const response = await fetch(options.url, options)
         const data = await response.json()
-        
+        console.log(data)
         return data    
     }
 
@@ -105,7 +109,7 @@ export class getUsers {
         const specified = `${key} : "${value}"`
         const options = {
             method: 'GET',
-            url: "https://lundsnation.eu.auth0.com/api/v2/users?",
+            url: "https://lundsnation.eu.auth0.com/o",
             headers: { authorization: 'Bearer ' + token }
         }
 
@@ -121,27 +125,59 @@ export class getUsers {
 
     }
 
+    private async _changePassword(email:string){
+        const token = await this.token
+        const options = {
+            method: 'POST',
+            url: 'https://lundsnation.eu.auth0.com/dbconnections/change_password',
+            // headers: { authorization: 'Bearer ' + token, 'content-type': 'application/json' },
+            headers: { 'content-type': 'application/json' },
+            body: JSON.stringify({client_id:this.id,email:email,connection: "Username-Password-Authentication"})
+        }
+        console.log("Skickade: " + options.body)
+        return await fetch(options.url, options)
+    }
+    /**
+    * Fetches all users
+    */
     getAllUsers() {
         return this._getAllUsers()
     }
-
+    /**
+    * Fetches the desired user using the supplied key-value pair
+    */
     getUser(key: string, value: string) {
         if (!key || !value) {
             return
         }
         return this._getSpecificUser(key, value)
     }
-
+    /**
+    * Creates new user from supplied UserType
+    */
     createUser(newUser:UserType){
         return this._createUser(newUser)
     }
 
+    /**
+    * Function for modifying user with user_id 'id' properties in modification-object. 
+    */
     modifyUser(modification:object,id:string){
         return this._modifyUser(modification,id)
     }
 
+    /**
+    * Function deleting user with user_id
+    */
     deleteUser(id:string){
         return this._deleteUser(id)
+    }
+
+    /**
+    * Function triggering the change password-flow in auth0. 
+    */
+    changePassword(email:string){
+        return this._changePassword(email)
     }
 
 }
