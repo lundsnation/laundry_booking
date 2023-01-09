@@ -1,6 +1,5 @@
 import BookingButton from "./BookingButton";
-import ButtonGroup from '@mui/material/ButtonGroup';
-
+import ButtonGroup from '@mui/material/ButtonGroup'
 import { AlertColor, Box, Container, SnackbarOrigin, Typography } from "@mui/material"
 import { Booking, UserType } from "../../../utils/types"
 import { timeSlotToBooking, timeSlotToDryingBooth } from "../../../utils/bookingsAPI";
@@ -17,8 +16,6 @@ interface Props {
 const BookingButtonGroup = (props: Props) => {
     const { bookedBookings, timeSlots, selectedDate, user, updateBookings, snackTrigger } = props
     const timeToBooking: Map<string, Booking> = timeSlotToBooking(bookedBookings);
-    const timeToDryingBooth: Map<string, number> = timeSlotToDryingBooth(timeSlots);
-
 
     const buttons = timeSlots.map(timeSlot => {
         let booking: null | Booking = null;
@@ -26,7 +23,7 @@ const BookingButtonGroup = (props: Props) => {
             booking = timeToBooking.get(timeSlot) as Booking;
         }
 
-        const dryingBoothNbr = timeToDryingBooth.get(timeSlot);
+        const dryingBoothNbr = timeSlotToDryingBooth.get(timeSlot);
 
         return <BookingButton
             key={timeSlot}

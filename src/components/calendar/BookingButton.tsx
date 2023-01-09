@@ -1,12 +1,12 @@
 import { Button, Container, AlertColor, Grid, IconButton, Typography, Box, SnackbarOrigin } from "@mui/material"
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Booking, timeFromTimeSlot } from "../../../utils/types"
 import BookingInfo from "./BookingInfo"
 import { timeSlots } from "../../../utils/types";
 import { UserType } from "../../../utils/types";
 import { textTransform } from "@mui/system";
-import { timeSlotToDryingBooth } from "../../../utils/bookingsAPI";
+import { dateFromTimeSlot } from "../../../utils/bookingsAPI";
 
 interface Props {
     boothIndex: number,
@@ -18,22 +18,29 @@ interface Props {
     snackTrigger: (severity: AlertColor, snackString: string, alignment: SnackbarOrigin) => void;
 }
 const BookingButton = (props: Props) => {
+    const { boothIndex, user, booking, selectedDate, timeSlot, updateBookings, snackTrigger } = props
     const [disabled, setDisabled] = useState<boolean>(false)
     const [showBookingInfo, setShowBookingInfo] = useState<boolean>(false)
     const [bookingUser, setBookingUser] = useState<UserType>({} as UserType)
     const [loadingUser, setLoadingUser] = useState(false)
-    const { boothIndex,user, booking, selectedDate, timeSlot, updateBookings, snackTrigger } = props
     const bookedTimeSlot = booking != null;
     const myTimeSlot = user.name == booking?.userName ? bookedTimeSlot : null;
-    let snackString;
     const snackAlignment: SnackbarOrigin = { vertical: 'bottom', horizontal: 'left' }
+    const timeSlotDate = dateFromTimeSlot(selectedDate, timeSlot)
+    const timeSlotHasPassed = new Date().getTime() > timeSlotDate.getTime()
+    let snackString;
+
+    useEffect(() => {
+        setDisabled(timeSlotHasPassed)
+    }, [timeSlotHasPassed]);
+
 
     // Function for booking time
     const handleBook = async () => {
         setDisabled(true)
-        console.log(selectedDate+timeSlot)
+        console.log(selectedDate + timeSlot)
         const date = new Date(timeFromTimeSlot(selectedDate, timeSlot))
-        
+
         const jsonBooking = { userName: (user.name as string), date: date, timeSlot: timeSlot, createdAt: new Date() }
         const response = await fetch("/api/bookings", {
             method: "POST",
@@ -45,11 +52,11 @@ const BookingButton = (props: Props) => {
         if (response.ok) {
             snackString = "Du har bokat: " + String(timeSlot)
             snackTrigger("success", snackString, snackAlignment)
-        } else{
+        } else {
             let responseContent = await response.json()
             snackString = responseContent.error
             snackTrigger("error", snackString, snackAlignment)
-        } 
+        }
         setDisabled(false)
     }
     // Function for deleting already aquired time
@@ -112,15 +119,15 @@ const BookingButton = (props: Props) => {
                     onClick={bookedTimeSlot && myTimeSlot ? handleCancel : handleBook}
                     color={!bookedTimeSlot ? 'primary' : 'secondary'}
                     disabled={(bookedTimeSlot && !myTimeSlot) || disabled} variant="contained"
-                    >
-                        <Grid container>
-                            <Grid item xs={8} >
-                                <Typography variant="button" align="left">{timeSlot}</Typography>
-                            </Grid>
-                            <Grid item xs={4}>
-                                <Typography variant="button" align="right" sx={{textTransform:"none"}}>Bås {" "+ boothIndex}</Typography>
-                            </Grid>
+                >
+                    <Grid container>
+                        <Grid item xs={8} >
+                            <Typography variant="button" align="left">{timeSlot}</Typography>
                         </Grid>
+                        <Grid item xs={4}>
+                            <Typography variant="button" align="right" sx={{ textTransform: "none" }}>Bås {" " + boothIndex}</Typography>
+                        </Grid>
+                    </Grid>
                 </Button>
             </Grid>
             {/* <Grid container xs={3} justifyContent="center">
