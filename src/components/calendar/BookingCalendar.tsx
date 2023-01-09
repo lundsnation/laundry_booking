@@ -22,6 +22,7 @@ const BookingCalendar = (props: Props) => {
     const [bookings, setBookings] = useState<Array<Booking>>([]);
     const [snack, setSnack] = useState<SnackInterface>({ show: false, snackString: "", severity: "success", alignment: { vertical: "bottom", horizontal: "left" } })
     const [realtimeSnack, setRealtimeSnack] = useState<SnackInterface>({ show: false, snackString: "", severity: "success", alignment: { vertical: "bottom", horizontal: "right" } })
+    const todaysDateMinus2Days = new Date(new Date().setDate(new Date().getDate() - 2));
     const { user } = props;
 
     const updateBookings = async () => {
@@ -61,14 +62,7 @@ const BookingCalendar = (props: Props) => {
             !myBooking && setRealtimeSnack({ show: true, snackString: snackString, severity: severity, alignment: alignment })
 
         })
-
-        console.log("HOPEFULLY THIS ONLY EXECUTES ONCE ")
-
-        setFirstRender(false);
     }
-
-    console.log(firstRender);
-    console.log("-----!!!!!!!!-_-----_____!!!")
 
 
     const timeSlots: Array<string> = ["07:00-08:30",
@@ -84,14 +78,19 @@ const BookingCalendar = (props: Props) => {
 
     //Should be optimized,abstracted and refined later
     const handleDayColor = (day: Date): SxProps => {
+        const oldDate = todaysDateMinus2Days.getTime() > day.getTime();
+
         let nbrBookedTimes: number = 0;
 
-        bookings.forEach(booking => {
+        /*If it's not an old date we calculate the number of booknings for that day,
+        else we let nbrBookedTimes = 0, which means it wont get any color */
+        !oldDate && bookings.forEach(booking => {
             if (compareDates(booking.date, day)) {
                 nbrBookedTimes += 1;
             }
 
         });
+
         interface colorProps {
             backgroundColor: string,
             hoverBackgroundcolor: string,
@@ -195,6 +194,7 @@ const BookingCalendar = (props: Props) => {
                             <Paper elevation={0} variant={"outlined"}>
                                 <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={svLocale}>
                                     <StaticDatePicker<Date>
+                                        minDate={todaysDateMinus2Days}
                                         orientation="landscape"
                                         displayStaticWrapperAs="desktop"
                                         openTo="day"
