@@ -1,68 +1,10 @@
-import * as React from 'react';
-import { useEffect, useState } from "react";
-import type { NextPage } from 'next';
-import { Grid, Paper } from '@mui/material';
-import { useUser } from '@auth0/nextjs-auth0/client';
-import Header from '../src/components/Header'
-import BookingCalendar from '../src/components/calendar/BookingCalendar';
-import { useRouter } from 'next/router'
-import Footer from '../src/components/Footer';
-import Terms from '../src/components/Terms';
-import { UserType } from '../utils/types';
+import { NextPage } from 'next';
 import Loading from '../src/components/Loading';
-import Rules from '../src/components/Rules';
 
-const img = process.env.AUTH0_BASE_URL as string + "/logotyp02.png"
-const styles = {
-  paperContainer: {
-    backgroundImage: `url(${img})`,
-    backgroundRepeat: 'no-repeat',
-    backgroundSize: 'contain',
-    backgroundPosition: 'center',
-    // height: '120vh',
-    // width: '100%',
-  }
-}
 
 
 const Test: NextPage = () => {
-  const { user, error, isLoading } = useUser();
-  const router = useRouter()
-
-  useEffect(() => {
-    if (!(user || isLoading)) {
-      router.push('api/auth/login')
-    }
-  }, [user, isLoading])
-
-  return (user ?
-    
-      <Grid container justifyContent="flex-start" >
-        <Header />
-        <Terms user={user as UserType}/>
-        <Rules/>
-
-
-        <Grid item xs={12}  >          
-          <Paper style={styles.paperContainer}
-            sx={{
-              boxShadow: "none",
-              justifyContent: "center",
-              alignItems: "center",
-              display: "flex",
-              opacity: "1"
-            }}>
-            
-            {<BookingCalendar title="" user={user as UserType} />}
-          </Paper>
-        </Grid>
-        
-        <Grid container xs={12}  >
-          <Footer />
-        </Grid>
-
-      </Grid> :<Loading/>
-    )
+  return (<Loading/>)
 }
 
 export default Test;
