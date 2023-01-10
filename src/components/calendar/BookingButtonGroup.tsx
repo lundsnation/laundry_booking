@@ -19,7 +19,7 @@ const BookingButtonGroup = (props: Props) => {
     const [ready,setReady] = useState(false)
     const timeToBooking: Map<string, Booking> = timeSlotToBooking(bookedBookings);
 
-    const timeToDryingBooth: Map<string, number> = timeSlotToDryingBooth(timeSlots);
+
 
     useEffect(()=>{
         if(!ready){
