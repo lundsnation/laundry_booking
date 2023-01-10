@@ -49,7 +49,7 @@ const BookingButtonGroup = (props: Props) => {
     
     return (
         <Fade in={ready}>
-        <ButtonGroup sx={{ zIndex: 'modal' }} fullWidth size='medium' orientation='vertical'> {buttons} </ButtonGroup>
+        <ButtonGroup sx={{ zIndex: 'modal', pt:{xs:2} }} fullWidth size='medium' orientation='vertical'> {buttons} </ButtonGroup>
         </Fade>
     );
 }
