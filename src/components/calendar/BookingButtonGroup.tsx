@@ -18,6 +18,7 @@ const BookingButtonGroup = (props: Props) => {
     const { bookedBookings, timeSlots, selectedDate, user, updateBookings, snackTrigger } = props
     const [ready,setReady] = useState(false)
     const timeToBooking: Map<string, Booking> = timeSlotToBooking(bookedBookings);
+
     const timeToDryingBooth: Map<string, number> = timeSlotToDryingBooth(timeSlots);
 
     useEffect(()=>{
@@ -32,7 +33,7 @@ const BookingButtonGroup = (props: Props) => {
             booking = timeToBooking.get(timeSlot) as Booking;
         }
 
-        const dryingBoothNbr = timeToDryingBooth.get(timeSlot);
+        const dryingBoothNbr = timeSlotToDryingBooth.get(timeSlot);
 
         return <BookingButton
             key={timeSlot}

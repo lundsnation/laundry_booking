@@ -4,6 +4,8 @@ import React, { useEffect, useState } from "react";
 import { Booking, timeFromTimeSlot } from "../../../utils/types"
 import BookingInfo from "./BookingInfo"
 import { UserType } from "../../../utils/types";
+import { textTransform } from "@mui/system";
+import { dateFromTimeSlot } from "../../../utils/bookingsAPI";
 
 interface Props {
     boothIndex: number,
@@ -15,17 +17,27 @@ interface Props {
     snackTrigger: (severity: AlertColor, snackString: string, alignment: SnackbarOrigin) => void;
 }
 const BookingButton = (props: Props) => {
+    const { boothIndex, user, booking, selectedDate, timeSlot, updateBookings, snackTrigger } = props
     const [disabled, setDisabled] = useState<boolean>(false)
     const [showBookingInfo, setShowBookingInfo] = useState<boolean>(false)
-    const { boothIndex,user, booking, selectedDate, timeSlot, updateBookings, snackTrigger } = props
+    const [bookingUser, setBookingUser] = useState<UserType>({} as UserType)
+    const [loadingUser, setLoadingUser] = useState(false)
     const bookedTimeSlot = booking != null;
     const myTimeSlot = user.name == booking?.userName ? bookedTimeSlot : null;
-    let snackString;
     const snackAlignment: SnackbarOrigin = { vertical: 'bottom', horizontal: 'left' }
+    const timeSlotDate = dateFromTimeSlot(selectedDate, timeSlot)
+    const timeSlotHasPassed = new Date().getTime() > timeSlotDate.getTime()
+    let snackString;
+
+    useEffect(() => {
+        setDisabled(timeSlotHasPassed)
+    }, [timeSlotHasPassed]);
+
 
     // Function for booking time
     const handleBook = async () => {
         setDisabled(true)
+
         const date = new Date(timeFromTimeSlot(selectedDate, timeSlot))
         const jsonBooking = { userName: (user.name as string), date: date, timeSlot: timeSlot, createdAt: new Date() }
         const response = await fetch("/api/bookings", {
@@ -38,11 +50,11 @@ const BookingButton = (props: Props) => {
         if (response.ok) {
             snackString = "Du har bokat: " + String(timeSlot)
             snackTrigger("success", snackString, snackAlignment)
-        } else{
+        } else {
             let responseContent = await response.json()
             snackString = responseContent.error
             snackTrigger("error", snackString, snackAlignment)
-        } 
+        }
         setDisabled(false)
     }
     // Function for deleting already aquired time
@@ -92,7 +104,10 @@ const BookingButton = (props: Props) => {
                             <Grid item xs={5}>
                                 <Typography variant="button" align="left" sx={{textTransform:"none"}}>Bås {" "+ boothIndex}</Typography>
                             </Grid>
+
+
                         </Grid>
+                    </Grid>
                 </Button>
                 </Paper>
             </Grid>
