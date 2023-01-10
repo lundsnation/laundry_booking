@@ -107,7 +107,6 @@ const BookingButton = (props: Props) => {
 
 
                         </Grid>
-                    </Grid>
                 </Button>
                 </Paper>
             </Grid>
