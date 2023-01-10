@@ -38,12 +38,10 @@ const Header = () => {
         setMenuOpen(false)
     };
 
-
-
     return (
-        <div >
-        <Box sx={{ alignItems: "top", height:80}}>
+        <React.Fragment>
             <AppBar position="sticky" color="primary">
+                
                 <Toolbar>
                     <IconButton
                         size="large"
@@ -91,20 +89,18 @@ const Header = () => {
                                     onClose={handleClose}
                                 >
                                     
-
                                     <HomeButton/>
                                     <ProfileButton />
                                     <LoginButton />
                                 </Menu>
                             </Box></>
-                        //ProfileButton & LoginButton, Buttons in iconMenu
-                        //Whether buttons are shown are based on "user" in the components
                     )}
 
                 </Toolbar>
             </AppBar>
-        </Box>
-        </div>
+            {/* Recommended hack when using postiion="sticky" from MUI docs */}
+            <Toolbar/>
+            </React.Fragment>
     )
 
 };

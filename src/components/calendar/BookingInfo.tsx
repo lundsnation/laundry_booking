@@ -1,4 +1,4 @@
-import { Box,List, Button, DialogActions ,Dialog, DialogTitle, ListItem, Typography, Divider,Skeleton } from "@mui/material"
+import { List, Button, DialogActions ,Dialog, DialogTitle, ListItem, Typography, Divider,Skeleton, Grid } from "@mui/material"
 import AlternateEmailIcon from '@mui/icons-material/AlternateEmail';
 import CallIcon from '@mui/icons-material/Call';
 import { Booking, UserType } from "../../../utils/types"
@@ -7,14 +7,33 @@ import { useState,useEffect } from "react";
 interface Props {
     booking: Booking,
     showBookingInfo: boolean,
-    showBookedTime: () => void,
-    user: UserType,
-    loading: boolean
+    setShowBookingInfo: (state:boolean)=>void
 }
 const BookingInfo = (props: Props) => {
-    const {booking, showBookingInfo,user,showBookedTime,loading} = props
+    const[loading,setLoading] = useState(false)
+    const {booking, showBookingInfo,setShowBookingInfo} = props
     const [userInfo,setUserInfo] = useState<UserType>({} as UserType)
     
+    useEffect(()=>{
+        if(showBookingInfo){
+            showBookedTime()
+        }
+    },[showBookingInfo])
+
+    const showBookedTime = async () => {
+            setLoading(true)
+            const response = await fetch("/api/user/" + booking?.userName)
+            if (response.ok) {
+                try {
+                    const responseContent = await response.json()
+                    setUserInfo({ ...responseContent })
+                } catch (error) {
+                    console.log(error)
+                }
+            }
+        setLoading(false)
+    }
+
     return(
     <Dialog onClose = {()=>{showBookedTime()}}
                                 open={showBookingInfo} fullWidth>
@@ -22,19 +41,24 @@ const BookingInfo = (props: Props) => {
                                     <Divider variant="middle"/>
                                     <List >
                                         <ListItem >
-                                            Tid bokad av &nbsp;{loading ? <Skeleton width={80} />:<Typography style={{fontWeight: 'bold'}}>{user.name}</Typography>}
+                                            Tid bokad av &nbsp;{loading ? <Skeleton width={80} />:<Typography style={{fontWeight: 'bold'}}>{userInfo.name}</Typography>}
                                         </ListItem>    
                                         <ListItem>
-                                            <CallIcon fontSize = "small" />  &nbsp; {loading ? <Skeleton width={150} />:<Typography style={{paddingLeft: 5}}>{user.user_metadata?.telephone}</Typography>}
+                                            <CallIcon fontSize = "small" />  &nbsp; {loading ? <Skeleton width={150} />:<Typography style={{paddingLeft: 5}}>{userInfo.user_metadata?.telephone}</Typography>}
                                         </ListItem>
                                         <ListItem>
-                                            <AlternateEmailIcon fontSize = "small"/>  &nbsp; {loading? <Skeleton width={150} />:<Typography style={{paddingLeft: 5}}>{user.email}</Typography>}
+                                            <AlternateEmailIcon fontSize = "small"/>  &nbsp; {loading? <Skeleton width={150} />:<Typography style={{paddingLeft: 5}}>{userInfo.email}</Typography>}
                                         </ListItem>
                                     </List>   
                                     <DialogActions>
-                                        <Typography sx={{fontStyle: "italic", justifyContent: "center", padding:2}} variant="caption" align= "left">Kom ihåg att hålla god ton mot andra hyrestagare</Typography>
-                                        <Box  /> 
-                                        <Button onClick={()=>{showBookedTime()}}>Stäng</Button>
+                                        <Grid container padding={2}>
+                                            <Grid item xs={8} >
+                                                <Typography sx={{fontStyle: "italic"}} variant="caption" >Kom ihåg att hålla god ton mot andra hyrestagare</Typography>
+                                            </Grid>
+                                            <Grid item xs={4}>
+                                                    <Button onClick={()=>{setShowBookingInfo(false)}}>Stäng</Button>
+                                            </Grid>
+                                        </Grid>
                                     </DialogActions>
                                 </Dialog>
     )}
