@@ -46,10 +46,7 @@ const BookingCalendar = (props: Props) => {
             const isPostRequest = data.request == 'post'
             const tmpDate = new Date(date);
             const dateString = tmpDate.getFullYear() + "/" + (tmpDate.getMonth() + 1) + "/" + tmpDate.getDay()
-            console.log(dateString);
             const snackString = isPostRequest ? userName + ' bokade ' + dateString + ', ' + timeSlot : userName + ' avbokade ' + dateString + ', ' + timeSlot
-
-
             const severity = "info"
             //const alignment: SnackbarOrigin = {vertical: 'bottom', horizontal: 'right'}
             const myBooking = userName == user.name
@@ -153,25 +150,6 @@ const BookingCalendar = (props: Props) => {
         setRealtimeSnack({ show: false, snackString: realtimeSnack.snackString, severity: realtimeSnack.severity, alignment: realtimeSnack.alignment })
     }
 
-    /*const bookingButtonGroup = (
-        <Grid container spacing={1} direction="row" sx={{margin:0}}>
-            <Grid container>
-                <Grid item xs={3}>
-                    <Typography variant="body2" style={{fontWeight:"bold"}} align='center' sx={{padding:1}}>Torkbås</Typography>
-                </Grid>
-                <Grid item xs={6}>
-                    <Typography variant="body2"  align='center' style={{fontWeight:"bold"}}sx={{padding:1}}>Tid</Typography>
-                </Grid>
-                <Grid item xs={3}>
-                <Typography variant="body2"  align='center' style={{fontWeight:"bold"}} sx={{padding:1}}>Info</Typography>
-                </Grid>
-
-            </Grid>
-            
-            <BookingButtonGroup  timeSlots={timeSlots} bookedBookings={getDateBookings(bookings, selectedDate)} selectedDate={selectedDate} user={user} updateBookings={updateBookings} snackTrigger={snackTrigger} />
-        </Grid>
-    )*/
-
     const bookingButtonGroup = (
         <BookingButtonGroup timeSlots={timeSlots} bookedBookings={getDateBookings(bookings, selectedDate)} selectedDate={selectedDate} user={user} updateBookings={updateBookings} snackTrigger={snackTrigger} />
     )
@@ -184,13 +162,10 @@ const BookingCalendar = (props: Props) => {
                 container
                 maxWidth={600}
                 spacing={2}
-                sx={{
-                    padding: { xs: 4, md: 0 },
-                    marginTop: { xs: 5, md: 0 }
-                }}>
+                >
                 <Grid item xs={12} md={12}>
-                    <Grid container spacing={3}>
-                        <Grid item xs={12} md={8}>
+                    <Grid container>
+                        <Grid item xs={12} md={7}>
                             <Paper elevation={0} variant={"outlined"}>
                                 <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={svLocale}>
                                     <StaticDatePicker<Date>
@@ -209,10 +184,7 @@ const BookingCalendar = (props: Props) => {
                                         }
                                         }
                                         renderInput={(params) => <TextField {...params} />}
-
-                                        //DO NOT REMOVE
                                         renderDay={(day, _value, DayComponentProps) => {
-
                                             return (
                                                 <PickersDay sx={handleDayColor(day)} {...DayComponentProps} />
                                             );
@@ -221,19 +193,17 @@ const BookingCalendar = (props: Props) => {
                                     />
                                 </LocalizationProvider>
                             </Paper>
-
                         </Grid>
-                        <Grid item xs={12} md={4}>
-                            {/*<Paper elevation={0} variant="outlined" sx={{paddingBottom:1}}>*/}
-                            {bookingButtonGroup}
-                            {/*</Paper>*/}
-
-                        </Grid>
+                            <Grid item xs={12} md={5}>
+                                    <Grid container>
+                                        <Grid item xs={12}>
+                                                {bookingButtonGroup}
+                                        </Grid>
+                                    </Grid>
+                            </Grid>
                     </Grid>
                 </Grid>
-
                 <Grid item xs={12}>
-                    {/*<Box m={2}/>*/}
                     <BookedTimes bookings={bookings} user={user} snackTrigger={snackTrigger} />
                 </Grid>
 

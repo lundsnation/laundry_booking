@@ -88,7 +88,6 @@ const UserGrid = () => {
 
       // SEARCH
       useEffect(()=>{
-        console.log("searchTriggered")
         let searchRes = users.filter(user => user.name.includes(searchString))
         setSearchedUsers(searchRes)
     },[searchString])
@@ -207,7 +206,6 @@ const UserGrid = () => {
                         variant="outlined"
                         label="Sök efte användare"
                         onChange={(e)=>{
-                            console.log(e.target.value)
                             setSearchString(e.target.value)
                         }}
                         InputProps={{

@@ -25,7 +25,6 @@ const userAccept = async (req, res, session, state) => {
       const userModifier = new getUsers()
       const {sid,sub,updated_at,...edit} = {...session.user,email:req.body.email,user_metadata:req.body.user_metadata}
       const response = await userModifier.modifyUser(edit,session.user.sub) 
-        console.log(await response.json())
         if(response.ok){
           delete session.refreshToken
           return {...session,user:{...session.user,email:req.body.email,user_metadata:{...req.body.user_metadata}}}

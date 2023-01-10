@@ -1,7 +1,7 @@
 import * as React from 'react';
-import { useEffect, useState } from "react";
+import { useEffect} from "react";
 import type { NextPage } from 'next';
-import { CircularProgress , Typography, Box, Button, Grid, Paper } from '@mui/material';
+import { Grid, Paper } from '@mui/material';
 import { useUser } from '@auth0/nextjs-auth0/client';
 import Header from '../src/components/Header'
 import BookingCalendar from '../src/components/calendar/BookingCalendar';
@@ -19,14 +19,11 @@ const styles = {
     backgroundRepeat: 'no-repeat',
     backgroundSize: 'contain',
     backgroundPosition: 'center',
-    height: '100vh',
-    width: '100%',
   }
 }
 
 
-const Index = () => {
-  //const { user, isLoading, error } = useUser()
+const Index : NextPage = () => {
   const { user, error, isLoading } = useUser();
   const router = useRouter()
 
@@ -38,18 +35,15 @@ const Index = () => {
 
   return (user ?
 
-      <Grid container rowSpacing={{xs : 14, sm: 0}}  justifyContent="flex-end" >
-        <Terms user={user as UserType}/>
-        <Grid item xs={12}  minHeight={100} >
-          <Header />
-        </Grid>
-        <Rules/>
+    <Grid container justifyContent="flex-end" >
+      <Header />
+      <Terms user={user as UserType}/>
+      <Rules/>
 
 
-        <Grid item xs={12} flexGrow={1} >          
+        <Grid item xs={12}>          
           <Paper style={styles.paperContainer}
             sx={{
-              minHeight: 0,
               boxShadow: "none",
               justifyContent: "center",
               alignItems: "center",
@@ -57,18 +51,15 @@ const Index = () => {
               opacity: "1"
             }}>
               
-              {/* <Terms/> */}
             {<BookingCalendar title="" user={user as UserType} />}
-          
           </Paper>
-
         </Grid>
         
         <Grid item xs={12}  >
           <Footer />
         </Grid>
 
-      </Grid> :<Loading/>
+      </Grid> : <Loading/>
     )
 }
 

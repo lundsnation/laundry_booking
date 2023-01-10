@@ -36,14 +36,11 @@ const EditProfile = (props:props)=>{
         e.preventDefault()
         setWait(true);
             let response : Response
-                console.log(editedProfile)
                 response = await fetch("/api/auth/edit", {
                     method: "PATCH",
                     headers: {"Content-Type": "application/json"},
                     body: JSON.stringify(editedProfile)
                 })
-                console.log(response)
-                console.log(await response.json())
                 if(response.ok){
                     setSnack({show: true, snackString: "Användare sparad", severity:'success'})
                     user.email = editedProfile.email

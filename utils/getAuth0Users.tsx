@@ -16,7 +16,6 @@ export class getUsers {
         
         const secret = (process.env.REACT_APP_SECRET as string)
         const id = (process.env.REACT_APP_ID as string)
-        console.log(this.id)
         const options = {
             method: 'POST',
             url: 'https://lundsnation.eu.auth0.com/oauth/token',
@@ -99,7 +98,6 @@ export class getUsers {
         }
         const response = await fetch(options.url, options)
         const data = await response.json()
-        console.log(data)
         return data    
     }
 
@@ -109,7 +107,7 @@ export class getUsers {
         const specified = `${key} : "${value}"`
         const options = {
             method: 'GET',
-            url: "https://lundsnation.eu.auth0.com/o",
+            url: "https://lundsnation.eu.auth0.com/api/v2/users?",
             headers: { authorization: 'Bearer ' + token }
         }
 
@@ -134,7 +132,6 @@ export class getUsers {
             headers: { 'content-type': 'application/json' },
             body: JSON.stringify({client_id:this.id,email:email,connection: "Username-Password-Authentication"})
         }
-        console.log("Skickade: " + options.body)
         return await fetch(options.url, options)
     }
     /**

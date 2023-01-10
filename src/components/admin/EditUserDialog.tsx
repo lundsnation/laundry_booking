@@ -50,15 +50,12 @@ const EditUserDialog = (props: Props) => {
                 if(tempUser.email!=selectedUsers[i].email){
                     tempUser = {...tempUser,app_metadata:{...tempUser.app_metadata, acceptedTerms : false}}
                 }
-                console.log(tempUser)
                 userID = selectedUsers[i].user_id
                 response = await fetch("/api/user/" + userID, {
                     method: "PATCH",
                     headers: {"Content-Type": "application/json"},
                     body: JSON.stringify(tempUser)
                 })
-                console.log(response)
-                console.log(await response.json())
                 if(response.ok){
                     editedUsers.push(selectedUsers[i].name)
                 }

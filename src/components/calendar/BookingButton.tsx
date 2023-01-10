@@ -1,9 +1,8 @@
-import { Button, Container, AlertColor, Grid, IconButton, Typography, Box, SnackbarOrigin } from "@mui/material"
+import { Button, Paper, AlertColor, Grid, IconButton, Typography, Box, SnackbarOrigin, Fade } from "@mui/material"
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import React, { useEffect, useState } from "react";
 import { Booking, timeFromTimeSlot } from "../../../utils/types"
 import BookingInfo from "./BookingInfo"
-import { timeSlots } from "../../../utils/types";
 import { UserType } from "../../../utils/types";
 import { textTransform } from "@mui/system";
 import { dateFromTimeSlot } from "../../../utils/bookingsAPI";
@@ -38,9 +37,8 @@ const BookingButton = (props: Props) => {
     // Function for booking time
     const handleBook = async () => {
         setDisabled(true)
-        console.log(selectedDate + timeSlot)
-        const date = new Date(timeFromTimeSlot(selectedDate, timeSlot))
 
+        const date = new Date(timeFromTimeSlot(selectedDate, timeSlot))
         const jsonBooking = { userName: (user.name as string), date: date, timeSlot: timeSlot, createdAt: new Date() }
         const response = await fetch("/api/bookings", {
             method: "POST",
@@ -84,68 +82,49 @@ const BookingButton = (props: Props) => {
     }
     // Function for showing info on booked time
 
-    const showBookedTime = async () => {
-
-        if (!showBookingInfo) {
-
-            setLoadingUser(true)
-            setShowBookingInfo(!showBookingInfo);
-            const response = await fetch("/api/user/" + booking?.userName)
-            if (response.ok) {
-                try {
-                    const responseContent = await response.json()
-                    setBookingUser({ ...responseContent })
-                } catch (error) {
-                    console.log(error)
-                }
-            }
-            setLoadingUser(false)
-            return
-        }
-        setShowBookingInfo(!showBookingInfo);
-    }
-
     return (
-        <Grid container>
-            <Grid item xs={12}>
+        <Grid container spacing={1}>
+            <Grid item xs={1}></Grid>
+            <Grid item xs={10}>
+                
+            <Paper elevation={0} >
                 <Button
-                    sx={{
-                        minWidth: "100",
-                        minHeight: { xs: 50, md: 0 },
-                        maxHeight: "33.6px",
-                        textTransform: "none",
-                        fontSize: { xs: 20, md: 14 },
-                    }}
+                    fullWidth
+                    size="small"
+                    variant="contained"
                     onClick={bookedTimeSlot && myTimeSlot ? handleCancel : handleBook}
                     color={!bookedTimeSlot ? 'primary' : 'secondary'}
-                    disabled={(bookedTimeSlot && !myTimeSlot) || disabled} variant="contained"
-                >
-                    <Grid container>
-                        <Grid item xs={8} >
-                            <Typography variant="button" align="left">{timeSlot}</Typography>
+                    disabled={(bookedTimeSlot && !myTimeSlot) || disabled} 
+                    >
+
+                        <Grid container >
+                            <Grid item xs={7} >
+                                <Typography variant="button" align="left">{timeSlot}</Typography>
+                            </Grid>
+                            <Grid item xs={5}>
+                                <Typography variant="button" align="left" sx={{textTransform:"none"}}>Bås {" "+ boothIndex}</Typography>
+                            </Grid>
+
+
                         </Grid>
-                        <Grid item xs={4}>
-                            <Typography variant="button" align="right" sx={{ textTransform: "none" }}>Bås {" " + boothIndex}</Typography>
-                        </Grid>
-                    </Grid>
                 </Button>
+                </Paper>
             </Grid>
-            {/* <Grid container xs={3} justifyContent="center">
-                <IconButton disabled={!(bookedTimeSlot && !myTimeSlot)} onClick={() => { showBookedTime() }} style={{ padding: 0, height: 20, width: 20, marginBottom: "-8px" }}>
+            <Grid item xs={1}> 
+                <IconButton disabled={!(bookedTimeSlot && !myTimeSlot)} 
+                            onClick={() => {setShowBookingInfo(true)}} 
+                            style={{ padding: 0, height: 20, width: 20, marginBottom: "-8px" }}>
                     {(bookedTimeSlot && !myTimeSlot) ?
-                        <InfoOutlinedIcon color="action" fontSize="small" />
+                        <InfoOutlinedIcon color="action" />
                         : null}
                 </IconButton>
                 {booking && <BookingInfo
                     showBookingInfo={showBookingInfo}
-                    showBookedTime={showBookedTime}
                     booking={booking}
-                    user={bookingUser}
-                    loading={loadingUser}
+                    setShowBookingInfo={setShowBookingInfo}
                 />}
-            </Grid> */}
         </Grid >
-
+        </Grid>
     );
 };
 

@@ -25,7 +25,6 @@ const NewUserDialog = (props: Props) => {
     const handleAddUser = async (event : FormEvent) =>{
         event.preventDefault();
         setWait(true)
-        console.log({...newUser, app_metadata : {...newUser.app_metadata, acceptedTerms: false, roles:['user']}})
         const response = await fetch("/api/user", {
             method: "POST",
             headers: {

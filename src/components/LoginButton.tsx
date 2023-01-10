@@ -14,11 +14,11 @@ const LoginButton: NextPage = () => {
                 <Grid container justifyContent="center">
                     <Grid item xs={10}>
                         <Grid container justifyContent="center">
-                            <Typography variant="button">Logga ut</Typography>
+                            <Typography variant="button" color="error">Logga ut</Typography>
                         </Grid>
                     </Grid>
                     <Grid item xs={2}>
-                        <LogoutIcon />
+                        <LogoutIcon color="error"/>
                     </Grid> 
                 </Grid>   
             </MenuItem>
