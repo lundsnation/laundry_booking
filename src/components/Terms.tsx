@@ -1,23 +1,33 @@
-import { Modal, Typography,Box,Button, Grid } from "@mui/material"
+import { Modal, Typography,Box,Button, Grid, Divider } from "@mui/material"
 import { Container } from "@mui/system"
 import { useState } from "react"
 import { LoadingButton } from "@mui/lab";
 import { UserType } from "../../utils/types";
 import { useUser } from '@auth0/nextjs-auth0/client';
+import { Apartment,  Email, EmailOutlined, Place } from "@mui/icons-material";
 
-const USER_AGREEMENT_TITLE = "Villkor för bruk & GDPR"
-const USER_AGREEMENT_TEXT_1 = "Välkommen till Lunds Nations tvättbokningssystem, snabb informativ text om basala regler. snabb informativ text om basala reglersnabb informativ text om basala reglersnabb informativ text om basala reglersnabb informativ text om basala reglersnabb informativ text om basala reglersnabb informativ text om basala regler"
-const USER_AGREEMENT_TEXT_2 = "För att använda systemet måste du godkänna att vi sparar följande personuppgifter: namn, telefonnummer, lägenhetsnummer och e-post i våra system. För att öka transparensen visar systemet andra hyrestagares kontaktuppgifter, ifall tvätt skulle vara kvarlämnad eller dyliktkan användare på eget initiativ kontakta varandra. Vi understryker att hålla god ton gentemot andra hyresgäster och ifall det framkommer att funktionen inte fungerar som avsett, kommer den att inaktiveras. Accepterar du följande?"
+const USER_AGREEMENT_MAIN_TITLE = "Användarvillkor"
+const USER_AGREEMENT_TITLE_1 = "GDPR"
+const USER_AGREEMENT_TEXT_1 = "Lunds Nation behandlar personuppgifter när vi måste göra det enligt gällande lagstiftning inom våra olika verksamhetsområden eller när det behövs för att utföra den uppgift som avses (t.ex. för att kunna ge dig bättre service). Vi samlar in dina uppgifter i syfte att skapa ett personligt konto åt dig på vår tvättbokningshemsida. "
+const USER_AGREEMENT_TITLE_2 = "RÄTT TILL RADERING"
+const USER_AGREEMENT_TEXT_2 = "I de fall behandlingen av dina personuppgifter grundas på samtycke så har du när som helst rätt att ta tillbaka (återkalla) ditt samtycke som du har lämnat till Lunds Nation. Vid utflytt av bostad raderas alla personuppgifter som du har delgivit till här. För att ta tillbaka (återkalla) ett samtycke, ta kontakt med Lunds Nation Studentbostadshus via de kontaktuppgifter som finns längst ned på denna sida. Du ska då uppge för vilket ändamål du väljer att ta tillbaka ditt samtycke. När du har tagit tillbaka (återkallat) ditt samtycke kommer vi att upphöra att behandla dina personuppgifter för det berörda ändamålet. Du har även rätt att begära radering av dina personuppgifter i samband med återkallande av samtycke. OBS! Om du återkallar ditt samtycke kommer du raderas från tvättbokningshemsidan och därmed inte kunna boka tvättider längre." 
+const CONTACT_INFO_TITLE = "KONTAKTA OSS"
+const CONTACT_INFO_TEXT_1 = "Om du har några frågor eller funderingar om behandlingen av dina personuppgifter, hör gärna av dig till Lunds nation Husförmän:"
+const CONTACT_INFO_ADRESS = " Agardhsgatan 1, 223 51 Lund"
+const CONTACT_INFO_EMAIL = " husforman@lundsnation.se"
+
 
 const style = {
-    position: {xs:"relative",sm:"relative",md:"abolute"},
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    bgcolor: 'background.paper',
-    border: '2px solid #000',
-    boxShadow: 24,
-    p: 4,
+     position: {xs:"relative",sm:"fixed"},
+     top: {xs: 'none',sm:'50%'},
+     left: {xs: 'none',sm:'50%'},
+     transform: {xs: 'none',sm:'translate(-50%, -50%)'},
+     bgcolor: 'background.paper',
+    // border: '2px solid #000',
+    // boxShadow: 24,
+     maxHeight: "100vh",
+     overflow: 'auto',
+     p: 4,
     };
 
 interface props{
@@ -57,15 +67,55 @@ export const Terms = (props:props) => {
             sx={{overflow:"scroll"}}
         >
             <Box sx={style}>
-            <Typography id="modal-modal-title" variant="h6" component="h2">
-                {USER_AGREEMENT_TITLE}
+            <Typography id="modal-modal-Title" align="center" variant="h5">{USER_AGREEMENT_MAIN_TITLE}</Typography>
+            <Box margin={1} />
+            <Typography id="modal-modal-subtitle1" fontSize="large" variant="h6" >
+                {USER_AGREEMENT_TITLE_1}
             </Typography>
-            <Typography id="modal-modal-descriptio1" variant="body1" sx={{ mt: 2 }}>
+            <Typography id="modal-modal-description1" variant="body1" >
                 {USER_AGREEMENT_TEXT_1}
             </Typography>
-            <Typography id="modal-modal-description2" variant="body1" sx={{ mt: 2 }}>
+            <Box margin={1} />
+            <Typography id="modal-modal-subtitle2" fontSize="large" variant="h6" >
+                {USER_AGREEMENT_TITLE_2}
+            </Typography>
+            
+            <Typography id="modal-modal-description2" variant="body1" >
                 {USER_AGREEMENT_TEXT_2}
             </Typography>
+            <Box margin={1} />
+            <Typography id="modal-modal-subtitle-contactinfo" fontSize="large" variant="h6" >
+                {CONTACT_INFO_TITLE}
+            </Typography>
+            <Typography id="modal-modal-text-contactinfo">
+                {CONTACT_INFO_TEXT_1}
+            </Typography>
+            <Box margin={1} />
+            <Grid container spacing={1}>
+                <Grid item >
+                    <EmailOutlined/>
+                </Grid>
+                <Grid item>
+                    <Typography id="modal-modal-email" fontStyle="italic" >
+                        {CONTACT_INFO_EMAIL}
+                    </Typography>
+                </Grid>
+            </Grid>
+            <Box margin={1} />
+            <Grid container spacing={1}>
+                <Grid item >
+                    <Place/>
+                </Grid>
+                <Grid item>
+                    <Typography id="modal-modal-email" fontStyle="italic" >
+                        {CONTACT_INFO_ADRESS}
+                    </Typography>
+                </Grid>
+            </Grid>
+            
+            
+            
+
             <Grid container spacing={2} justifyContent="center" sx={{ mt: 1 }}>
                 <Grid item xs="auto" >
                     <Button href="api/auth/logout" color="warning" variant="contained" >Avböj</Button>
@@ -73,6 +123,7 @@ export const Terms = (props:props) => {
                 <Grid item xs="auto">   
                     <LoadingButton loading={loading} variant="contained" onClick={handleAccept}>Acceptera</LoadingButton>
                 </Grid>
+                
             </Grid>
             
             </Box>

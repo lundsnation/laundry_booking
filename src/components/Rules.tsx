@@ -2,9 +2,6 @@
 import { Button, Drawer, Popper, SwipeableDrawer, Tooltip, Typography } from "@mui/material"
 import { Box } from "@mui/system";
 import { useState } from "react";
-import { positions } from '@mui/system';
-import zIndex from "@mui/material/styles/zIndex";
-import mt from "date-fns/locale/mt";
 import KeyboardDoubleArrowRightIcon from '@mui/icons-material/KeyboardDoubleArrowRight';
 
 
@@ -32,6 +29,7 @@ const Rules = (props: Props) => {
 
 
     return (
+
         <Box>
             {!drawerOpen && <Tooltip
                 placement={'right'}
@@ -41,6 +39,7 @@ const Rules = (props: Props) => {
                     variant={'outlined'}
                     onClick={toggleDrawer}
                     sx={{
+                        display:{xs:"none",md:"inline-flex"},
                         color: '#000000a6',
                         borderColor: '#000000a6',
                         zIndex: 'tooltip',
