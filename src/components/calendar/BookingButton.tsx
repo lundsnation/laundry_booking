@@ -84,8 +84,8 @@ const BookingButton = (props: Props) => {
 
     return (
         <Grid container spacing={1}>
-            <Grid item xs={1}></Grid>
-            <Grid item xs={10}>
+            <Grid item xs={2} md={1}></Grid>
+            <Grid item xs={8} md={10}>
                 
             <Paper elevation={0} >
                 <Button
@@ -110,7 +110,7 @@ const BookingButton = (props: Props) => {
                 </Button>
                 </Paper>
             </Grid>
-            <Grid item xs={1}> 
+            <Grid item xs={2} md={1}> 
                 <IconButton disabled={!(bookedTimeSlot && !myTimeSlot)} 
                             onClick={() => {setShowBookingInfo(true)}} 
                             style={{ padding: 0, height: 20, width: 20, marginBottom: "-8px" }}>
