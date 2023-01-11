@@ -15,7 +15,7 @@ const Admin = () => {
     return (
         <Grid container justifyContent="center">
             <Grid item xs={12} flexGrow={1}>
-                <Header />
+                <Header user={user as UserType} />
             </Grid>
             {user && !isLoading ?
                 <Grid item xs={12}>
