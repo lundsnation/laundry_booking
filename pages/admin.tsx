@@ -4,7 +4,6 @@ import NotLoggedIn from "../src/components/NotLoggedIn";
 import NotAuthorized from "../src/components/NotAuthorized";
 import Header from "../src/components/header/Header";
 import UserGrid from "../src/components/admin/UserGrid";
-
 import { Grid } from "@mui/material";
 import Loading from "../src/components/Loading";
 import { UserType } from "../utils/types";

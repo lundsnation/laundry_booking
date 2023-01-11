@@ -24,9 +24,6 @@ interface Props {
 
 const Header = (props: Props) => {
     const home = process.env.AUTH0_BASE_URL
-    const HEADER_IMAGE_PATH = "/LN24_w.svg"
-    const HEADER_IMAGE_SCALE = 2
-    const HEADER_IMAGE_SIZE = 24 * HEADER_IMAGE_SCALE
     const user = props.user
     const [menuOpen, setMenuOpen] = React.useState(false)
     const [auth, setAuth] = React.useState(true);

@@ -5,21 +5,23 @@ import router from 'next/router';
 import { UserType } from '../../../../utils/types';
 import AdminButton from './AdminButton'
 import { Typography } from '@mui/material';
+import ProfileMenuButton from './ProfileMenuButton';
 
 interface Props {
     user: UserType
 }
 
-type navItem = {
+type NavItem = {
     navText: string,
     navLink: string
 }
 
-//Admin button is added separately as it is special
-const navItems: Array<navItem> = [
+//Admin button is added separately as it is special, same with profileButton
+const navItems: Array<NavItem> = [
     { navText: 'Boka', navLink: "/" },
     { navText: 'Regler', navLink: "/regler" },
-    { navText: 'info', navLink: "/info" }
+    { navText: 'info', navLink: "/info" },
+    { navText: "nylänk", navLink: "/nylänk" }
 ];
 
 const DesktopNav = (props: Props) => {
@@ -34,8 +36,9 @@ const DesktopNav = (props: Props) => {
         <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
             {navItems.map(({ navText, navLink }) => (
                 <Button
+                    color={"inherit"}
                     key={navText}
-                    sx={{ color: '#fff', mx: 2 }}
+                    sx={{ mx: 2 }}
                     onClick={() => onClick(navLink)}
                 >
                     <Typography
@@ -45,7 +48,8 @@ const DesktopNav = (props: Props) => {
                     </Typography>
                 </Button>
             ))}
-            {user.name == "admin" && <AdminButton />}
+            {user.app_metadata?.roles?.includes("admin") && <AdminButton />}
+            <ProfileMenuButton user={user} />
         </Box >
     );
 }
