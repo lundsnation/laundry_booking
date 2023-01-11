@@ -30,7 +30,7 @@ const Rules = (props: Props) => {
 
     return (
 
-        <Box>
+        <Box sx={{ display: { xs: 'none' } }}>
             {!drawerOpen && <Tooltip
                 placement={'right'}
                 title={<> <KeyboardDoubleArrowRightIcon /></>}
@@ -39,7 +39,7 @@ const Rules = (props: Props) => {
                     variant={'outlined'}
                     onClick={toggleDrawer}
                     sx={{
-                        display:{xs:"none",md:"inline-flex"},
+                        display: { md: "inline-flex" },
                         color: '#000000a6',
                         borderColor: '#000000a6',
                         zIndex: 'tooltip',
