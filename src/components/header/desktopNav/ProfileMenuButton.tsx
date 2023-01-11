@@ -6,7 +6,7 @@ import Typography from '@mui/material/Typography';
 import Tooltip from '@mui/material/Tooltip';
 import { UserType } from '../../../../utils/types';
 import { AccountCircle, Logout } from '@mui/icons-material/';
-import { ListItemIcon, MenuItem, SvgIconTypeMap } from '@mui/material';
+import { Button, ListItemIcon, MenuItem, SvgIconTypeMap } from '@mui/material';
 import SvgIcon from '@mui/material';
 import router from 'next/router';
 import { OverridableComponent } from '@mui/material/OverridableComponent';
@@ -47,25 +47,24 @@ const ProfileMenuButton = (props: Props) => {
         <React.Fragment>
 
             <Tooltip title="Profil/Logga ut">
-                <IconButton
-
+                <Button
+                    size="large"
+                    color={"inherit"}
+                    startIcon={<AccountCircle />}
                     onClick={handleClick}
-                    size="small"
                     sx={{ ml: 2, color: "#FFFFFF" }}
                     aria-controls={open ? 'account-menu' : undefined}
                     aria-haspopup="true"
                     aria-expanded={open ? 'true' : undefined}
                 >
-                    <AccountCircle />
                     <Typography
                         variant={"h6"}
                         fontSize={16}
-                        sx={{ pl: 1 }}
                     >
                         {user.name}
                     </Typography>
 
-                </IconButton>
+                </Button>
             </Tooltip>
 
             <Menu
