@@ -7,6 +7,7 @@ import UserGrid from "../src/components/admin/UserGrid";
 
 import { Grid } from "@mui/material";
 import Loading from "../src/components/Loading";
+import { UserType } from "../utils/types";
 
 const Admin = () => {
     const { user, isLoading, error } = useUser()
