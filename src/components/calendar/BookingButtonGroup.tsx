@@ -1,9 +1,9 @@
 import BookingButton from "./BookingButton";
 import ButtonGroup from '@mui/material/ButtonGroup';
-
-import { AlertColor, Container, SnackbarOrigin } from "@mui/material"
-import { Booking,UserType } from "../../../utils/types"
-import { timeSlotToBooking } from "../../../utils/bookingsAPI";
+import { useEffect, useState } from "react";
+import { AlertColor, SnackbarOrigin, Fade } from "@mui/material"
+import { Booking, UserType } from "../../../utils/types"
+import { timeSlotToBooking, timeSlotToDryingBooth } from "../../../utils/bookingsAPI";
 
 interface Props {
     bookedBookings: Set<Booking>;
@@ -16,32 +16,41 @@ interface Props {
 
 const BookingButtonGroup = (props: Props) => {
     const { bookedBookings, timeSlots, selectedDate, user, updateBookings, snackTrigger } = props
+    const [ready,setReady] = useState(false)
     const timeToBooking: Map<string, Booking> = timeSlotToBooking(bookedBookings);
+
+
+
+    useEffect(()=>{
+        if(!ready){
+            setReady(true)
+        }
+    },[bookedBookings])
+
     const buttons = timeSlots.map(timeSlot => {
         let booking: null | Booking = null;
         if (timeToBooking.has(timeSlot)) {
             booking = timeToBooking.get(timeSlot) as Booking;
         }
 
-        return <BookingButton 
-        key={timeSlot} 
-        timeSlot={timeSlot} 
-        booking={booking != null ? booking : null} 
-        selectedDate={selectedDate}
-        user={user} 
-        updateBookings={updateBookings} 
-        snackTrigger={snackTrigger} 
+        const dryingBoothNbr = timeSlotToDryingBooth.get(timeSlot);
+
+        return <BookingButton
+            key={timeSlot}
+            timeSlot={timeSlot}
+            boothIndex={dryingBoothNbr as number}
+            booking={booking != null ? booking : null}
+            selectedDate={selectedDate}
+            user={user}
+            updateBookings={updateBookings}
+            snackTrigger={snackTrigger}
         />
     });
-    //Kan vara fel här
-
-
+    
     return (
-        // <ButtonGroup  orientation='vertical'> {buttons}  </ButtonGroup>
-        <Container disableGutters>
-            {buttons}
-        </Container>
-        
+        <Fade in={ready}>
+        <ButtonGroup sx={{ zIndex: 'modal', pt:{xs:2, md:0} }} fullWidth size='medium' orientation='vertical'> {buttons} </ButtonGroup>
+        </Fade>
     );
 }
 

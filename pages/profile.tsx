@@ -1,13 +1,18 @@
-import { TextField, Button, List, Grid, Paper, ListItem, Typography } from "@mui/material";
+import { Grid, Paper, AlertColor, SnackbarOrigin, Box } from "@mui/material";
 import { useUser } from '@auth0/nextjs-auth0/client';
 import { NextPage } from "next";
-import NotLoggedIn from "../src/components/NotLoggedIn";
-import ProfileBox from "../src/components/profile/ProfileBox";
-import ProfileBooked from "../src/components/profile/ProfileBooked";
-import Header from "../src/components/Header";
+import Header from "../src/components/header/Header";
 import Footer from "../src/components/Footer";
-import { LoadingButton } from "@mui/lab";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import BookedTimes from "../src/components/BookedTimes";
+import { Booking, UserType } from "../utils/types"
+import { Snack, SnackInterface } from "../src/components/Snack";
+import EditProfile from "../src/components/profile/EditProfile";
+import { pusherClient } from "../utils/pusherAPI";
+import Loading from "../src/components/Loading";
+import router from "next/router";
+
+
 
 const img = process.env.AUTH0_BASE_URL as string + "/logotyp02.png"
 const styles = {
@@ -24,68 +29,80 @@ const styles = {
 
 const Profile: NextPage = () => {
     const { user, isLoading, error } = useUser()
-    const [loading, setLoading] = useState()
-    return (
-        <Grid container>
+    const [bookings, setBookings] = useState<Array<Booking>>([])
+    const [snack, setSnack] = useState<SnackInterface>({
+        show: false,
+        snackString: "",
+        severity: "success"
+    })
+    const pusherChannel = pusherClient.subscribe("bookingUpdates");
+    pusherChannel.bind('bookingUpdate', (data: any) => { updateBookings() })
 
+    const updateBookings = async () => {
+        const res = await fetch("/api/bookings")
+        const resBooking: Array<Booking> = await res.json();
+        const bookings: Array<Booking> = [];
+        resBooking.forEach(booking => {
+            const tmpBooking = { ...booking, date: new Date(booking.date) }
+            bookings.push(tmpBooking);
+        });
+        setBookings(bookings);
+    }
+
+    useEffect(() => {
+        if (!(user || isLoading)) {
+            router.push('api/auth/login')
+        }
+    }, [user, isLoading])
+
+    useEffect(() => {
+        updateBookings()
+    }, [])
+
+    const resetSnack = () => {
+        setSnack({ show: false, snackString: snack.snackString, severity: snack.severity })
+    }
+
+    const snackTrigger = (severity: AlertColor, snackString: string, alignment: SnackbarOrigin) => {
+        setSnack({ show: true, snackString: snackString, severity: severity })
+    }
+
+    return (user ?
+        <Grid container rowSpacing={10}>
+            <Snack state={snack} handleClose={resetSnack} />
             <Grid item xs={12} minHeight={100} flexGrow={1}>
-                <Header />
+                <Header user={user as UserType} />
             </Grid>
-
-            <Grid item xs={12} sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
-                <Paper style={styles.paperContainer}
-                    sx={{
-                        boxShadow: "none",
-                        justifyContent: "center",
-                        alignItems: "center",
-                        display: "flex",
-                    }}>
-                    <Paper sx={{minWidth : "50%"}}>
-                        <Typography sx={{margin: "16px",mb:0}}variant="h4" >
-                            Ändra {user?.name}
-                        </Typography>
-                        <List>
-                            <ListItem>
-                            <TextField
-                                fullWidth
-                                label="E-Post"
-                                type="email"
-                                variant="outlined"
-                                margin="dense"
-                            />
-                            </ListItem>
-                            <ListItem>
-                            <TextField
-                                fullWidth
-                                label="Telefon"
-                                type="tel"
-                                variant="outlined"
-                                margin="dense"
-                            />
-                            </ListItem>
-                        </List>
-                        <Grid container justifyContent="flex-end">
-                            <Grid item>
-                                <LoadingButton color="warning" variant="outlined" >
-                                    Tillbaka
-                                </LoadingButton>
-                                <LoadingButton variant="outlined" sx={{margin: "16px"}}type="submit" >
-                                    Spara
-                                </LoadingButton>
+            <Grid item xs={12} flexGrow={1} sx={{ display: "flex", justifyContent: "center", alignItems: "flex-end" }}>
+                <Grid container alignItems="flex-end">
+                    <Paper style={styles.paperContainer}
+                        sx={{
+                            minHeight: 0,
+                            boxShadow: "none",
+                            justifyContent: "center",
+                            alignItems: "center",
+                            display: "flex",
+                            opacity: "1"
+                        }}>
+                        <Grid container alignItems="flex-end" rowSpacing={2} sx={{ width: { xs: "100%", sm: "75%", md: "50%" } }}>
+                            <Grid item xs={12}>
+                                <EditProfile user={user as UserType} setSnack={setSnack} />
+                            </Grid>
+                            <Grid item xs={12}>
+                                <BookedTimes
+                                    bookings={bookings}
+                                    user={user as UserType}
+                                    snackTrigger={snackTrigger} />
                             </Grid>
                         </Grid>
-                        
-                        </Paper>
-                </Paper>
+                    </Paper>
+                </Grid>
             </Grid>
-
             <Grid item xs={12} sm={12} md={12}>
                 <Footer />
             </Grid>
-
-        </Grid >
-
-
+            <Snack state={snack} handleClose={resetSnack} />
+        </Grid > : <Loading />
     )
 }
 

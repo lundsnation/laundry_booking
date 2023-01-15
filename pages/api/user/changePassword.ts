@@ -12,21 +12,12 @@ const handler = withApiAuthRequired(async (req: NextApiRequest, res: NextApiResp
   
 
   const handleCase: ResponseFuncs = {
-    GET: async (req: NextApiRequest, res: NextApiResponse) => {
-      logRequest('GET_ALL_USERS')
-      if(userSession?.user.app_metadata.roles.indexOf("admin")>-1){  
-        const result = await userFetcher.getAllUsers()?.catch(catcher)
-        res.status(200).json(result)
-        return
-      }
-      res.status(403).json({error : ERROR_MSG.NOTAUTHORIZED})
-    },
     POST: async (req: NextApiRequest, res: NextApiResponse) => {
-      logRequest('POST_USERS')
-      if(userSession?.user.app_metadata.roles.indexOf("admin")>-1){
-        const user = req.body
-        const result = await userFetcher.createUser(user).catch(catcher)
-        res.status(200).json(result)
+      logRequest('USER_CHANGEPASSWORD')
+      const {email} = req.body
+      if(userSession?.user.email === email){
+        const result = await userFetcher.changePassword(email).catch(catcher)
+        res.json(result)
         return
       }
       res.status(403).json({error : ERROR_MSG.NOTAUTHORIZED})

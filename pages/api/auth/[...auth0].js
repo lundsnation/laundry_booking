@@ -1,6 +1,7 @@
 import { handleAuth,handleProfile,handleCallback } from "@auth0/nextjs-auth0";
 import { getUsers } from "../../../utils/getAuth0Users"
 
+// Function triggered on user accepting user-agreement and GDPR-terms, if modification was sucessfull, updates the user-session
 const userAccept = async (req, res, session, state) => {
     try{
         const userModifier = new getUsers()
@@ -18,6 +19,22 @@ const userAccept = async (req, res, session, state) => {
     }
   };
 
+  // Function triggered on user-modification done by the user, if modification was sucessfull, updates the user-session
+  const userEdit = async (req,res,session,state) =>{
+    try{
+      const userModifier = new getUsers()
+      const {sid,sub,updated_at,...edit} = {...session.user,email:req.body.email,user_metadata:req.body.user_metadata}
+      const response = await userModifier.modifyUser(edit,session.user.sub) 
+        if(response.ok){
+          delete session.refreshToken
+          return {...session,user:{...session.user,email:req.body.email,user_metadata:{...req.body.user_metadata}}}
+      }
+      return session
+    }catch(error){
+      throw error
+    }
+  }
+
 /* Overriding default auth-handler, api/auth/accepted will intially update userInfo
 *  using atuh0 Authentication API, thn refetch the userSession from Auth0 
 *  authentication API at route: /userinfo. Since the custom app_metadata property only is set on 
@@ -29,6 +46,13 @@ export default handleAuth({
     accepted: async (req, res) => {
       try {
         await handleProfile(req, res, { refetch: true, afterRefetch : userAccept });
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    edit: async (req, res) => {
+      try {
+        await handleProfile(req, res, { refetch: true, afterRefetch : userEdit });
       } catch (error) {
         console.error(error);
       }

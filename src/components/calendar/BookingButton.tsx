@@ -1,13 +1,14 @@
-import { Button, Container, AlertColor, Grid, IconButton, Typography,Box, SnackbarOrigin } from "@mui/material"
+import { Button, Paper, AlertColor, Grid, IconButton, Typography, Box, SnackbarOrigin, Fade } from "@mui/material"
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Booking, timeFromTimeSlot } from "../../../utils/types"
 import BookingInfo from "./BookingInfo"
-import { timeSlots } from "../../../utils/types";
 import { UserType } from "../../../utils/types";
+import { textTransform } from "@mui/system";
+import { dateFromTimeSlot } from "../../../utils/bookingsAPI";
 
 interface Props {
-    //user: UserProfile;
+    boothIndex: number,
     user: UserType;
     booking: Booking | null;
     selectedDate: Date;
@@ -16,21 +17,29 @@ interface Props {
     snackTrigger: (severity: AlertColor, snackString: string, alignment: SnackbarOrigin) => void;
 }
 const BookingButton = (props: Props) => {
+    const { boothIndex, user, booking, selectedDate, timeSlot, updateBookings, snackTrigger } = props
     const [disabled, setDisabled] = useState<boolean>(false)
-    const [showBookingInfo,setShowBookingInfo] = useState<boolean>(false)
+    const [showBookingInfo, setShowBookingInfo] = useState<boolean>(false)
     const [bookingUser, setBookingUser] = useState<UserType>({} as UserType)
-    const [loadingUser,setLoadingUser] = useState(false)
-    const { user, booking, selectedDate, timeSlot, updateBookings, snackTrigger } = props
+    const [loadingUser, setLoadingUser] = useState(false)
     const bookedTimeSlot = booking != null;
     const myTimeSlot = user.name == booking?.userName ? bookedTimeSlot : null;
+    const snackAlignment: SnackbarOrigin = { vertical: 'bottom', horizontal: 'left' }
+    const timeSlotDate = dateFromTimeSlot(selectedDate, timeSlot)
+    const timeSlotHasPassed = new Date().getTime() > timeSlotDate.getTime()
     let snackString;
-    const snackAlignment: SnackbarOrigin = {vertical: 'bottom', horizontal: 'left'}
-    
+
+    useEffect(() => {
+        setDisabled(timeSlotHasPassed)
+    }, [timeSlotHasPassed]);
+
+
     // Function for booking time
     const handleBook = async () => {
         setDisabled(true)
+
         const date = new Date(timeFromTimeSlot(selectedDate, timeSlot))
-        const jsonBooking = { userName: (user.name as string), date: date, timeSlot: timeSlot, createdAt: new Date()}
+        const jsonBooking = { userName: (user.name as string), date: date, timeSlot: timeSlot, createdAt: new Date() }
         const response = await fetch("/api/bookings", {
             method: "POST",
             headers: {
@@ -38,16 +47,12 @@ const BookingButton = (props: Props) => {
             },
             body: JSON.stringify(jsonBooking)
         });
-
-        //updateBookings();
         if (response.ok) {
             snackString = "Du har bokat: " + String(timeSlot)
             snackTrigger("success", snackString, snackAlignment)
-        } else if (response.status == 400) {
-            snackString = "Du kan inte boka flera tider"
-            snackTrigger("error", snackString, snackAlignment)
-        } else if (response.status == 406) {
-            snackString = "Du kan inte boka tider som redan varit"
+        } else {
+            let responseContent = await response.json()
+            snackString = responseContent.error
             snackTrigger("error", snackString, snackAlignment)
         }
         setDisabled(false)
@@ -56,7 +61,7 @@ const BookingButton = (props: Props) => {
     const handleCancel = async () => {
         const api_url = "/api/bookings" + "/" + (booking?._id);
         const date = new Date(timeFromTimeSlot(selectedDate, timeSlot))
-        const jsonBooking = { userName: (user.name as string), date: date, timeSlot: timeSlot, createdAt: new Date()}
+        const jsonBooking = { userName: (user.name as string), date: date, timeSlot: timeSlot, createdAt: new Date() }
         const response = await fetch(api_url, {
             method: "DELETE",
             headers: {
@@ -70,66 +75,56 @@ const BookingButton = (props: Props) => {
             snackString = "Du har avbokat tiden"
             snackTrigger("success", snackString, snackAlignment)
         } else {
-            snackString = "Internt fel"
+            let responseContent = await response.json()
+            snackString = responseContent.error
             snackTrigger("error", snackString, snackAlignment)
         }
     }
     // Function for showing info on booked time
-    const showBookedTime = async ()=>{
-        
-        if(!showBookingInfo){
-            setLoadingUser(true)
-            setShowBookingInfo(!showBookingInfo);
-            const response = await fetch("/api/user/"+booking?.userName)
-            if(response.ok){
-                try{
-                const responseContent = await response.json()
-                setBookingUser({...responseContent})
-            }catch(error){ 
-                console.log(error)
-            }
-        }
-        setLoadingUser(false)
-        return
-    }
-    setShowBookingInfo(!showBookingInfo);
-    }
 
     return (
-            <Grid container spacing={1} direction="row" justifyContent ="center" alignItems="center"> 
-                <Grid item xs={3} >
-                    <Box>
-                        <Typography align="center">{timeSlots.indexOf(timeSlot)+1}</Typography>
-                    </Box>
-                    
-                </Grid>
-                <Grid item xs={6} >
-                    <Button 
-                        sx={{whiteSpace: "nowrap", minWidth: "auto"}}
-                        size="small"
-                        fullWidth={true}
-                        onClick={bookedTimeSlot && myTimeSlot ? handleCancel : handleBook} 
-                        color={!bookedTimeSlot ? 'primary' : 'secondary'} 
-                        disabled={(bookedTimeSlot && !myTimeSlot) || disabled} variant="contained"  > 
-                        {props.timeSlot} 
-                    </Button>
-                </Grid>
-                    <Grid container xs={3}  justifyContent ="center">
-                                <IconButton disabled={!(bookedTimeSlot && !myTimeSlot)} onClick={()=>{showBookedTime()}} style={{padding:0, height:20, width:20, marginBottom:"-8px"}}>
-                                {(bookedTimeSlot && !myTimeSlot)?
-                                        <InfoOutlinedIcon color="action" fontSize = "small" />
-                                        : null}
-                                </IconButton>
-                                {booking&&<BookingInfo
-                                    showBookingInfo={showBookingInfo}
-                                    showBookedTime={showBookedTime}
-                                    booking = {booking}
-                                    user = {bookingUser}  
-                                    loading = {loadingUser}
-                                />}
-                    </Grid>
-            </Grid>
+        <Grid container spacing={1}>
+            <Grid item xs={2} md={1}></Grid>
+            <Grid item xs={8} md={10}>
+                
+            <Paper elevation={0} >
+                <Button
+                    fullWidth
+                    size="small"
+                    variant="contained"
+                    onClick={bookedTimeSlot && myTimeSlot ? handleCancel : handleBook}
+                    color={!bookedTimeSlot ? 'primary' : 'secondary'}
+                    disabled={(bookedTimeSlot && !myTimeSlot) || disabled} 
+                    >
 
+                        <Grid container >
+                            <Grid item xs={7} >
+                                <Typography variant="button" align="left">{timeSlot}</Typography>
+                            </Grid>
+                            <Grid item xs={5}>
+                                <Typography variant="button" align="left" sx={{textTransform:"none"}}>Bås {" "+ boothIndex}</Typography>
+                            </Grid>
+
+
+                        </Grid>
+                </Button>
+                </Paper>
+            </Grid>
+            <Grid item xs={2} md={1}> 
+                <IconButton disabled={!(bookedTimeSlot && !myTimeSlot)} 
+                            onClick={() => {setShowBookingInfo(true)}} 
+                            style={{ padding: 0, height: 20, width: 20, marginBottom: "-8px" }}>
+                    {(bookedTimeSlot && !myTimeSlot) ?
+                        <InfoOutlinedIcon color="action" />
+                        : null}
+                </IconButton>
+                {booking && <BookingInfo
+                    showBookingInfo={showBookingInfo}
+                    booking={booking}
+                    setShowBookingInfo={setShowBookingInfo}
+                />}
+        </Grid >
+        </Grid>
     );
 };
 

@@ -4,11 +4,16 @@ import csv
 import getopt, sys
 from dotenv import load_dotenv
 import requests
+import re
+
+BUILDINGS = ["NH","GH","ARKIVET"]
+ARKIVET_BUILDINGS = ["A","B","C","D"]
 
 # Argument passing
 argumentList = sys.argv[1:]
 options = "htv"
 long_options = ["Help", "testing","verbose"]
+# Testing
 TESTING_MODE = True
 VERBOSE = True
 try:
@@ -28,8 +33,8 @@ except getopt.error as err:
     # output error, and return with an error code
     print (str(err))
 
-# indices of info
-CSV_IND = {"username": 0, "email":1, "telephone":2}
+# indices of info # CHANGE THIS TO INCLUDE MORE FIELDS
+CSV_IND = {"username": 0, "email":1}
 
 load_dotenv()
 my_id = os.getenv("AUTH0_CLIENT_ID")
@@ -37,6 +42,16 @@ secret = os.getenv("REACT_APP_SECRET")
 url = os.getenv("AUTH0_ISSUER_BASE_URL")
 token = os.getenv("AUTH0_TOKEN")
 
+# Function for getting building name, user name must start with letters defined in
+def assertBuilding(buildingName):
+    regex = '^[A-Z]{1,2}'
+    res = re.match(regex,buildingName)
+    if(res in ARKIVET_BUILDINGS):
+        return "ARKIVET"
+    elif(res in BUILDINGS):
+        return res
+    else:
+        return None
 
 def run():
     fileDir = "utils/users/userLists" 
@@ -66,14 +81,13 @@ def run():
         nFail = 0
         for user in users:
             email = user[CSV_IND["email"]]
-            telephone = user[CSV_IND["telephone"]]
-            name = user[CSV_IND["username"]]
+            name = user[CSV_IND["username"]].upper()
             userBodyObject = {
                 "email": email,
-                "user_metadata": {"telephone": telephone},
                 "name": name,
-                "password": "secret",
-                "connection": "Username-Password-Authentication"
+                "password": name,
+                "connection": "Username-Password-Authentication",
+                "app_metadata":{"acceptedTerms" : False, "building":assertBuilding(name),"allowedSlots":1}
                 }
             #body = {'client_id' : f'${my_id}', 'client_secret': f'${secret}', 'audience' : url, 'grant_type' : 'client_credentials'}
             postHeaders = {"Authorization": "Bearer " + str(token), "Content-Type": "application/json"}
@@ -88,7 +102,8 @@ def run():
             else:
                 nFail += 1
                 if(VERBOSE):
-                    print("Failed: "+str(user[CSV_IND["username"]]))
+                    print("Failed creation of: "+str(user[CSV_IND["username"]]))
+                    print(response.json())
         print("---SCRIPT SUMMARY---")
         print("Created: "+ str(nSucessfull)+" Failed: "+str(nFail))
     else:
@@ -97,3 +112,6 @@ def run():
       
 if __name__ == '__main__':
     run()
+
+
+

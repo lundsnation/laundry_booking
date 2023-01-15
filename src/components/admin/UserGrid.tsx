@@ -39,7 +39,8 @@ const UserGrid = () => {
                     tempUsers.push(element)
                     setUsers(tempUsers)
                 })
-            }catch(error){
+            }catch(error : any){
+                setSnack({show:true, severity:'error', snackString:String(error)})
                 console.log(error)
             }
         }
@@ -87,7 +88,6 @@ const UserGrid = () => {
 
       // SEARCH
       useEffect(()=>{
-        console.log("searchTriggered")
         let searchRes = users.filter(user => user.name.includes(searchString))
         setSearchedUsers(searchRes)
     },[searchString])
@@ -106,6 +106,9 @@ const UserGrid = () => {
 
       const getContent = ()=>{
         let display : Array<UserType>  = searchString != "" ? searchedUsers : users
+        display = display.sort((a,b) => {
+            return a.name.localeCompare(b.name, 'sv');
+        });
         return ( 
             display.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((userEntry,index) =>{ 
                     const isItemSelected = isSelected(userEntry.name)
@@ -194,17 +197,15 @@ const UserGrid = () => {
                 </TableBody>
                 </Table>
             </TableContainer>
-            <Grid container alignItems='center' justifyContent="stretch">
+            <Grid container alignItems='flex-end' justifyContent="stretch">
                 
-                <Grid item xs={6} md={3}>
+                <Grid item xs={12} sm={6} md ={3}>
                     <TextField
                         fullWidth
                         size="small"
-                        sx={{mt:"4%"}}
                         variant="outlined"
                         label="Sök efte användare"
                         onChange={(e)=>{
-                            console.log(e.target.value)
                             setSearchString(e.target.value)
                         }}
                         InputProps={{
@@ -218,7 +219,7 @@ const UserGrid = () => {
                         }}
                         />
                 </Grid>
-                <Grid item xs={3}>
+                <Grid item xs={12} sm={6} md ={3}>
 
                     <ButtonGroup size ="large" variant="outlined" sx={{height:"105%"}}>
                         <Button fullWidth onClick={() =>{setShowDeleteUserDialog(true)}} disabled = {selected.length == 0} size= 'small' color="error" ><DeleteIcon/> Ta Bort</Button>  
@@ -231,7 +232,7 @@ const UserGrid = () => {
                     
 
                
-                <Grid item xs={12}md={6}>
+                <Grid item xs={12} sm={12} md={6}>
                     <TablePagination
                         rowsPerPageOptions={[10,25,50]}
                         component="div"

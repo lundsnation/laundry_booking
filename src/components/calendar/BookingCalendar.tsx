@@ -4,8 +4,8 @@ import AdapterDateFns from '@date-io/date-fns'
 import { Grid, Box, SxProps, TextField, AlertColor, Paper, Typography, SnackbarOrigin } from "@mui/material";
 import svLocale from 'date-fns/locale/sv';
 import BookingButtonGroup from "./BookingButtonGroup";
-import BookedTimes from "./BookedTimes";
-import { Booking,UserType } from "../../../utils/types";
+import BookedTimes from '../BookedTimes';
+import { Booking, UserType } from "../../../utils/types";
 import { getDateBookings, compareDates } from "../../../utils/bookingsAPI"
 import { Snack, SnackInterface } from "../Snack"
 import { pusherClient } from '../../../utils/pusherAPI'
@@ -20,34 +20,33 @@ const BookingCalendar = (props: Props) => {
     const [firstRender, setFirstRender] = useState(true);
     const [selectedDate, setSelectedDate] = useState<Date>(new Date());
     const [bookings, setBookings] = useState<Array<Booking>>([]);
-    const [snack, setSnack] = useState<SnackInterface>({ show: false, snackString: "", severity: "success", alignment: {vertical: "bottom", horizontal: "left"} })
-    const [realtimeSnack, setRealtimeSnack] = useState<SnackInterface>({ show: false, snackString: "", severity: "success", alignment: {vertical: "bottom", horizontal: "right"} })
+    const [snack, setSnack] = useState<SnackInterface>({ show: false, snackString: "", severity: "success", alignment: { vertical: "bottom", horizontal: "left" } })
+    const [realtimeSnack, setRealtimeSnack] = useState<SnackInterface>({ show: false, snackString: "", severity: "success", alignment: { vertical: "bottom", horizontal: "right" } })
+    const todaysDateMinus2Days = new Date(new Date().setDate(new Date().getDate() - 2));
     const { user } = props;
-    
+
     const updateBookings = async () => {
         //fetch bookings and update
         const res = await fetch("/api/bookings")
         const resBooking: Array<Booking> = await res.json();
         const bookings: Array<Booking> = [];
         resBooking.forEach(booking => {
-            const tmpBooking = {...booking, date:new Date(booking.date)}
+            const tmpBooking = { ...booking, date: new Date(booking.date) }
             bookings.push(tmpBooking);
         });
         setBookings(bookings);
     }
 
-    if(firstRender) {
-        const pusherChannel = pusherClient .subscribe("bookingUpdates");
+    if (firstRender) {
+
+        const pusherChannel = pusherClient.subscribe("bookingUpdates");
         pusherChannel.bind('bookingUpdate', (data: any) => {
             updateBookings();
-            const {userName, date, timeSlot } = data
+            const { userName, date, timeSlot } = data
             const isPostRequest = data.request == 'post'
             const tmpDate = new Date(date);
-            const dateString = tmpDate.getFullYear() + "/" + (tmpDate.getMonth()+1) + "/" + tmpDate.getDay()
-            console.log(dateString);
-            const snackString = isPostRequest ? userName + ' bokade ' + dateString + ', ' + timeSlot  : userName + ' avbokade ' + dateString + ', ' + timeSlot
-
-            
+            const dateString = tmpDate.getFullYear() + "/" + (tmpDate.getMonth() + 1) + "/" + tmpDate.getDay()
+            const snackString = isPostRequest ? userName + ' bokade ' + dateString + ', ' + timeSlot : userName + ' avbokade ' + dateString + ', ' + timeSlot
             const severity = "info"
             //const alignment: SnackbarOrigin = {vertical: 'bottom', horizontal: 'right'}
             const myBooking = userName == user.name
@@ -55,20 +54,13 @@ const BookingCalendar = (props: Props) => {
 
             console.log("window.innerWidt: " + window.innerWidth)
 
-            const alignment: SnackbarOrigin = window.innerWidth > 600 ? {vertical: 'bottom', horizontal: 'right'} : {vertical: 'top', horizontal: 'right'}
+            const alignment: SnackbarOrigin = window.innerWidth > 600 ? { vertical: 'bottom', horizontal: 'right' } : { vertical: 'top', horizontal: 'right' }
 
             !myBooking && setRealtimeSnack({ show: true, snackString: snackString, severity: severity, alignment: alignment })
-    
+
         })
-
-        console.log("HOPEFULLY THIS ONLY EXECUTES ONCE ")
-
-        setFirstRender(false);
     }
 
-    console.log(firstRender);
-    console.log("-----!!!!!!!!-_-----_____!!!")
-   
 
     const timeSlots: Array<string> = ["07:00-08:30",
         "08:30-10:00",
@@ -83,14 +75,19 @@ const BookingCalendar = (props: Props) => {
 
     //Should be optimized,abstracted and refined later
     const handleDayColor = (day: Date): SxProps => {
+        const oldDate = todaysDateMinus2Days.getTime() > day.getTime();
+
         let nbrBookedTimes: number = 0;
 
-        bookings.forEach(booking => {
+        /*If it's not an old date we calculate the number of booknings for that day,
+        else we let nbrBookedTimes = 0, which means it wont get any color */
+        !oldDate && bookings.forEach(booking => {
             if (compareDates(booking.date, day)) {
                 nbrBookedTimes += 1;
             }
 
         });
+
         interface colorProps {
             backgroundColor: string,
             hoverBackgroundcolor: string,
@@ -133,7 +130,7 @@ const BookingCalendar = (props: Props) => {
             }
         }
     }
-    
+
     //get initial bookings
     useEffect(() => {
         updateBookings()
@@ -142,7 +139,7 @@ const BookingCalendar = (props: Props) => {
 
     const snackTrigger = (severity: AlertColor, snackString: string, alignment: SnackbarOrigin) => {
         setSnack({ show: true, snackString: snackString, severity: severity, alignment: alignment })
-        
+
     }
 
     const resetSnack = () => {
@@ -154,78 +151,63 @@ const BookingCalendar = (props: Props) => {
     }
 
     const bookingButtonGroup = (
-        <Grid container spacing={1} direction="row" sx={{margin:0}}>
-            <Grid container>
-                <Grid item xs={3}>
-                    <Typography variant="body2" style={{fontWeight:"bold"}} align='center' sx={{padding:1}}>Torkbås</Typography>
-                </Grid>
-                <Grid item xs={6}>
-                    <Typography variant="body2"  align='center' style={{fontWeight:"bold"}}sx={{padding:1}}>Tid</Typography>
-                </Grid>
-                <Grid item xs={3}>
-                <Typography variant="body2"  align='center' style={{fontWeight:"bold"}} sx={{padding:1}}>Info</Typography>
-                </Grid>
-
-            </Grid>
-            
-            <BookingButtonGroup  timeSlots={timeSlots} bookedBookings={getDateBookings(bookings, selectedDate)} selectedDate={selectedDate} user={user} updateBookings={updateBookings} snackTrigger={snackTrigger} />
-        </Grid>
+        <BookingButtonGroup timeSlots={timeSlots} bookedBookings={getDateBookings(bookings, selectedDate)} selectedDate={selectedDate} user={user} updateBookings={updateBookings} snackTrigger={snackTrigger} />
     )
 
     return (
         <div>
             <Snack state={realtimeSnack} handleClose={resetRealtimeSnack} />
             <Snack state={snack} handleClose={resetSnack} />
-            <Grid container spacing={2}>
-                <Grid item xs={12} sm={8}>
-                    <Paper elevation={0} variant={"outlined"}>
-                        <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={svLocale}>
-                            <StaticDatePicker<Date>
-                                orientation="landscape"
-                                displayStaticWrapperAs="desktop"
-                                openTo="day"
-                                showDaysOutsideCurrentMonth={true}
-                                views={['day']}
-                                showToolbar={false}
-                                value={selectedDate}
-                                toolbarTitle={"Valt Datum: "}
-                                onChange={async (date) => {
-                                    date && setSelectedDate(date);
-                                    //updateBookings();
-                                }
-                                }
-                                renderInput={(params) => <TextField {...params} />}
+            <Grid
+                container
+                maxWidth={600}
+                spacing={2}
+                >
+                <Grid item xs={12} md={12}>
+                    <Grid container>
+                        <Grid item xs={12} md={7}>
+                            <Paper elevation={0} variant={"outlined"}>
+                                <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={svLocale}>
+                                    <StaticDatePicker<Date>
+                                        minDate={todaysDateMinus2Days}
+                                        orientation="landscape"
+                                        displayStaticWrapperAs="desktop"
+                                        openTo="day"
+                                        showDaysOutsideCurrentMonth={true}
+                                        views={['day']}
+                                        showToolbar={false}
+                                        value={selectedDate}
+                                        toolbarTitle={"Valt Datum: "}
+                                        onChange={async (date) => {
+                                            date && setSelectedDate(date);
+                                            //updateBookings();
+                                        }
+                                        }
+                                        renderInput={(params) => <TextField {...params} />}
+                                        renderDay={(day, _value, DayComponentProps) => {
+                                            return (
+                                                <PickersDay sx={handleDayColor(day)} {...DayComponentProps} />
+                                            );
 
-                                //DO NOT REMOVE
-                                renderDay={(day, _value, DayComponentProps) => {
-
-
-                                    return (
-                                        <PickersDay sx={handleDayColor(day)} {...DayComponentProps} />
-                                    );
-
-                                }}
-                            />
-                        </LocalizationProvider>
-                    </Paper>
-
+                                        }}
+                                    />
+                                </LocalizationProvider>
+                            </Paper>
+                        </Grid>
+                            <Grid item xs={12} md={5}>
+                                    <Grid container>
+                                        <Grid item xs={12}>
+                                                {bookingButtonGroup}
+                                        </Grid>
+                                    </Grid>
+                            </Grid>
+                    </Grid>
                 </Grid>
-                <Grid item xs={12} sm={4}>
-                    <Paper elevation={0} variant="outlined" sx={{paddingBottom:1}}>
-                        {bookingButtonGroup}
-                    </Paper>
-                    
+                <Grid item xs={12}>
+                    <BookedTimes bookings={bookings} user={user} snackTrigger={snackTrigger} />
                 </Grid>
-                
-            </Grid>
-            <Box m={2}/>
-            <Grid item xs={12}>
-
-                <BookedTimes bookings={bookings} user = {user} selectedDate = {selectedDate} updateBookings={updateBookings} snackTrigger={snackTrigger}/>
 
             </Grid>
-           
-            
         </div>
     );
 }
