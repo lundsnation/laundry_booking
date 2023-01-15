@@ -8,6 +8,9 @@
 # testing
 /coverage
 
+# lists of users
+/utils/users/userLists
+
 # next.js
 /.next/
 /out/

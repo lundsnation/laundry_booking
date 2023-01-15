@@ -34,7 +34,7 @@ const Index: NextPage = () => {
   }, [user, isLoading])
 
   return (user ?
-
+  
     <Grid container justifyContent="flex-end" >
       <Header user={user as UserType} />
       <Terms user={user as UserType} />

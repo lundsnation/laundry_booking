@@ -1,5 +1,5 @@
 import { SnackInterface } from "../Snack";
-import { Dialog, DialogActions, DialogTitle, DialogContent, Divider, Typography, Grid, Button } from "@mui/material";
+import { Dialog, DialogActions, DialogTitle, DialogContent, Divider, Typography, Grid, Button, Card } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
 import { useState } from "react";
 import { UserType } from "../../../utils/types";
@@ -41,7 +41,11 @@ const ChangePasswordDialog = (props:props) => {
             <DialogTitle> Ändra lösenord</DialogTitle>
                 <Divider variant="middle"/>
             <DialogContent>
-                <Typography> Är du säker att du vill ändra lösenord? <br/>Ett mail med instruktioner kommer att skickas till {user?.email} </Typography>
+                <Typography> Är du säker att du vill ändra lösenord? <br/>Ett mail med instruktioner kommer att skickas till:  <br/> </Typography>
+                    
+                    <Typography align="center" variant="body1" sx={{fontWeight: "bold",mt:2}}>{user?.email}</Typography>
+
+                    
             </DialogContent>
             <DialogActions>
                 <Grid  container alignItems='center' justifyContent='center'>
