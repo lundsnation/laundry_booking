@@ -17,6 +17,7 @@ import Link from 'next/link';
 import { HeaderLogo } from './HeaderLogo';
 import DesktopNav from './desktopNav/DesktopNav';
 import { UserType } from '../../../utils/types';
+import MobileNav from './mobileNav/MobileNav';
 
 interface Props {
     user: UserType
@@ -47,8 +48,9 @@ const Header = (props: Props) => {
             <AppBar position="sticky" color="primary">
 
                 <Toolbar>
-                    <HeaderLogo logoText={"TVÄTTBOKNING NH&GH"} />
+                    <HeaderLogo logoText={"TVÄTT NH&GH"} />
                     <DesktopNav user={user} />
+                    <MobileNav />
                 </Toolbar>
             </AppBar>
             {/* Recommended hack when using postiion="sticky" from MUI docs */}

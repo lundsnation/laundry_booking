@@ -3,7 +3,7 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import router from 'next/router';
 import { UserType } from '../../../../utils/types';
-import AdminButton from './AdminButton'
+import AdminButton from './DeskAdminButton'
 import { Typography } from '@mui/material';
 import ProfileMenuButton from './ProfileMenuButton';
 
@@ -19,9 +19,7 @@ type NavItem = {
 //Admin button is added separately as it is special, same with profileButton
 const navItems: Array<NavItem> = [
     { navText: 'Boka', navLink: "/" },
-    { navText: 'Regler', navLink: "/regler" },
-    { navText: 'info', navLink: "/info" },
-    { navText: "nylänk", navLink: "/nylänk" }
+    { navText: 'Regler', navLink: "/rules" }
 ];
 
 const DesktopNav = (props: Props) => {

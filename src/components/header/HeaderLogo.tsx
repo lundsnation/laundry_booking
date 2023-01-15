@@ -20,21 +20,23 @@ export const HeaderLogo = (props: Props) => {
                 color="inherit"
                 aria-label="menu"
                 sx={{
-                    mr: 2,
                 }}
                 onClick={handleClick}
                 variant="text"
                 startIcon={
-                    <Avatar src={
-                        'https://lundsnation-git-preview-lundsnation.vercel.app/LN24_w.svg'
-                    } />}
+                    <Avatar
+                        src={'/LN24_w.svg'}
+                    />
+                }
             >
                 <Typography
                     sx={{ flexGrow: 1 }}
-                    variant="h6">
+                    variant="h6"
+                >
+
                     {logoText}
                 </Typography>
             </Button>
-        </Box>
+        </Box >
     );
 }
