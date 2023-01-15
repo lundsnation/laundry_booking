@@ -37,7 +37,7 @@ const Header = (props: Props) => {
                 <Toolbar>
                     <HeaderLogo logoText={"TVÄTT NH&GH"} />
                     <DesktopNav user={user} />
-                    <MobileNav />
+                    <MobileNav user={user} />
                 </Toolbar>
             </AppBar>
             {/* Recommended hack when using postiion="sticky" from MUI docs */}

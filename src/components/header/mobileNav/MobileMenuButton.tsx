@@ -12,10 +12,6 @@ import Hamburger from 'hamburger-react';
 import GavelIcon from '@mui/icons-material/Gavel';
 import LocalLaundryServiceIcon from '@mui/icons-material/LocalLaundryService';
 
-interface Props {
-    user: UserType
-}
-
 type MenuItemType = {
     text: string,
     link: string,
