@@ -1,9 +1,9 @@
 import * as React from 'react';
-import { useEffect} from "react";
+import { useEffect } from "react";
 import type { NextPage } from 'next';
 import { Grid, Paper } from '@mui/material';
 import { useUser } from '@auth0/nextjs-auth0/client';
-import Header from '../src/components/Header'
+import Header from '../src/components/header/Header'
 import BookingCalendar from '../src/components/calendar/BookingCalendar';
 import { useRouter } from 'next/router'
 import Footer from '../src/components/Footer';
@@ -23,7 +23,7 @@ const styles = {
 }
 
 
-const Index : NextPage = () => {
+const Index: NextPage = () => {
   const { user, error, isLoading } = useUser();
   const router = useRouter()
 
@@ -34,32 +34,33 @@ const Index : NextPage = () => {
   }, [user, isLoading])
 
   return (user ?
+  
+    <Grid container justifyContent="flex-end" >
+      <Header user={user as UserType} />
+      <Terms user={user as UserType} />
+      <Rules />
 
-    <Grid container justifyContent="center"  alignItems="flex-end">
-      <Header />
-      <Terms user={user as UserType}/>
-      <Rules/>
-        <Grid item xs={12}>          
-          <Paper style={styles.paperContainer}
-            sx={{
-              boxShadow: "none",
-              justifyContent: "center",
-              alignItems: "center",
-              display: "flex",
-              opacity: "1"
-            }}>
-              
-            {<BookingCalendar title="" user={user as UserType} />}
-          </Paper>
-        </Grid>    
-        <Grid container alignItems="flex-end" position="sticky">
-          <Grid item xs={12}  >
-            <Footer />
-          </Grid>
-        </Grid>   
-        
-      </Grid> : <Loading/>
-    )
+
+      <Grid item xs={12}>
+        <Paper style={styles.paperContainer}
+          sx={{
+            boxShadow: "none",
+            justifyContent: "center",
+            alignItems: "center",
+            display: "flex",
+            opacity: "1"
+          }}>
+
+          {<BookingCalendar title="" user={user as UserType} />}
+        </Paper>
+      </Grid>
+
+      <Grid item xs={12}  >
+        <Footer />
+      </Grid>
+
+    </Grid> : <Loading />
+  )
 }
 
 export default Index;
