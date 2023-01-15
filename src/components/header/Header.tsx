@@ -1,19 +1,6 @@
 import * as React from 'react';
-import { Typography, Box, Toolbar, AppBar, Fade, Collapse } from '@mui/material';
-import Menu from '@mui/material/Menu';
-import IconButton from "@mui/material/IconButton";
-import { useUser } from '@auth0/nextjs-auth0/client';
-import { AccountCircle, Scale } from '@mui/icons-material';
-import MenuIcon from '@mui/icons-material/Menu';
-import LoginButton from '../LoginButton';
-import ProfileButton from '../ProfileButton';
-import HomeButton from '../HomeButton';
-import Image from "next/image"
-import { Fab } from "@mui/material"
-import { Spin as Hamburger } from 'hamburger-react'
-import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
+import { Toolbar, AppBar, Fade, Collapse } from '@mui/material';
 import { useRouter } from 'next/router';
-import Link from 'next/link';
 import { HeaderLogo } from './HeaderLogo';
 import DesktopNav from './desktopNav/DesktopNav';
 import { UserType } from '../../../utils/types';
