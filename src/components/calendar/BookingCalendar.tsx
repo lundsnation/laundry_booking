@@ -17,6 +17,7 @@ interface Props {
 
 
 const BookingCalendar = (props: Props) => {
+
     const [firstRender, setFirstRender] = useState(true);
     const [selectedDate, setSelectedDate] = useState<Date>(new Date());
     const [bookings, setBookings] = useState<Array<Booking>>([]);
@@ -37,9 +38,9 @@ const BookingCalendar = (props: Props) => {
         setBookings(bookings);
     }
 
-    if (firstRender) {
-
-        const pusherChannel = pusherClient.subscribe("bookingUpdates");
+    useEffect(()=>{
+        const pusher = pusherClient();
+        const pusherChannel = pusher.subscribe("bookingUpdates");
         pusherChannel.bind('bookingUpdate', (data: any) => {
             updateBookings();
             const { userName, date, timeSlot } = data
@@ -57,9 +58,11 @@ const BookingCalendar = (props: Props) => {
             const alignment: SnackbarOrigin = window.innerWidth > 600 ? { vertical: 'bottom', horizontal: 'right' } : { vertical: 'top', horizontal: 'right' }
 
             !myBooking && setRealtimeSnack({ show: true, snackString: snackString, severity: severity, alignment: alignment })
-
         })
-    }
+    },[])
+
+        
+    
 
 
     const timeSlots: Array<string> = ["07:00-08:30",

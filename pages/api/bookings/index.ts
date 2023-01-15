@@ -7,6 +7,8 @@ import { withApiAuthRequired, getSession } from "@auth0/nextjs-auth0"
 import { getUsers } from '../../../utils/getAuth0Users'
 import { pusherBackend } from "../../../utils/pusherAPI"
 
+const pusher = pusherBackend();
+
 const handler = withApiAuthRequired(async (req: NextApiRequest, res: NextApiResponse) => {
   //capture request method, we type it as a key of ResponseFunc to reduce typing later
   const method: keyof ResponseFuncs = req.method as keyof ResponseFuncs
@@ -35,7 +37,7 @@ const handler = withApiAuthRequired(async (req: NextApiRequest, res: NextApiResp
       const slotCheck = await Booking.find({userName: user?.name, date: {$gte: new Date()}})
       if (!slotCheck || slotCheck.length < allowedSlots) {
         const json = await Booking.create(req.body).catch(catcher)
-        await pusherBackend.trigger('bookingUpdates', 'bookingUpdate', {userName,date,timeSlot,request: 'POST'})
+        await pusher.trigger('bookingUpdates', 'bookingUpdate', {userName,date,timeSlot,request: 'POST'})
         return res.status(201).json(json)
         
       }

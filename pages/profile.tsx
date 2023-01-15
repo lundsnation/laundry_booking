@@ -35,8 +35,8 @@ const Profile: NextPage = () => {
         snackString: "",
         severity: "success"
     })
-    const pusherChannel = pusherClient.subscribe("bookingUpdates");
-    pusherChannel.bind('bookingUpdate', (data: any) => { updateBookings() })
+    
+    
 
     const updateBookings = async () => {
         const res = await fetch("/api/bookings")
@@ -56,6 +56,9 @@ const Profile: NextPage = () => {
     }, [user, isLoading])
 
     useEffect(() => {
+        const pusher = pusherClient()
+        const pusherChannel = pusher.subscribe("bookingUpdates");
+        pusherChannel.bind('bookingUpdate', (data: any) => { updateBookings() })
         updateBookings()
     }, [])
 
