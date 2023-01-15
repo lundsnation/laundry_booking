@@ -7,12 +7,20 @@ import UserGrid from "../src/components/admin/UserGrid";
 import { Grid } from "@mui/material";
 import Loading from "../src/components/Loading";
 import { UserType } from "../utils/types";
+import { useEffect } from "react";
+import router from "next/router";
 
 const Admin = () => {
     const { user, isLoading, error } = useUser()
 
+    useEffect(() => {
+        if (!(user || isLoading)) {
+            router.push('api/auth/login')
+        }
+    }, [user, isLoading])
 
-    return (
+
+    return (user ?
         <Grid container justifyContent="center">
             <Grid item xs={12} flexGrow={1}>
                 <Header user={user as UserType} />
@@ -26,7 +34,7 @@ const Admin = () => {
                         }</Box></Grid> : <Loading />
 
             }
-        </Grid>
+        </Grid> : <Loading />
     )
 }
 

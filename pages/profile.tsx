@@ -1,4 +1,4 @@
-import { Grid, Paper, AlertColor, SnackbarOrigin } from "@mui/material";
+import { Grid, Paper, AlertColor, SnackbarOrigin, Box } from "@mui/material";
 import { useUser } from '@auth0/nextjs-auth0/client';
 import { NextPage } from "next";
 import Header from "../src/components/header/Header";
@@ -9,6 +9,10 @@ import { Booking, UserType } from "../utils/types"
 import { Snack, SnackInterface } from "../src/components/Snack";
 import EditProfile from "../src/components/profile/EditProfile";
 import { pusherClient } from "../utils/pusherAPI";
+import Loading from "../src/components/Loading";
+import router from "next/router";
+
+
 
 const img = process.env.AUTH0_BASE_URL as string + "/logotyp02.png"
 const styles = {
@@ -46,6 +50,12 @@ const Profile: NextPage = () => {
     }
 
     useEffect(() => {
+        if (!(user || isLoading)) {
+            router.push('api/auth/login')
+        }
+    }, [user, isLoading])
+
+    useEffect(() => {
         updateBookings()
     }, [])
 
@@ -57,7 +67,7 @@ const Profile: NextPage = () => {
         setSnack({ show: true, snackString: snackString, severity: severity })
     }
 
-    return (
+    return (user ?
         <Grid container rowSpacing={10}>
             <Snack state={snack} handleClose={resetSnack} />
             <Grid item xs={12} minHeight={100} flexGrow={1}>
@@ -92,7 +102,7 @@ const Profile: NextPage = () => {
                 <Footer />
             </Grid>
             <Snack state={snack} handleClose={resetSnack} />
-        </Grid >
+        </Grid > : <Loading />
     )
 }
 
