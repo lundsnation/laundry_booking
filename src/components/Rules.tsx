@@ -9,8 +9,6 @@ interface Props {
 
 }
 
-//{z-index:999;right:0;top:50%;margin-top:-25px;width:50px;height:50px;position:fixed}
-
 const Rules = (props: Props) => {
     const [drawerOpen, setdrawerOpen] = useState<boolean>(false);
 
@@ -26,11 +24,9 @@ const Rules = (props: Props) => {
         </Typography>
     )
 
-
-
     return (
 
-        <Box sx={{ display: { xs: 'none' } }}>
+        <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
             {!drawerOpen && <Tooltip
                 placement={'right'}
                 title={<> <KeyboardDoubleArrowRightIcon /></>}
@@ -48,7 +44,9 @@ const Rules = (props: Props) => {
                         left: 0,
                         top: '40%',
                         position: 'fixed'
-                    }}>
+                    }}
+                >
+
                     {ruleText}
                 </Button>
             </Tooltip>}
