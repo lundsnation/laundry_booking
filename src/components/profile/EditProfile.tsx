@@ -12,7 +12,6 @@ interface props{
 }
 
 const EditProfile = (props:props)=>{
-
     const textFieldVariant = "outlined"
     const {user,setSnack} = props
     const [wait,setWait] = useState(false)
@@ -25,12 +24,13 @@ const EditProfile = (props:props)=>{
     })
 
     useEffect(()=>{
+        console.log("trig")
         if(user?.email != editedProfile.email || user?.user_metadata?.telephone != editedProfile.user_metadata.telephone){
             setUserEditable(true)
         }else{
             setUserEditable(false)
         }
-    },[editedProfile])
+    },[editedProfile,user])
 
     const handleEditUser = async (e : FormEvent) =>{
         e.preventDefault()
@@ -43,8 +43,9 @@ const EditProfile = (props:props)=>{
                 })
                 if(response.ok){
                     setSnack({show: true, snackString: "Användare sparad", severity:'success'})
-                    user.email = editedProfile.email
                     user.user_metadata = editedProfile.user_metadata
+                    user.email = editedProfile.email
+                    user.user_id = user.user_id
                 }else{
                     setSnack({show: true, snackString: await response.json(), severity:'error'})
                 }

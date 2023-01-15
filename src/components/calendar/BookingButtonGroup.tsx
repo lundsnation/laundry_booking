@@ -1,7 +1,7 @@
 import BookingButton from "./BookingButton";
 import ButtonGroup from '@mui/material/ButtonGroup';
 import { useEffect, useState } from "react";
-import { AlertColor, Box, Container, SnackbarOrigin, Fade } from "@mui/material"
+import { AlertColor, SnackbarOrigin, Fade } from "@mui/material"
 import { Booking, UserType } from "../../../utils/types"
 import { timeSlotToBooking, timeSlotToDryingBooth } from "../../../utils/bookingsAPI";
 
@@ -49,7 +49,7 @@ const BookingButtonGroup = (props: Props) => {
     
     return (
         <Fade in={ready}>
-        <ButtonGroup sx={{ zIndex: 'modal', pt:{xs:2} }} fullWidth size='medium' orientation='vertical'> {buttons} </ButtonGroup>
+        <ButtonGroup sx={{ zIndex: 'modal', pt:{xs:2, md:0} }} fullWidth size='medium' orientation='vertical'> {buttons} </ButtonGroup>
         </Fade>
     );
 }

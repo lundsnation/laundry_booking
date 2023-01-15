@@ -35,7 +35,7 @@ const BookingInfo = (props: Props) => {
     }
 
     return(
-    <Dialog onClose = {()=>{showBookedTime()}}
+    <Dialog onClose = {()=>{setShowBookingInfo(false)}}
                                 open={showBookingInfo} fullWidth>
                                     <DialogTitle> Info om bokning </DialogTitle>
                                     <Divider variant="middle"/>

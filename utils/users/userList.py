@@ -33,8 +33,8 @@ except getopt.error as err:
     # output error, and return with an error code
     print (str(err))
 
-# indices of info
-CSV_IND = {"username": 0, "email":1,"telephone":2}
+# indices of info # CHANGE THIS TO INCLUDE MORE FIELDS
+CSV_IND = {"username": 0, "email":1}
 
 load_dotenv()
 my_id = os.getenv("AUTH0_CLIENT_ID")
@@ -81,11 +81,9 @@ def run():
         nFail = 0
         for user in users:
             email = user[CSV_IND["email"]]
-            telephone = user[CSV_IND["telephone"]]
             name = user[CSV_IND["username"]].upper()
             userBodyObject = {
                 "email": email,
-                "user_metadata": {"telephone": telephone},
                 "name": name,
                 "password": name,
                 "connection": "Username-Password-Authentication",
@@ -104,7 +102,8 @@ def run():
             else:
                 nFail += 1
                 if(VERBOSE):
-                    print("Failed: "+str(user[CSV_IND["username"]]))
+                    print("Failed creation of: "+str(user[CSV_IND["username"]]))
+                    print(response.json())
         print("---SCRIPT SUMMARY---")
         print("Created: "+ str(nSucessfull)+" Failed: "+str(nFail))
     else:
