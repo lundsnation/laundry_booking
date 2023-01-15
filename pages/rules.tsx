@@ -80,7 +80,7 @@ const Rules : NextPage =()=>{
                                 <Typography margin={2}>
                                     Tvättmaskiner, torktumlare och torkrum lämnas avtorkade (glöm ej att torka ovanpå) efter varje tvättpass. Det är även väldigt viktigt att det inte läggs för mycket tvättmedel i facket. För mycket tvättmedel resulterar i att avlagring bildas och maskinen behöver servas av en tekniker (dvs. dyrt). Rätt dosering står på tvättmedelspaketet, men det är ALLTID mindre än vad du tror.
                                     <br/>
-                                    Felanmäl snarast om någonting är trasigt, antingen via hemsidan eller till husförmännen via telefon. Sätt en lapp med "trasig" och dagens datum på maskinen.
+                                    Felanmäl snarast om någonting är trasigt, antingen via hemsidan eller till husförmännen via telefon. Sätt en lapp med trasig och dagens datum på maskinen.
                                 </Typography>
 
                             </Paper>
