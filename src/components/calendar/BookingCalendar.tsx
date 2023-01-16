@@ -63,10 +63,6 @@ const BookingCalendar = (props: Props) => {
         })
     }, [])
 
-
-
-
-
     const timeSlots: Array<string> = ["07:00-08:30",
         "08:30-10:00",
         "10:00-11:30",
@@ -78,68 +74,6 @@ const BookingCalendar = (props: Props) => {
         "19:00-20:30",
         "20:30-22:00"]
 
-    //Should be optimized,abstracted and refined later
-    /*{(day, _value, DayComponentProps) => {
-        return (
-            <PickersDay sx={handleDayColor(day)} {...DayComponentProps} />
-        )
-    }} */
-
-
-    /*
-            return {
-                "&.MuiPickersDay-root": {
-                    color: color(nbrBookedTimes)?.color,
-                    backgroundColor: color(nbrBookedTimes)?.backgroundColor,
-                    '&:hover': {
-                        backgroundColor: color(nbrBookedTimes)?.hoverBackgroundcolor,
-                    }
-                },
-    
-                "&.Mui-selected": {
-                    backgroundColor: "#6e8f68",
-                    '&:hover': {
-                        backgroundColor: "#4d6448"
-                    }
-                }
-            }
-        }
-        */
-
-    const handleDayBadge = (day: Date, _value: Date[], DayComponentProps: PickersDayProps<Date>): JSX.Element => {
-        const oldDate = todaysDateMinus2Days.getTime() > day.getTime();
-
-        let nbrBookedTimes: number = 0;
-
-        /*If it's not an old date we calculate the number of booknings for that day,
-        else we let nbrBookedTimes = 0, which means it wont get any color */
-        !oldDate && bookings.forEach(booking => {
-            if (compareDates(booking.date, day)) {
-                nbrBookedTimes += 1;
-            }
-
-        });
-
-        if (nbrBookedTimes == timeSlots.length) {
-            return (
-                <Badge
-                    key={day.toString()}
-                    color={"error"}
-                    badgeContent={""}
-                    overlap="circular"
-                    sx={{
-                        ".css-10tn45-MuiBadge-badge": {
-                            transform: "scale(0.7) translate(50%, -50%)"
-                        }
-                    }}
-                >
-                    <PickersDay {...DayComponentProps} />
-                </Badge>
-            )
-        }
-
-        return <PickersDay {...DayComponentProps} />
-    }
 
     const handleRenderDay = (day: Date, _value: Date[], DayComponentProps: PickersDayProps<Date>): JSX.Element => {
         const oldDate = todaysDateMinus2Days.getTime() > day.getTime();
