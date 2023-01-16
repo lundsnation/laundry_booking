@@ -20,8 +20,8 @@ type MenuItemType = {
 
 const menuItems: Array<MenuItemType> = [
     { text: 'Boka', link: "/", Icon: LocalLaundryServiceIcon },
-    { text: "Regler", link: "/rules", Icon: GavelIcon },
-    { text: "Profil", link: "/profile", Icon: AccountCircle },
+    { text: "Regler", link: "/regler", Icon: GavelIcon },
+    { text: "Profil", link: "/profil", Icon: AccountCircle },
     //{ text: "Logga ut", link: "api/auth/logout", Icon: Logout }
 ]
 
