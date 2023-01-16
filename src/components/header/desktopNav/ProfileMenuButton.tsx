@@ -23,7 +23,7 @@ type MenuItemType = {
 
 const menuItems: Array<MenuItemType> = [
     { text: "Profil", link: "/profile", Icon: AccountCircle },
-    { text: "Logga ut", link: "api/auth/logout", Icon: Logout }
+    //{ text: "Logga ut", link: "api/auth/logout", Icon: Logout } //Button added manually instead so it can be made red.
 ]
 
 const ProfileMenuButton = (props: Props) => {
@@ -118,6 +118,21 @@ const ProfileMenuButton = (props: Props) => {
 
                     </MenuItem>
                 ))}
+
+                <MenuItem
+                    key={"Logga ut"}
+                    onClick={() => onClick("api/auth/logout")}
+                >
+                    <ListItemIcon>
+                        <Logout color={"error"} fontSize='medium' />
+                    </ListItemIcon>
+                    <Typography
+                        color={"error"}
+                    >
+                        {"Logga ut"}
+                    </Typography>
+
+                </MenuItem>
 
             </Menu>
 
