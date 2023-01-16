@@ -174,7 +174,12 @@ const BookingCalendar = (props: Props) => {
                     <PickersDay
                         sx={{
                             "&.MuiPickersDay-root": {
-                                color: "#FF0000"
+                                color: "#FFFFFF",
+                                backgroundColor: "#e65b62",
+                                '&:hover': {
+                                    backgroundColor: "#e3454d"
+                                }
+
                             }
                         }}
                         {...DayComponentProps} />
@@ -197,7 +202,12 @@ const BookingCalendar = (props: Props) => {
                 <PickersDay
                     sx={{
                         "&.MuiPickersDay-root": {
-                            color: "rgb(255 0 0)"
+                            color: "#FFFFFF",
+                            backgroundColor: "#e65b62",
+                            '&:hover': {
+                                backgroundColor: "#e13740"
+                            }
+
                         }
                     }}
                     {...DayComponentProps} />
