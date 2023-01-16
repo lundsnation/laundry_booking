@@ -1,4 +1,4 @@
-import { Button, Paper, AlertColor, Grid, IconButton, Typography, Box, SnackbarOrigin, Fade } from "@mui/material"
+import { Button, Paper, AlertColor, Grid, IconButton, Typography, Box, SnackbarOrigin, Fade, Tooltip } from "@mui/material"
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import React, { useEffect, useState } from "react";
 import { Booking, timeFromTimeSlot } from "../../../utils/types"
@@ -82,38 +82,55 @@ const BookingButton = (props: Props) => {
     }
     // Function for showing info on booked time
 
+    //Alla fall behövs egentligen inte då disabled knappar inte resulterar i tooltip
+    let title = ""
+    if (myTimeSlot) {
+        title = "Tryck för att avboka tiden"
+    } else if (bookedTimeSlot && !myTimeSlot) {
+        title = "Tiden är bokad av någon annan."
+    } else if (!bookedTimeSlot) {
+        title = "Tryck för att boka tiden"
+    } else {
+        title = "Tiden har passerat"
+    }
+
+
     return (
         <Grid container spacing={1}>
             <Grid item xs={2} md={1}></Grid>
             <Grid item xs={8} md={10}>
-                
-            <Paper elevation={0} >
-                <Button
-                    fullWidth
-                    size="small"
-                    variant="contained"
-                    onClick={bookedTimeSlot && myTimeSlot ? handleCancel : handleBook}
-                    color={!bookedTimeSlot ? 'primary' : 'secondary'}
-                    disabled={(bookedTimeSlot && !myTimeSlot) || disabled} 
+
+                <Paper elevation={0} >
+                    <Tooltip
+                        title={title}
+                        placement={"right"}
                     >
+                        <Button
+                            fullWidth
+                            size="small"
+                            variant="contained"
+                            onClick={bookedTimeSlot && myTimeSlot ? handleCancel : handleBook}
+                            color={!bookedTimeSlot ? 'primary' : 'secondary'}
+                            disabled={(bookedTimeSlot && !myTimeSlot) || disabled}
+                        >
+                            <Grid container >
+                                <Grid item xs={7} >
+                                    <Typography variant="button" align="left">{timeSlot}</Typography>
+                                </Grid>
+                                <Grid item xs={5}>
+                                    <Typography variant="button" align="left" sx={{ textTransform: "none" }}>Bås {" " + boothIndex}</Typography>
+                                </Grid>
 
-                        <Grid container >
-                            <Grid item xs={7} >
-                                <Typography variant="button" align="left">{timeSlot}</Typography>
+
                             </Grid>
-                            <Grid item xs={5}>
-                                <Typography variant="button" align="left" sx={{textTransform:"none"}}>Bås {" "+ boothIndex}</Typography>
-                            </Grid>
-
-
-                        </Grid>
-                </Button>
+                        </Button>
+                    </Tooltip>
                 </Paper>
             </Grid>
-            <Grid item xs={2} md={1}> 
-                <IconButton disabled={!(bookedTimeSlot && !myTimeSlot)} 
-                            onClick={() => {setShowBookingInfo(true)}} 
-                            style={{ padding: 0, height: 20, width: 20, marginBottom: "-8px" }}>
+            <Grid item xs={2} md={1}>
+                <IconButton disabled={!(bookedTimeSlot && !myTimeSlot)}
+                    onClick={() => { setShowBookingInfo(true) }}
+                    style={{ padding: 0, height: 20, width: 20, marginBottom: "-8px" }}>
                     {(bookedTimeSlot && !myTimeSlot) ?
                         <InfoOutlinedIcon color="action" />
                         : null}
@@ -123,7 +140,7 @@ const BookingButton = (props: Props) => {
                     booking={booking}
                     setShowBookingInfo={setShowBookingInfo}
                 />}
-        </Grid >
+            </Grid >
         </Grid>
     );
 };
