@@ -1,7 +1,7 @@
-import { StaticDatePicker, LocalizationProvider, PickersDay } from '@mui/x-date-pickers';
+import { StaticDatePicker, LocalizationProvider, PickersDay, PickersDayProps } from '@mui/x-date-pickers';
 import React, { useState, useEffect } from "react";
 import AdapterDateFns from '@date-io/date-fns'
-import { Grid, Box, SxProps, TextField, AlertColor, Paper, Typography, SnackbarOrigin } from "@mui/material";
+import { Grid, Box, SxProps, TextField, AlertColor, Paper, Typography, SnackbarOrigin, Badge } from "@mui/material";
 import svLocale from 'date-fns/locale/sv';
 import BookingButtonGroup from "./BookingButtonGroup";
 import BookedTimes from '../BookedTimes';
@@ -9,6 +9,8 @@ import { Booking, UserType } from "../../../utils/types";
 import { getDateBookings, compareDates } from "../../../utils/bookingsAPI"
 import { Snack, SnackInterface } from "../Snack"
 import { pusherClient } from '../../../utils/pusherAPI'
+import { DayPicker } from '@mui/x-date-pickers/CalendarPicker/DayPicker';
+import { Scale } from '@mui/icons-material';
 
 interface Props {
     title: string;
@@ -38,7 +40,7 @@ const BookingCalendar = (props: Props) => {
         setBookings(bookings);
     }
 
-    useEffect(()=>{
+    useEffect(() => {
         const pusher = pusherClient();
         const pusherChannel = pusher.subscribe("bookingUpdates");
         pusherChannel.bind('bookingUpdate', (data: any) => {
@@ -59,10 +61,10 @@ const BookingCalendar = (props: Props) => {
 
             !myBooking && setRealtimeSnack({ show: true, snackString: snackString, severity: severity, alignment: alignment })
         })
-    },[])
+    }, [])
 
-        
-    
+
+
 
 
     const timeSlots: Array<string> = ["07:00-08:30",
@@ -77,6 +79,8 @@ const BookingCalendar = (props: Props) => {
         "20:30-22:00"]
 
     //Should be optimized,abstracted and refined later
+    //<PickersDay sx={handleDayColor(day)} {...DayComponentProps} />
+
     const handleDayColor = (day: Date): SxProps => {
         const oldDate = todaysDateMinus2Days.getTime() > day.getTime();
 
@@ -101,15 +105,8 @@ const BookingCalendar = (props: Props) => {
             if (nbr == 10) {
                 return {
                     color: "#FFFFFF",
-                    backgroundColor: "#b72c3b",
-                    hoverBackgroundcolor: "#801e29"
-                }
-            } else if (nbr >= 4 && nbr < 10) {
-
-                return {
-                    color: "#FFFFFF",
-                    backgroundColor: "#f3c86e",
-                    hoverBackgroundcolor: "#eac16d"
+                    backgroundColor: "rgba(255, 0, 0, 0.5)",
+                    hoverBackgroundcolor: "rgba(255, 0, 0, 0.7)"
                 }
             }
 
@@ -132,6 +129,41 @@ const BookingCalendar = (props: Props) => {
                 }
             }
         }
+    }
+
+    const handleDayBadge = (day: Date, _value: Date[], DayComponentProps: PickersDayProps<Date>): JSX.Element => {
+        const oldDate = todaysDateMinus2Days.getTime() > day.getTime();
+
+        let nbrBookedTimes: number = 0;
+
+        /*If it's not an old date we calculate the number of booknings for that day,
+        else we let nbrBookedTimes = 0, which means it wont get any color */
+        !oldDate && bookings.forEach(booking => {
+            if (compareDates(booking.date, day)) {
+                nbrBookedTimes += 1;
+            }
+
+        });
+
+        if (nbrBookedTimes == timeSlots.length) {
+            return (
+                <Badge
+                    key={day.toString()}
+                    color={"error"}
+                    badgeContent={""}
+                    overlap="circular"
+                    sx={{
+                        ".css-10tn45-MuiBadge-badge": {
+                            transform: "scale(0.6) translate(50%, -50%)"
+                        }
+                    }}
+                >
+                    <PickersDay {...DayComponentProps} />
+                </Badge>
+            )
+        }
+
+        return <PickersDay {...DayComponentProps} />
     }
 
     //get initial bookings
@@ -165,7 +197,7 @@ const BookingCalendar = (props: Props) => {
                 container
                 maxWidth={600}
                 spacing={2}
-                >
+            >
                 <Grid item xs={12} md={12}>
                     <Grid container>
                         <Grid item xs={12} md={7}>
@@ -187,23 +219,18 @@ const BookingCalendar = (props: Props) => {
                                         }
                                         }
                                         renderInput={(params) => <TextField {...params} />}
-                                        renderDay={(day, _value, DayComponentProps) => {
-                                            return (
-                                                <PickersDay sx={handleDayColor(day)} {...DayComponentProps} />
-                                            );
-
-                                        }}
+                                        renderDay={handleDayBadge}
                                     />
                                 </LocalizationProvider>
                             </Paper>
                         </Grid>
-                            <Grid item xs={12} md={5}>
-                                    <Grid container>
-                                        <Grid item xs={12}>
-                                                {bookingButtonGroup}
-                                        </Grid>
-                                    </Grid>
+                        <Grid item xs={12} md={5}>
+                            <Grid container>
+                                <Grid item xs={12}>
+                                    {bookingButtonGroup}
+                                </Grid>
                             </Grid>
+                        </Grid>
                     </Grid>
                 </Grid>
                 <Grid item xs={12}>
