@@ -174,7 +174,7 @@ const BookingCalendar = (props: Props) => {
                     <PickersDay
                         sx={{
                             "&.MuiPickersDay-root": {
-                                color: ""
+                                color: "#FF0000"
                             }
                         }}
                         {...DayComponentProps} />
