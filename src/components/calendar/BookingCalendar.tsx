@@ -79,57 +79,32 @@ const BookingCalendar = (props: Props) => {
         "20:30-22:00"]
 
     //Should be optimized,abstracted and refined later
-    //<PickersDay sx={handleDayColor(day)} {...DayComponentProps} />
+    /*{(day, _value, DayComponentProps) => {
+        return (
+            <PickersDay sx={handleDayColor(day)} {...DayComponentProps} />
+        )
+    }} */
 
-    const handleDayColor = (day: Date): SxProps => {
-        const oldDate = todaysDateMinus2Days.getTime() > day.getTime();
 
-        let nbrBookedTimes: number = 0;
-
-        /*If it's not an old date we calculate the number of booknings for that day,
-        else we let nbrBookedTimes = 0, which means it wont get any color */
-        !oldDate && bookings.forEach(booking => {
-            if (compareDates(booking.date, day)) {
-                nbrBookedTimes += 1;
-            }
-
-        });
-
-        interface colorProps {
-            backgroundColor: string,
-            hoverBackgroundcolor: string,
-            color: string
-        }
-
-        const color = (nbr: number): colorProps | undefined => {
-            if (nbr == 10) {
-                return {
-                    color: "#FFFFFF",
-                    backgroundColor: "rgba(255, 0, 0, 0.5)",
-                    hoverBackgroundcolor: "rgba(255, 0, 0, 0.7)"
-                }
-            }
-
-            return undefined
-        }
-
-        return {
-            "&.MuiPickersDay-root": {
-                color: color(nbrBookedTimes)?.color,
-                backgroundColor: color(nbrBookedTimes)?.backgroundColor,
-                '&:hover': {
-                    backgroundColor: color(nbrBookedTimes)?.hoverBackgroundcolor,
-                }
-            },
-
-            "&.Mui-selected": {
-                backgroundColor: "#6e8f68",
-                '&:hover': {
-                    backgroundColor: "#4d6448"
+    /*
+            return {
+                "&.MuiPickersDay-root": {
+                    color: color(nbrBookedTimes)?.color,
+                    backgroundColor: color(nbrBookedTimes)?.backgroundColor,
+                    '&:hover': {
+                        backgroundColor: color(nbrBookedTimes)?.hoverBackgroundcolor,
+                    }
+                },
+    
+                "&.Mui-selected": {
+                    backgroundColor: "#6e8f68",
+                    '&:hover': {
+                        backgroundColor: "#4d6448"
+                    }
                 }
             }
         }
-    }
+        */
 
     const handleDayBadge = (day: Date, _value: Date[], DayComponentProps: PickersDayProps<Date>): JSX.Element => {
         const oldDate = todaysDateMinus2Days.getTime() > day.getTime();
@@ -154,7 +129,7 @@ const BookingCalendar = (props: Props) => {
                     overlap="circular"
                     sx={{
                         ".css-10tn45-MuiBadge-badge": {
-                            transform: "scale(0.6) translate(50%, -50%)"
+                            transform: "scale(0.7) translate(50%, -50%)"
                         }
                     }}
                 >
@@ -164,6 +139,72 @@ const BookingCalendar = (props: Props) => {
         }
 
         return <PickersDay {...DayComponentProps} />
+    }
+
+    const handleRenderDay = (day: Date, _value: Date[], DayComponentProps: PickersDayProps<Date>): JSX.Element => {
+        const oldDate = todaysDateMinus2Days.getTime() > day.getTime();
+        let hasBookingOnDay = false;
+        let nbrBookedTimes: number = 0;
+
+        /*If it's not an old date we calculate the number of booknings for that day,
+        else we let nbrBookedTimes = 0, which means it wont get any color */
+        !oldDate && bookings.forEach(booking => {
+
+
+            if (compareDates(booking.date, day)) {
+                nbrBookedTimes += 1;
+
+                if (booking.userName == user.name) {
+                    hasBookingOnDay = true;
+                    console.log("HasBookingonDate:" + day.toString())
+                }
+            }
+
+        });
+
+        if (nbrBookedTimes == timeSlots.length && hasBookingOnDay) {
+            return (
+                <Badge
+                    key={day.toString()}
+                    color={"secondary"}
+                    badgeContent={""}
+                    overlap="circular"
+                    variant="dot"
+                >
+                    <PickersDay
+                        sx={{
+                            "&.MuiPickersDay-root": {
+                                color: ""
+                            }
+                        }}
+                        {...DayComponentProps} />
+                </Badge>
+            )
+        } else if (nbrBookedTimes != timeSlots.length && hasBookingOnDay) {
+            return (
+                <Badge
+                    key={day.toString()}
+                    color={"secondary"}
+                    badgeContent={""}
+                    overlap="circular"
+                    variant="dot"
+                >
+                    <PickersDay {...DayComponentProps} />
+                </Badge>
+            )
+        } else if (nbrBookedTimes == timeSlots.length && !hasBookingOnDay) {
+            return (
+                <PickersDay
+                    sx={{
+                        "&.MuiPickersDay-root": {
+                            color: "rgb(255 0 0)"
+                        }
+                    }}
+                    {...DayComponentProps} />
+            )
+        } else {
+            return <PickersDay {...DayComponentProps} />
+        }
     }
 
     //get initial bookings
@@ -219,7 +260,7 @@ const BookingCalendar = (props: Props) => {
                                         }
                                         }
                                         renderInput={(params) => <TextField {...params} />}
-                                        renderDay={handleDayBadge}
+                                        renderDay={handleRenderDay}
                                     />
                                 </LocalizationProvider>
                             </Paper>
