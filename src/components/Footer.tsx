@@ -16,7 +16,7 @@ const Footer = () => {
                 <Box>hus@lundsnation.se</Box>
             </Grid>
             <Grid item xs={12} sm={3} mx={4}>
-                <Box borderBottom={1} sx={{ fontWeight: "bold" }}>ÖPPETTIDER EXPEN</Box>
+                <Box borderBottom={1} sx={{ fontWeight: "bold" }}>ÖPPETTIDER HUSEXPEN</Box>
                 <Box>Måndagar & Torsdagar 17.00-18.00</Box>
             </Grid>
         </Grid >
