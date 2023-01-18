@@ -90,7 +90,6 @@ const BookingCalendar = (props: Props) => {
 
                 if (booking.userName == user.name) {
                     hasBookingOnDay = true;
-                    console.log("HasBookingonDate:" + day.toString())
                 }
             }
 
