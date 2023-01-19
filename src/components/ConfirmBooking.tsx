@@ -92,40 +92,42 @@ export const ConfirmBooking = (props: Props) => {
     }
 
     return (
-        <div>
-            <Dialog
-                open={open}
-                onClose={() => handleOpenConfirmation(false)}
-                PaperComponent={PaperComponent}
-                aria-labelledby="draggable-dialog-title"
-            >
-                <DialogTitle style={{ cursor: 'move' }} id="draggable-dialog-title">
-                    Bekräfta
-                    <Divider />
-                </DialogTitle>
-                <DialogContent>
-                    <DialogContentText>
-                        Är du säker på att du vill {!myTimeSlot ? "boka" : "avboka"} tiden?
-                        <Typography>
-                            {date.toLocaleString('sv-SE', { year: 'numeric', month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
-                        </Typography>
-                    </DialogContentText>
-                </DialogContent>
-                <DialogActions>
-                    <Button
-                        autoFocus
-                        onClick={() => handleOpenConfirmation(false)}
-                        color={'warning'}
-                    >
-                        Avbryt
-                    </Button>
-                    <Button
-                        onClick={myTimeSlot ? handleCancel : handleBook}
-                        color={myTimeSlot ? 'error' : 'primary'}
-                    > {myTimeSlot ? "Avboka" : "Boka"} </Button>
-                </DialogActions>
-            </Dialog>
-        </div>
+        <Dialog
+            open={open}
+            onClose={() => handleOpenConfirmation(false)}
+            PaperComponent={PaperComponent}
+            aria-labelledby="draggable-dialog-title"
+        >
+            <DialogTitle style={{ cursor: 'move' }} id="draggable-dialog-title">
+                Bekräfta
+                <Divider />
+            </DialogTitle>
+            <DialogContent>
+                <DialogContentText>
+                    Är du säker på att du vill {!myTimeSlot ? "boka" : "avboka"} tiden?
+                    <Typography component={'span'} variant={'body2'}>
+                        {date.toLocaleString('sv-SE', { year: 'numeric', month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                    </Typography>
+                </DialogContentText>
+            </DialogContent>
+            <DialogActions>
+                <Button
+                    fullWidth
+                    autoFocus
+                    variant={"outlined"}
+                    onClick={() => handleOpenConfirmation(false)}
+                    color={'warning'}
+                >
+                    Avbryt
+                </Button>
+                <Button
+                    fullWidth
+                    variant={"outlined"}
+                    onClick={myTimeSlot ? handleCancel : handleBook}
+                    color={myTimeSlot ? 'error' : 'primary'}
+                > {myTimeSlot ? "Avboka" : "Boka"} </Button>
+            </DialogActions>
+        </Dialog>
     );
 }
 
