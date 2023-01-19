@@ -35,7 +35,7 @@ const Header = (props: Props) => {
             <AppBar position="sticky" color="primary">
 
                 <Toolbar>
-                    <HeaderLogo logoText={"TVÄTT NH&GH"} />
+                    <HeaderLogo logoText={"TVÄTT NATIONSHUSET"} />
                     <DesktopNav user={user} />
                     <MobileNav user={user} />
                 </Toolbar>
