@@ -17,9 +17,6 @@ interface Props {
     user: UserType;
 }
 
-
-const pusher = pusherClient();
-console.log("OUTSIDE OF BOOKINGCALENDAR")
 const BookingCalendar = (props: Props) => {
     console.log("INSIDE OF BOOKINGCALENDAR")
 
@@ -45,6 +42,7 @@ const BookingCalendar = (props: Props) => {
 
     useEffect(() => {
         console.log("USEEFFECT in BOOKINGCALENDAR")
+        const pusher = pusherClient();
         const pusherChannel = pusher.subscribe("bookingUpdates");
         pusherChannel.bind('bookingUpdate', (data: any) => {
             updateBookings();
@@ -61,6 +59,13 @@ const BookingCalendar = (props: Props) => {
 
             !myBooking && setRealtimeSnack({ show: true, snackString: snackString, severity: severity, alignment: alignment })
         })
+
+        //Cleanup function
+        return () => {
+            pusher.unbind("bookingUpdate");
+            pusher.unsubscribe("bookingUpdates");
+            pusher.disconnect();
+        }
     }, [])
 
     const timeSlots: Array<string> = ["07:00-08:30",
