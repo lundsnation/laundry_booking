@@ -26,8 +26,13 @@ const styles = {
     }
 }
 
+const pusher = pusherClient()
 
+
+console.log("Outside of profile");
 const Profile: NextPage = () => {
+    console.log("Inside of profile");
+
     const { user, isLoading, error } = useUser()
     const [bookings, setBookings] = useState<Array<Booking>>([])
     const [snack, setSnack] = useState<SnackInterface>({
@@ -35,8 +40,8 @@ const Profile: NextPage = () => {
         snackString: "",
         severity: "success"
     })
-    
-    
+
+
 
     const updateBookings = async () => {
         const res = await fetch("/api/bookings")
@@ -56,7 +61,7 @@ const Profile: NextPage = () => {
     }, [user, isLoading])
 
     useEffect(() => {
-        const pusher = pusherClient()
+        console.log("Useeffect in profile");
         const pusherChannel = pusher.subscribe("bookingUpdates");
         pusherChannel.bind('bookingUpdate', (data: any) => { updateBookings() })
         updateBookings()
