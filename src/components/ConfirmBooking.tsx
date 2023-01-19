@@ -42,8 +42,6 @@ export const ConfirmBooking = (props: Props) => {
     const date = new Date(dateFromTimeSlot(selectedDate, timeSlot))
     let snackString;
 
-    console.log(timeSlot)
-    console.log(dateFromTimeSlot(selectedDate, timeSlot))
     const handleBook = async () => {
         //setDisabled(true)
 
@@ -106,9 +104,8 @@ export const ConfirmBooking = (props: Props) => {
             <DialogContent>
                 <DialogContentText>
                     Är du säker på att du vill {!myTimeSlot ? "boka" : "avboka"} tiden?
-                    <Typography>
-                        {date.toLocaleString('sv-SE', { year: 'numeric', month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
-                    </Typography>
+                    <br />
+                    {date.toLocaleString('sv-SE', { year: 'numeric', month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
                 </DialogContentText>
             </DialogContent>
             <DialogActions>

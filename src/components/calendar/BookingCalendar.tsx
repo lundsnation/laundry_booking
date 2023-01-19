@@ -18,7 +18,10 @@ interface Props {
 }
 
 
+const pusher = pusherClient();
+console.log("OUTSIDE OF BOOKINGCALENDAR")
 const BookingCalendar = (props: Props) => {
+    console.log("INSIDE OF BOOKINGCALENDAR")
 
     const [firstRender, setFirstRender] = useState(true);
     const [selectedDate, setSelectedDate] = useState<Date>(new Date());
@@ -41,7 +44,7 @@ const BookingCalendar = (props: Props) => {
     }
 
     useEffect(() => {
-        const pusher = pusherClient();
+        console.log("USEEFFECT in BOOKINGCALENDAR")
         const pusherChannel = pusher.subscribe("bookingUpdates");
         pusherChannel.bind('bookingUpdate', (data: any) => {
             updateBookings();
@@ -53,9 +56,6 @@ const BookingCalendar = (props: Props) => {
             const severity = "info"
             //const alignment: SnackbarOrigin = {vertical: 'bottom', horizontal: 'right'}
             const myBooking = userName == user.name
-            console.log("this should print every event")
-
-            console.log("window.innerWidt: " + window.innerWidth)
 
             const alignment: SnackbarOrigin = window.innerWidth > 600 ? { vertical: 'bottom', horizontal: 'right' } : { vertical: 'top', horizontal: 'right' }
 
