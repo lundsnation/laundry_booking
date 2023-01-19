@@ -105,7 +105,7 @@ export const ConfirmBooking = (props: Props) => {
             <DialogContent>
                 <DialogContentText>
                     Är du säker på att du vill {!myTimeSlot ? "boka" : "avboka"} tiden?
-                    <Typography component={'span'} variant={'body2'}>
+                    <Typography>
                         {date.toLocaleString('sv-SE', { year: 'numeric', month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
                     </Typography>
                 </DialogContentText>

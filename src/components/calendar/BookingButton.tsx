@@ -43,7 +43,7 @@ const BookingButton = (props: Props) => {
         title = "Tryck för att avboka tiden"
     } else if (bookedTimeSlot && !myTimeSlot) {
         title = "Tiden är bokad av någon annan."
-    } else if (!bookedTimeSlot) {
+    } else if (!bookedTimeSlot && !timeSlotHasPassed) {
         title = "Tryck för att boka tiden"
     } else {
         title = "Tiden har passerat"
