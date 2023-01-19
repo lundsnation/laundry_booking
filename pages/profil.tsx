@@ -26,9 +26,6 @@ const styles = {
     }
 }
 
-const pusher = pusherClient()
-
-
 console.log("Outside of profile");
 const Profile: NextPage = () => {
     console.log("Inside of profile");
@@ -61,10 +58,17 @@ const Profile: NextPage = () => {
     }, [user, isLoading])
 
     useEffect(() => {
+        updateBookings()
+        const pusher = pusherClient()
         console.log("Useeffect in profile");
         const pusherChannel = pusher.subscribe("bookingUpdates");
         pusherChannel.bind('bookingUpdate', (data: any) => { updateBookings() })
-        updateBookings()
+        //cleanup function
+        return () => {
+            pusher.unbind("bookingUpdate");
+            pusher.unsubscribe("bookingUpdates");
+            pusher.disconnect();
+        }
     }, [])
 
     const resetSnack = () => {
