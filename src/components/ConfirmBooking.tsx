@@ -42,8 +42,6 @@ export const ConfirmBooking = (props: Props) => {
     const date = new Date(dateFromTimeSlot(selectedDate, timeSlot))
     let snackString;
 
-    console.log(timeSlot)
-    console.log(dateFromTimeSlot(selectedDate, timeSlot))
     const handleBook = async () => {
         //setDisabled(true)
 
