@@ -34,65 +34,12 @@ const BookingButton = (props: Props) => {
         setDisabled(timeSlotHasPassed)
     }, [timeSlotHasPassed]);
 
-
-    // Function for booking time
-    const handleBook = async () => {
-        setDisabled(true)
-
-        const date = new Date(timeFromTimeSlot(selectedDate, timeSlot))
-        const jsonBooking = { userName: (user.name as string), date: date, timeSlot: timeSlot, createdAt: new Date() }
-        const response = await fetch("/api/bookings", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(jsonBooking)
-        });
-        if (response.ok) {
-            snackString = "Du har bokat: " + String(timeSlot)
-            snackTrigger("success", snackString, snackAlignment)
-        } else {
-            let responseContent = await response.json()
-            snackString = responseContent.error
-            snackTrigger("error", snackString, snackAlignment)
-        }
-        setDisabled(false)
-    }
-    // Function for deleting already aquired time
-    const handleCancel = async () => {
-        const api_url = "/api/bookings" + "/" + (booking?._id);
-        const date = new Date(timeFromTimeSlot(selectedDate, timeSlot))
-        const jsonBooking = { userName: (user.name as string), date: date, timeSlot: timeSlot, createdAt: new Date() }
-        const response = await fetch(api_url, {
-            method: "DELETE",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(jsonBooking)
-        });
-
-        //updateBookings();
-        if (response.ok) {
-            snackString = "Du har avbokat tiden"
-            snackTrigger("success", snackString, snackAlignment)
-        } else {
-            let responseContent = await response.json()
-            snackString = responseContent.error
-            snackTrigger("error", snackString, snackAlignment)
-        }
-    }
-
     const handleOpenConfirmation = (open: boolean) => {
         setOpenConfirmation(open);
     }
 
-
-
-
-
-    //Alla fall behövs egentligen inte då disabled knappar inte resulterar i tooltip
     let title = ""
-    if (myTimeSlot) {
+    if (myTimeSlot && !timeSlotHasPassed) {
         title = "Tryck för att avboka tiden"
     } else if (bookedTimeSlot && !myTimeSlot) {
         title = "Tiden är bokad av någon annan."
@@ -101,7 +48,6 @@ const BookingButton = (props: Props) => {
     } else {
         title = "Tiden har passerat"
     }
-
 
     return (
         <div>
@@ -126,24 +72,27 @@ const BookingButton = (props: Props) => {
                             title={title}
                             placement={"right"}
                         >
-                            <Button
-                                fullWidth
-                                size="small"
-                                variant="contained"
-                                onClick={() => handleOpenConfirmation(true)}
-                                color={!bookedTimeSlot ? 'primary' : 'secondary'}
-                                disabled={(bookedTimeSlot && !myTimeSlot) || disabled}
-                            >
-                                <Grid container >
-                                    <Grid item xs={7} >
-                                        <Typography variant="button" align="left">{timeSlot}</Typography>
-                                    </Grid>
-                                    <Grid item xs={5}>
-                                        <Typography variant="button" align="left" sx={{ textTransform: "none" }}>Bås {" " + boothIndex}</Typography>
-                                    </Grid>
+                            <span>
+                                <Button
+                                    fullWidth
+                                    size="small"
+                                    variant="contained"
+                                    onClick={() => handleOpenConfirmation(true)}
+                                    color={!bookedTimeSlot ? 'primary' : 'secondary'}
+                                    disabled={(bookedTimeSlot && !myTimeSlot) || disabled}
+                                >
 
-                                </Grid>
-                            </Button>
+                                    <Grid container >
+                                        <Grid item xs={7} >
+                                            <Typography variant="button" align="left">{timeSlot}</Typography>
+                                        </Grid>
+                                        <Grid item xs={5}>
+                                            <Typography variant="button" align="left" sx={{ textTransform: "none" }}>Bås {" " + boothIndex}</Typography>
+                                        </Grid>
+
+                                    </Grid>
+                                </Button>
+                            </span>
                         </Tooltip>
                     </Paper>
                 </Grid>
