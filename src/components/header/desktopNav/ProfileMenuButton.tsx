@@ -22,7 +22,7 @@ type MenuItemType = {
 }
 
 const menuItems: Array<MenuItemType> = [
-    { text: "Profil", link: "/profile", Icon: AccountCircle },
+    { text: "Profil", link: "/profil", Icon: AccountCircle },
     //{ text: "Logga ut", link: "api/auth/logout", Icon: Logout } //Button added manually instead so it can be made red.
 ]
 
