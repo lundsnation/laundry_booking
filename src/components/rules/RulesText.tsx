@@ -153,7 +153,7 @@ export const RulesText = () => {
             </Box>
 
 
-            <Typography pt={3} align='right' fontWeight='medium' fontStyle='italic'>
+            <Typography pb={2} pt={3} align='right' fontWeight='medium' fontStyle='italic'>
                 Hyresgäster som inte följer ordningsreglerna kommer inte få använda tvättstugan.
             </Typography>
 
