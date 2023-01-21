@@ -10,7 +10,7 @@ import Footer from '../src/components/Footer';
 import Terms from '../src/components/Terms';
 import { UserType } from '../utils/types';
 import Loading from '../src/components/Loading';
-import Rules from '../src/components/Rules';
+import Rules from '../src/components/rules/Rules';
 
 const img = process.env.AUTH0_BASE_URL as string + "/logotyp02.png"
 const styles = {
