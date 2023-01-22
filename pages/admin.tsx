@@ -8,7 +8,6 @@ import Loading from "../src/components/Loading";
 import { UserType } from "../utils/types";
 import { useEffect } from "react";
 import router from "next/router";
-import Header from "../src/components/layout/header/Header";
 
 const Admin = () => {
     const { user, isLoading, error } = useUser()
@@ -22,9 +21,6 @@ const Admin = () => {
 
     return (user ?
         <Grid container justifyContent="center">
-            <Grid item xs={12} flexGrow={1}>
-                <Header user={user as UserType} />
-            </Grid>
             {user && !isLoading ?
                 <Grid item xs={12}>
                     <Box>

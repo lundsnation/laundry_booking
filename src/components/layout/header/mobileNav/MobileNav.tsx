@@ -12,7 +12,7 @@ const MobileNav = (props: Props) => {
     const user = props.user;
 
     return (
-        <Box sx={{ display: { xs: 'block', sm: 'none' } }}>
+        <Box sx={{ display: { xs: 'flex', sm: 'none' } }}>
             {user.app_metadata?.roles?.includes("admin") && <MobileAdminButton />}
             <MobileMenuButton />
         </Box >

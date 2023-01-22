@@ -24,7 +24,7 @@ const styles = {
         display: "flex",
         opacity: "1",
         flexGrow: 1,
-
+        my: 3
     }
 }
 
@@ -44,16 +44,20 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 minHeight: "100vh",
                 display: 'flex',
                 flexDirection: 'column',
+                width: '100%',
             }}
         >
-
             <Header user={user as UserType} />
+
 
             <Paper sx={styles.paperContainer}>
                 <main> {children} </main>
             </Paper>
 
+
             <Footer />
+
+
         </Grid> : <Loading />
 
     )
