@@ -60,12 +60,12 @@ export default function MyApp(props: MyAppProps) {
         <ThemeProvider theme={lundsNationtheme}>
 
           {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
-          {/* <Layout> */}
+          <Layout>
 
-          <Component {...pageProps} />
-          <CssBaseline />
+            <Component {...pageProps} />
+            <CssBaseline />
 
-          {/* </Layout> */}
+          </Layout>
 
 
         </ThemeProvider>

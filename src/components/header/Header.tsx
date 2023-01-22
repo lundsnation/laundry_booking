@@ -32,7 +32,7 @@ const Header = (props: Props) => {
 
     return (
         <React.Fragment>
-            <AppBar position="sticky" color="primary">
+            <AppBar position="fixed" color="primary">
 
                 <Toolbar>
                     <HeaderLogo logoText={"TVÄTT NATIONSHUSET"} />
@@ -41,7 +41,7 @@ const Header = (props: Props) => {
                 </Toolbar>
             </AppBar>
             {/* Recommended hack when using postiion="sticky" from MUI docs */}
-            <Toolbar />
+            <Toolbar disableGutters />
         </React.Fragment>
     )
 

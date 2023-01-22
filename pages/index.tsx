@@ -35,28 +35,18 @@ const Index: NextPage = () => {
 
   return (user ?
 
-    <Grid container justifyContent="flex-end" >
-      <Header user={user as UserType} />
+    <Grid container>
       <Terms user={user as UserType} />
       <Rules />
 
 
       <Grid item xs={12}>
-        <Paper style={styles.paperContainer}
-          sx={{
-            boxShadow: "none",
-            justifyContent: "center",
-            alignItems: "center",
-            display: "flex",
-            opacity: "1"
-          }}>
+        <BookingCalendar title="" user={user as UserType} />
 
-          {<BookingCalendar title="" user={user as UserType} />}
-        </Paper>
       </Grid>
 
       <Grid item xs={12}  >
-        <Footer />
+
       </Grid>
 
     </Grid> : <Loading />
