@@ -3,10 +3,10 @@ import { useEffect } from "react";
 import type { NextPage } from 'next';
 import { Grid, Paper } from '@mui/material';
 import { useUser } from '@auth0/nextjs-auth0/client';
-import Header from '../src/components/header/Header'
+import Header from "../src/components/layout/header/Header";
 import BookingCalendar from '../src/components/calendar/BookingCalendar';
 import { useRouter } from 'next/router'
-import Footer from '../src/components/Footer';
+import Footer from '../src/components/layout/Footer';
 import Terms from '../src/components/Terms';
 import { UserType } from '../utils/types';
 import Loading from '../src/components/Loading';

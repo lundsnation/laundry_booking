@@ -1,8 +1,8 @@
 import { Grid, Paper, AlertColor, SnackbarOrigin, Box } from "@mui/material";
 import { useUser } from '@auth0/nextjs-auth0/client';
 import { NextPage } from "next";
-import Header from "../src/components/header/Header";
-import Footer from "../src/components/Footer";
+import Header from "../src/components/layout/header/Header";
+import Footer from "../src/components/layout/Footer";
 import { useEffect, useState } from "react";
 import BookedTimes from "../src/components/BookedTimes";
 import { Booking, UserType } from "../utils/types"

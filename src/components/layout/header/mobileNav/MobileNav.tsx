@@ -1,6 +1,6 @@
 import { Box } from '@mui/material';
 import * as React from 'react';
-import { UserType } from '../../../../utils/types';
+import { UserType } from '../../../../../utils/types';
 import MobileAdminButton from './MobileAdminButton';
 import MobileMenuButton from './MobileMenuButton';
 

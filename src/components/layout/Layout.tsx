@@ -4,8 +4,8 @@ import { AppBar, Grid, Paper } from "@mui/material"
 import React, { useEffect } from "react"
 import { useUser } from "@auth0/nextjs-auth0/client"
 import { useRouter } from "next/router"
-import { UserType } from "../../utils/types"
-import Loading from "./Loading"
+import { UserType } from "../../../utils/types"
+import Loading from "../Loading"
 
 
 const img = process.env.AUTH0_BASE_URL as string + "/logotyp02.png"

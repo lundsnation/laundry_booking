@@ -3,7 +3,7 @@ import { Toolbar, AppBar, Fade, Collapse } from '@mui/material';
 import { useRouter } from 'next/router';
 import { HeaderLogo } from './HeaderLogo';
 import DesktopNav from './desktopNav/DesktopNav';
-import { UserType } from '../../../utils/types';
+import { UserType } from '../../../../utils/types';
 import MobileNav from './mobileNav/MobileNav';
 
 interface Props {

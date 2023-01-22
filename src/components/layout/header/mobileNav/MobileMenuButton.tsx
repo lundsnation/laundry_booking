@@ -3,7 +3,7 @@ import Box from '@mui/material/Box';
 import Menu from '@mui/material/Menu';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
-import { UserType } from '../../../../utils/types';
+import { UserType } from '../../../../../utils/types';
 import { AccountCircle, Logout } from '@mui/icons-material/';
 import { ListItemIcon, MenuItem, SvgIconTypeMap } from '@mui/material';
 import router from 'next/router';

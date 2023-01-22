@@ -2,13 +2,13 @@ import { Box, Container, Typography, Paper } from "@mui/material";
 import { useUser } from '@auth0/nextjs-auth0/client';
 import NotLoggedIn from "../src/components/NotLoggedIn";
 import NotAuthorized from "../src/components/NotAuthorized";
-import Header from "../src/components/header/Header";
 import UserGrid from "../src/components/admin/UserGrid";
 import { Grid } from "@mui/material";
 import Loading from "../src/components/Loading";
 import { UserType } from "../utils/types";
 import { useEffect } from "react";
 import router from "next/router";
+import Header from "../src/components/layout/header/Header";
 
 const Admin = () => {
     const { user, isLoading, error } = useUser()

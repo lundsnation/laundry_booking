@@ -4,7 +4,7 @@ import Menu from '@mui/material/Menu';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import Tooltip from '@mui/material/Tooltip';
-import { UserType } from '../../../../utils/types';
+import { UserType } from '../../../../../utils/types';
 import { AccountCircle, Logout } from '@mui/icons-material/';
 import { Button, ListItemIcon, MenuItem, SvgIconTypeMap } from '@mui/material';
 import SvgIcon from '@mui/material';
