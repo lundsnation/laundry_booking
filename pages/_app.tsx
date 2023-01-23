@@ -8,7 +8,7 @@ import createEmotionCache from '../src/createEmotionCache';
 import { UserProvider } from '@auth0/nextjs-auth0/client';
 import theme from "../src/theme"
 import { makeStyles, Paper, alpha, Grid } from '@mui/material';
-import Layout from '../src/components/Layout';
+import Layout from '../src/components/layout/Layout';
 
 
 
@@ -60,12 +60,12 @@ export default function MyApp(props: MyAppProps) {
         <ThemeProvider theme={lundsNationtheme}>
 
           {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
-          {/* <Layout> */}
+          <Layout>
 
-          <Component {...pageProps} />
-          <CssBaseline />
+            <Component {...pageProps} />
+            <CssBaseline />
 
-          {/* </Layout> */}
+          </Layout>
 
 
         </ThemeProvider>

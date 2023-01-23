@@ -2,7 +2,6 @@ import { Box, Container, Typography, Paper } from "@mui/material";
 import { useUser } from '@auth0/nextjs-auth0/client';
 import NotLoggedIn from "../src/components/NotLoggedIn";
 import NotAuthorized from "../src/components/NotAuthorized";
-import Header from "../src/components/header/Header";
 import UserGrid from "../src/components/admin/UserGrid";
 import { Grid } from "@mui/material";
 import Loading from "../src/components/Loading";
@@ -22,9 +21,6 @@ const Admin = () => {
 
     return (user ?
         <Grid container justifyContent="center">
-            <Grid item xs={12} flexGrow={1}>
-                <Header user={user as UserType} />
-            </Grid>
             {user && !isLoading ?
                 <Grid item xs={12}>
                     <Box>

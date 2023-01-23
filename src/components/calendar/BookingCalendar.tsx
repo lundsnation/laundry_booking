@@ -179,55 +179,47 @@ const BookingCalendar = (props: Props) => {
     )
 
     return (
-        <div>
+        <Grid
+            container
+            maxWidth={600}
+        >
             <Snack state={realtimeSnack} handleClose={resetRealtimeSnack} />
             <Snack state={snack} handleClose={resetSnack} />
-            <Grid
-                container
-                maxWidth={600}
-                spacing={2}
-            >
-                <Grid item xs={12} md={12}>
-                    <Grid container>
-                        <Grid item xs={12} md={7}>
-                            <Paper elevation={0} variant={"outlined"}>
-                                <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={svLocale}>
-                                    <StaticDatePicker<Date>
-                                        minDate={todaysDateMinus2Days}
-                                        orientation="landscape"
-                                        displayStaticWrapperAs="desktop"
-                                        openTo="day"
-                                        showDaysOutsideCurrentMonth={true}
-                                        views={['day']}
-                                        showToolbar={false}
-                                        value={selectedDate}
-                                        toolbarTitle={"Valt Datum: "}
-                                        onChange={async (date) => {
-                                            date && setSelectedDate(date);
-                                            //updateBookings();
-                                        }
-                                        }
-                                        renderInput={(params) => <TextField {...params} />}
-                                        renderDay={handleRenderDay}
-                                    />
-                                </LocalizationProvider>
-                            </Paper>
-                        </Grid>
-                        <Grid item xs={12} md={5}>
-                            <Grid container>
-                                <Grid item xs={12}>
-                                    {bookingButtonGroup}
-                                </Grid>
-                            </Grid>
-                        </Grid>
-                    </Grid>
+            <Grid container>
+                <Grid item xs={12} md={7}>
+                    <Paper elevation={0} variant={"outlined"}>
+                        <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={svLocale}>
+                            <StaticDatePicker<Date>
+                                minDate={todaysDateMinus2Days}
+                                orientation="landscape"
+                                displayStaticWrapperAs="desktop"
+                                openTo="day"
+                                showDaysOutsideCurrentMonth={true}
+                                views={['day']}
+                                showToolbar={false}
+                                value={selectedDate}
+                                toolbarTitle={"Valt Datum: "}
+                                onChange={async (date) => {
+                                    date && setSelectedDate(date);
+                                    //updateBookings();
+                                }
+                                }
+                                renderInput={(params) => <TextField {...params} />}
+                                renderDay={handleRenderDay}
+                            />
+                        </LocalizationProvider>
+                    </Paper>
                 </Grid>
-                <Grid item xs={12}>
+                <Grid item xs={12} md={5} sx={{ pt: { xs: 2, sm: 0 } }}>
+                    {bookingButtonGroup}
+                </Grid>
+                <Grid item xs={12} pt={2}>
                     <BookedTimes bookings={bookings} user={user} snackTrigger={snackTrigger} />
                 </Grid>
-
             </Grid>
-        </div>
+
+
+        </Grid>
     );
 }
 export default BookingCalendar;

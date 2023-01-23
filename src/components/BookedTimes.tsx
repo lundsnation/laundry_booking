@@ -63,7 +63,7 @@ const BookedTimes = (props: Props) => {
     }
 
     return (
-        <Card variant={"outlined"} sx={{ mb: 20 }}>
+        <Card variant={"outlined"}>
             <Box >
                 <Grid container alignItems="center">
                     <Grid item xs={12}>

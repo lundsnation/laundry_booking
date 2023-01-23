@@ -1,6 +1,6 @@
 import { Box } from '@mui/material';
 import * as React from 'react';
-import { UserType } from '../../../../utils/types';
+import { UserType } from '../../../../../utils/types';
 import MobileAdminButton from './MobileAdminButton';
 import MobileMenuButton from './MobileMenuButton';
 
@@ -12,7 +12,7 @@ const MobileNav = (props: Props) => {
     const user = props.user;
 
     return (
-        <Box sx={{ display: { xs: 'block', sm: 'none' } }}>
+        <Box sx={{ display: { xs: 'flex', sm: 'none' } }}>
             {user.app_metadata?.roles?.includes("admin") && <MobileAdminButton />}
             <MobileMenuButton />
         </Box >

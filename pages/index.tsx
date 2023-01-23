@@ -1,12 +1,12 @@
 import * as React from 'react';
 import { useEffect } from "react";
 import type { NextPage } from 'next';
-import { Grid, Paper } from '@mui/material';
+import { Box, Grid, Paper } from '@mui/material';
 import { useUser } from '@auth0/nextjs-auth0/client';
-import Header from '../src/components/header/Header'
+import Header from "../src/components/layout/header/Header";
 import BookingCalendar from '../src/components/calendar/BookingCalendar';
 import { useRouter } from 'next/router'
-import Footer from '../src/components/Footer';
+import Footer from '../src/components/layout/Footer';
 import Terms from '../src/components/Terms';
 import { UserType } from '../utils/types';
 import Loading from '../src/components/Loading';
@@ -35,29 +35,11 @@ const Index: NextPage = () => {
 
   return (user ?
 
-    <Grid container justifyContent="flex-end" >
-      <Header user={user as UserType} />
+    <Grid container justifyContent={'center'} pt={3}>
       <Terms user={user as UserType} />
       <Rules />
 
-
-      <Grid item xs={12}>
-        <Paper style={styles.paperContainer}
-          sx={{
-            boxShadow: "none",
-            justifyContent: "center",
-            alignItems: "center",
-            display: "flex",
-            opacity: "1"
-          }}>
-
-          {<BookingCalendar title="" user={user as UserType} />}
-        </Paper>
-      </Grid>
-
-      <Grid item xs={12}  >
-        <Footer />
-      </Grid>
+      <BookingCalendar title="" user={user as UserType} />
 
     </Grid> : <Loading />
   )

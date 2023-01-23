@@ -2,7 +2,7 @@ import * as React from 'react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import router from 'next/router';
-import { UserType } from '../../../../utils/types';
+import { UserType } from '../../../../../utils/types';
 import AdminButton from './DeskAdminButton'
 import { Typography } from '@mui/material';
 import ProfileMenuButton from './ProfileMenuButton';
