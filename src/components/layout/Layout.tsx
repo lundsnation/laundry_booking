@@ -29,9 +29,8 @@ const styles = {
 }
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-    const { user, error, isLoading } = useUser();
 
-    return (user ?
+    return (
         <Grid container
             sx={{
                 minHeight: "100vh",
@@ -39,7 +38,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 width: '100%',
             }}
         >
-            <Header user={user as UserType} />
+            <Header />
 
 
             <Grid sx={styles.paperContainer}>
@@ -50,7 +49,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             <Footer />
 
 
-        </Grid> : <Loading />
-
+        </Grid>
     )
 }
