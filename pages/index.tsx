@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useEffect } from "react";
 import type { NextPage } from 'next';
-import { Grid, Paper } from '@mui/material';
+import { Box, Grid, Paper } from '@mui/material';
 import { useUser } from '@auth0/nextjs-auth0/client';
 import Header from "../src/components/layout/header/Header";
 import BookingCalendar from '../src/components/calendar/BookingCalendar';
@@ -35,19 +35,11 @@ const Index: NextPage = () => {
 
   return (user ?
 
-    <Grid container>
+    <Grid container justifyContent={'center'}>
       <Terms user={user as UserType} />
       <Rules />
 
-
-      <Grid item xs={12}>
-        <BookingCalendar title="" user={user as UserType} />
-
-      </Grid>
-
-      <Grid item xs={12}  >
-
-      </Grid>
+      <BookingCalendar title="" user={user as UserType} />
 
     </Grid> : <Loading />
   )

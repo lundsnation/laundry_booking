@@ -21,7 +21,7 @@ const styles = {
         boxShadow: "none",
         justifyContent: "center",
         alignItems: "center",
-        display: "flex",
+        //display: "flex", //This property ruins the admin page.
         opacity: "1",
         flexGrow: 1,
         my: 3
@@ -42,7 +42,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         <Grid container
             sx={{
                 minHeight: "100vh",
-                display: 'flex',
                 flexDirection: 'column',
                 width: '100%',
             }}
@@ -50,9 +49,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             <Header user={user as UserType} />
 
 
-            <Paper sx={styles.paperContainer}>
+            <Grid sx={styles.paperContainer}>
                 <main> {children} </main>
-            </Paper>
+            </Grid>
 
 
             <Footer />
