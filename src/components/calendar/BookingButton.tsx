@@ -42,7 +42,7 @@ const BookingButton = (props: Props) => {
     if (myTimeSlot && !timeSlotHasPassed) {
         title = "Tryck för att avboka tiden"
     } else if (bookedTimeSlot && !myTimeSlot) {
-        title = "Tiden är bokad av någon annan."
+        title = "Tiden är bokad av annan hyresgäst."
     } else if (!bookedTimeSlot && !timeSlotHasPassed) {
         title = "Tryck för att boka tiden"
     } else {
@@ -50,7 +50,7 @@ const BookingButton = (props: Props) => {
     }
 
     return (
-        <div>
+        <Grid container>
             <ConfirmBooking
                 open={openConfirmation}
                 myTimeSlot={myTimeSlot}
@@ -62,56 +62,56 @@ const BookingButton = (props: Props) => {
                 snackTrigger={snackTrigger}
             />
 
-            <Grid container spacing={1}>
+            <Grid item xs={2} md={1}></Grid>
 
-                <Grid item xs={2} md={1}></Grid>
-                <Grid item xs={8} md={10}>
-
-                    <Paper elevation={0} >
-                        <Tooltip
-                            title={title}
-                            placement={"right"}
+            <Grid item xs={8} md={10}>
+                <Tooltip
+                    title={title}
+                    placement={"right"}
+                >
+                    {/*The span is a hack to enable tooltip on disabled buttons*/}
+                    {/*The sx height is also a hack to make the buttongroup same size as calendar vertically*/}
+                    <span>
+                        <Button
+                            fullWidth
+                            size="small"
+                            sx={{ height: 334 / 10 }}
+                            variant="contained"
+                            onClick={() => handleOpenConfirmation(true)}
+                            color={!bookedTimeSlot ? 'primary' : 'secondary'}
+                            disabled={(bookedTimeSlot && !myTimeSlot) || disabled}
                         >
-                            <span>
-                                <Button
-                                    fullWidth
-                                    size="small"
-                                    variant="contained"
-                                    onClick={() => handleOpenConfirmation(true)}
-                                    color={!bookedTimeSlot ? 'primary' : 'secondary'}
-                                    disabled={(bookedTimeSlot && !myTimeSlot) || disabled}
-                                >
 
-                                    <Grid container >
-                                        <Grid item xs={7} >
-                                            <Typography variant="button" align="left">{timeSlot}</Typography>
-                                        </Grid>
-                                        <Grid item xs={5}>
-                                            <Typography variant="button" align="left" sx={{ textTransform: "none" }}>Bås {" " + boothIndex}</Typography>
-                                        </Grid>
+                            <Grid container >
+                                <Grid item xs={7} >
+                                    <Typography variant="button" align="left">{timeSlot}</Typography>
+                                </Grid>
+                                <Grid item xs={5}>
+                                    <Typography variant="button" align="left" sx={{ textTransform: "none" }}>Bås {" " + boothIndex}</Typography>
+                                </Grid>
 
-                                    </Grid>
-                                </Button>
-                            </span>
-                        </Tooltip>
-                    </Paper>
-                </Grid>
-                <Grid item xs={2} md={1}>
-                    <IconButton disabled={!(bookedTimeSlot && !myTimeSlot)}
-                        onClick={() => { setShowBookingInfo(true) }}
-                        style={{ padding: 0, height: 20, width: 20, marginBottom: "-8px" }}>
-                        {(bookedTimeSlot && !myTimeSlot) ?
-                            <InfoOutlinedIcon color="action" />
-                            : null}
-                    </IconButton>
-                    {booking && <BookingInfo
-                        showBookingInfo={showBookingInfo}
-                        booking={booking}
-                        setShowBookingInfo={setShowBookingInfo}
-                    />}
-                </Grid >
+                            </Grid>
+                        </Button>
+                    </span>
+                </Tooltip>
             </Grid>
-        </div>
+
+            <Grid item xs={2} md={1}>
+                <IconButton disabled={!(bookedTimeSlot && !myTimeSlot)}
+                    onClick={() => { setShowBookingInfo(true) }}
+                    style={{ padding: 0, height: 20, width: 20, marginBottom: "-8px" }}>
+                    {(bookedTimeSlot && !myTimeSlot) ?
+                        <InfoOutlinedIcon color="action" />
+                        : null}
+                </IconButton>
+                {booking && <BookingInfo
+                    showBookingInfo={showBookingInfo}
+                    booking={booking}
+                    setShowBookingInfo={setShowBookingInfo}
+                />}
+            </Grid >
+
+        </Grid>
     );
 };
 

@@ -185,7 +185,7 @@ const BookingCalendar = (props: Props) => {
         >
             <Snack state={realtimeSnack} handleClose={resetRealtimeSnack} />
             <Snack state={snack} handleClose={resetSnack} />
-            <Grid container >
+            <Grid container>
                 <Grid item xs={12} md={7}>
                     <Paper elevation={0} variant={"outlined"}>
                         <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={svLocale}>
@@ -210,10 +210,10 @@ const BookingCalendar = (props: Props) => {
                         </LocalizationProvider>
                     </Paper>
                 </Grid>
-                <Grid item xs={12} md={5}>
+                <Grid item xs={12} md={5} flexDirection={'column'} sx={{ py: { xs: 2 } }}>
                     {bookingButtonGroup}
                 </Grid>
-                <Grid item xs={12} pt={1}>
+                <Grid item xs={12} pt={2}>
                     <BookedTimes bookings={bookings} user={user} snackTrigger={snackTrigger} />
                 </Grid>
             </Grid>

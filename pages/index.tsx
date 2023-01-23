@@ -35,7 +35,7 @@ const Index: NextPage = () => {
 
   return (user ?
 
-    <Grid container justifyContent={'center'}>
+    <Grid container justifyContent={'center'} pt={3}>
       <Terms user={user as UserType} />
       <Rules />
 
