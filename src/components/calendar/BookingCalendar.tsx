@@ -210,7 +210,7 @@ const BookingCalendar = (props: Props) => {
                         </LocalizationProvider>
                     </Paper>
                 </Grid>
-                <Grid item xs={12} md={5} flexDirection={'column'} sx={{ py: { xs: 2 } }}>
+                <Grid item xs={12} md={5} sx={{ pt: { xs: 2, sm: 0 } }}>
                     {bookingButtonGroup}
                 </Grid>
                 <Grid item xs={12} pt={2}>
