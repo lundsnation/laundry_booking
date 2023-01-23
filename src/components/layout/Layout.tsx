@@ -30,13 +30,6 @@ const styles = {
 
 export default function Layout({ children }: { children: React.ReactNode }) {
     const { user, error, isLoading } = useUser();
-    const router = useRouter()
-
-    useEffect(() => {
-        if (!(user || isLoading)) {
-            router.push('api/auth/login')
-        }
-    }, [user, isLoading])
 
     return (user ?
         <Grid container
