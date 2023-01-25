@@ -81,6 +81,7 @@ export const timeSlotToBooking = (bookings: Set<Booking>) => {
     return map;
 }
 
+//Should be refactored to use dates standard library string.
 export const dateToNbrOfBookingsMap = (bookings: Array<Booking>) => {
     const map: Map<string, number> = new Map<string, number>();
 
