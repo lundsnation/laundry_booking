@@ -36,6 +36,7 @@ const Index: NextPage = () => {
 
   return (user ?
     <Layout>
+
       <Terms user={user as UserType} />
       <Rules />
 

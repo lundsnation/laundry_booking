@@ -22,6 +22,7 @@ const Admin = () => {
 
     return (user ?
         <Layout>
+
             <Grid container justifyContent="center">
                 {user && !isLoading ?
                     <Grid item xs={12}>
@@ -32,6 +33,7 @@ const Admin = () => {
                             }</Box></Grid> : <Loading />
                 }
             </Grid>
+
         </Layout> : <Loading />
     )
 }

@@ -8,6 +8,7 @@ import Loading from "../src/components/Loading";
 import { NextPage } from "next";
 import { UserType } from "../utils/types";
 import RulesText from "../src/components/rules/RulesText";
+import Layout from "../src/components/layout/Layout";
 
 
 const Rules: NextPage = () => {
@@ -22,16 +23,19 @@ const Rules: NextPage = () => {
 
 
     return (user ?
-        <Grid container justifyContent="center" py={5}>
+        <Layout>
 
-            <Grid item xs={12} md={6}
-            >
-                <Paper variant="outlined">
-                    <RulesText />
-                </Paper>
+            <Grid container justifyContent="center" py={5}>
+                <Grid item xs={12} md={6}>
 
+                    <Paper variant="outlined">
+                        <RulesText />
+                    </Paper>
+
+                </Grid >
             </Grid >
-        </Grid > : <Loading />
+
+        </Layout> : <Loading />
     )
 }
 export default Rules
