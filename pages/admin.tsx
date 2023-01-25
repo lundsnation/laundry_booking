@@ -8,6 +8,7 @@ import Loading from "../src/components/Loading";
 import { UserType } from "../utils/types";
 import { useEffect } from "react";
 import router from "next/router";
+import Layout from "../src/components/layout/Layout";
 
 const Admin = () => {
     const { user, isLoading, error } = useUser()
@@ -20,17 +21,20 @@ const Admin = () => {
 
 
     return (user ?
-        <Grid container justifyContent="center">
-            {user && !isLoading ?
-                <Grid item xs={12}>
-                    <Box>
-                        {user.name == "admin" ?
-                            <UserGrid />
-                            : <NotAuthorized />
-                        }</Box></Grid> : <Loading />
+        <Layout>
 
-            }
-        </Grid> : <Loading />
+            <Grid container justifyContent="center">
+                {user && !isLoading ?
+                    <Grid item xs={12}>
+                        <Box>
+                            {user.name == "admin" ?
+                                <UserGrid />
+                                : <NotAuthorized />
+                            }</Box></Grid> : <Loading />
+                }
+            </Grid>
+
+        </Layout> : <Loading />
     )
 }
 

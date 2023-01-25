@@ -11,6 +11,7 @@ import Terms from '../src/components/Terms';
 import { UserType } from '../utils/types';
 import Loading from '../src/components/Loading';
 import Rules from '../src/components/rules/Rules';
+import Layout from '../src/components/layout/Layout';
 
 const img = process.env.AUTH0_BASE_URL as string + "/logotyp02.png"
 const styles = {
@@ -34,14 +35,16 @@ const Index: NextPage = () => {
   }, [user, isLoading])
 
   return (user ?
+    <Layout>
 
-    <Grid container justifyContent={'center'} pt={3}>
       <Terms user={user as UserType} />
       <Rules />
 
-      <BookingCalendar title="" user={user as UserType} />
+      <Grid container justifyContent={'center'} pt={3}>
+        <BookingCalendar title="" user={user as UserType} />
+      </Grid>
 
-    </Grid> : <Loading />
+    </Layout> : <Loading />
   )
 }
 

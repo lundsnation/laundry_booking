@@ -11,6 +11,7 @@ import EditProfile from "../src/components/profile/EditProfile";
 import { pusherClient } from "../utils/pusherAPI";
 import Loading from "../src/components/Loading";
 import router from "next/router";
+import Layout from "../src/components/layout/Layout";
 
 
 
@@ -80,26 +81,30 @@ const Profile: NextPage = () => {
     }
 
     return (user ?
-        <Grid container justifyContent='center'>
-            <Snack state={snack} handleClose={resetSnack} />
-            <Grid item xs={12} flexGrow={1} sx={{ display: "flex", justifyContent: "center", alignItems: "flex-end" }}>
-                <Grid container alignItems="flex-end" justifyContent={'center'}>
-                    <Grid container alignItems="flex-end" rowSpacing={2} sx={{ width: { xs: "100%", sm: "75%", md: "50%" } }}>
-                        <Grid item xs={12}>
-                            <EditProfile user={user as UserType} setSnack={setSnack} />
-                        </Grid>
-                        <Grid item xs={12}>
-                            <BookedTimes
-                                bookings={bookings}
-                                user={user as UserType}
-                                snackTrigger={snackTrigger} />
+        <Layout>
+
+            <Grid container justifyContent='center'>
+                <Snack state={snack} handleClose={resetSnack} />
+                <Grid item xs={12} flexGrow={1} sx={{ display: "flex", justifyContent: "center", alignItems: "flex-end" }}>
+                    <Grid container alignItems="flex-end" justifyContent={'center'}>
+                        <Grid container alignItems="flex-end" rowSpacing={2} sx={{ width: { xs: "100%", sm: "75%", md: "50%" } }}>
+                            <Grid item xs={12}>
+                                <EditProfile user={user as UserType} setSnack={setSnack} />
+                            </Grid>
+                            <Grid item xs={12}>
+                                <BookedTimes
+                                    bookings={bookings}
+                                    user={user as UserType}
+                                    snackTrigger={snackTrigger} />
+                            </Grid>
                         </Grid>
                     </Grid>
                 </Grid>
-            </Grid>
 
-            <Snack state={snack} handleClose={resetSnack} />
-        </Grid > : <Loading />
+                <Snack state={snack} handleClose={resetSnack} />
+            </Grid >
+
+        </Layout> : <Loading />
     )
 }
 
