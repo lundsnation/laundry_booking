@@ -11,7 +11,6 @@ import { makeStyles, Paper, alpha, Grid } from '@mui/material';
 import Layout from '../src/components/layout/Layout';
 
 
-
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
 // Theme for Lunds Nation as specified in the design handbook
@@ -60,12 +59,12 @@ export default function MyApp(props: MyAppProps) {
         <ThemeProvider theme={lundsNationtheme}>
 
           {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
-          <Layout>
+          {/* <Layout> */}
 
-            <Component {...pageProps} />
-            <CssBaseline />
+          <Component {...pageProps} />
+          <CssBaseline />
 
-          </Layout>
+          {/* </Layout> */}
 
 
         </ThemeProvider>
@@ -74,4 +73,3 @@ export default function MyApp(props: MyAppProps) {
 
   );
 }
-

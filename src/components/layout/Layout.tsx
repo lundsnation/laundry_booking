@@ -8,7 +8,7 @@ import { UserType } from "../../../utils/types"
 import Loading from "../Loading"
 
 
-const img = process.env.AUTH0_BASE_URL as string + "/logotyp02.png"
+const img = "/logotyp02.png"
 const styles = {
     paperContainer: {
         backgroundImage: `url(${img})`,
@@ -39,16 +39,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             }}
         >
             <Header />
-
-
             <Grid sx={styles.paperContainer}>
                 <main> {children} </main>
             </Grid>
-
-
             <Footer />
-
-
         </Grid>
     )
 }

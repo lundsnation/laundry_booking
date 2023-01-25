@@ -28,7 +28,7 @@ const Header = () => {
         setMenuOpen(false)
     };
 
-    return (user ?
+    return (
         <React.Fragment>
             <AppBar position="fixed" color="primary">
 
@@ -40,9 +40,8 @@ const Header = () => {
             </AppBar>
             {/* Recommended hack when using postiion="sticky" from MUI docs */}
             <Toolbar disableGutters />
-        </React.Fragment> : <Loading />
+        </React.Fragment>
     )
-
 };
 
 export default Header;
