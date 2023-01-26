@@ -13,15 +13,6 @@ import Loading from '../src/components/Loading';
 import Rules from '../src/components/rules/Rules';
 import Layout from '../src/components/layout/Layout';
 
-const img = process.env.AUTH0_BASE_URL as string + "/logotyp02.png"
-const styles = {
-  paperContainer: {
-    backgroundImage: `url(${img})`,
-    backgroundRepeat: 'no-repeat',
-    backgroundSize: 'contain',
-    backgroundPosition: 'center',
-  }
-}
 
 
 const Index: NextPage = () => {
@@ -39,8 +30,7 @@ const Index: NextPage = () => {
 
       <Terms user={user as UserType} />
       <Rules />
-
-      <Grid container justifyContent={'center'} pt={3}>
+      <Grid container>
         <BookingCalendar title="" user={user as UserType} />
       </Grid>
 

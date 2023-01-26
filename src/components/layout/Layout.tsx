@@ -15,16 +15,16 @@ const styles = {
         backgroundRepeat: 'no-repeat',
         backgroundSize: 'contain',
         backgroundPosition: 'center',
-
         width: '100%',
-
         boxShadow: "none",
         justifyContent: "center",
-        alignItems: "center",
+        alignContent: "center",
+        alignItems: 'center',
         //display: "flex", //This property ruins the admin page.
         opacity: "1",
         flexGrow: 1,
-        my: 3
+        my: 3,
+        display: { xs: 'block', sm: 'flex' }
     }
 }
 

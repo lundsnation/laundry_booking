@@ -8,7 +8,7 @@ export const RulesText = () => {
     const mx = 3
     return (
         <Box >
-            <Typography align="center" variant="h3" >
+            <Typography align="center" variant="h3" py={2}>
                 Ordningsregler
             </Typography >
             <Typography variant="body1" align="left" fontWeight={fontWeight} mx={mx}>

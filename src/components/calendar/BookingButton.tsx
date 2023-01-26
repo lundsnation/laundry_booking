@@ -71,7 +71,7 @@ const BookingButton = (props: Props) => {
                         <Button
                             fullWidth
                             size="small"
-                            sx={{ height: 334 / 10 }}
+                            sx={{ height: 33.6, borderRadius: 0 }}
                             variant="contained"
                             onClick={() => handleOpenConfirmation(true)}
                             color={!bookedTimeSlot ? 'primary' : 'secondary'}
@@ -92,10 +92,10 @@ const BookingButton = (props: Props) => {
                 </Tooltip>
             </Grid>
 
-            <Grid item xs={2} md={1}>
+            <Grid item alignItems='center' xs={2} md={1} pl={0.5}>
                 <IconButton disabled={!(bookedTimeSlot && !myTimeSlot)}
                     onClick={() => { setShowBookingInfo(true) }}
-                    style={{ padding: 0, height: 20, width: 20, marginBottom: "-8px" }}>
+                    style={{ height: 33.4, width: 20 }}>
                     {(bookedTimeSlot && !myTimeSlot) ?
                         <InfoOutlinedIcon color="action" />
                         : null}
