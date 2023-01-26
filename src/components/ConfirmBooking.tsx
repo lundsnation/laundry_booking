@@ -41,7 +41,6 @@ export const ConfirmBooking = (props: Props) => {
     const snackAlignment: SnackbarOrigin = { vertical: 'bottom', horizontal: 'left' }
     const dateWithTimeSlot = new Date(dateFromTimeSlot(date, timeSlot))
     let snackString;
-    console.log("Confirm booking being run")
 
     const handleBook = async () => {
         //setDisabled(true)

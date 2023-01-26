@@ -25,7 +25,6 @@ const BookingButton = (props: Props) => {
     const myTimeSlot = user.name == booking?.userName ? bookedTimeSlot : null;
     const timeSlotDate = dateFromTimeSlot(selectedDate, timeSlot)
     const timeSlotHasPassed = new Date().getTime() > timeSlotDate.getTime()
-    console.log("BookingButton being run")
 
     useEffect(() => {
         setDisabled(timeSlotHasPassed)

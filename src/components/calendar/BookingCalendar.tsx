@@ -6,7 +6,7 @@ import svLocale from 'date-fns/locale/sv';
 import BookingButtonGroup from "./BookingButtonGroup";
 import BookedTimes from '../BookedTimes';
 import { Booking, JsonBooking, UserType } from "../../../utils/types";
-import { getDateBookings, compareDates } from "../../../utils/bookingsAPI"
+import { getDateBookings, compareDates, dateFromTimeSlot } from "../../../utils/bookingsAPI"
 import { Snack, SnackInterface } from "../Snack"
 import { pusherClient } from '../../../utils/pusherAPI'
 
@@ -22,7 +22,13 @@ const BookingCalendar = (props: Props) => {
     const [realtimeSnack, setRealtimeSnack] = useState<SnackInterface>({ show: false, snackString: "", severity: "success", alignment: { vertical: "bottom", horizontal: "right" } })
     const todaysDateMinus2Days = new Date(new Date().setDate(new Date().getDate() - 2));
     const { user } = props;
-    const userBookings = bookings.filter(booking => booking.userName === user.name)
+
+    const userBookings = bookings.filter(booking => {
+        const timeSlotDate = dateFromTimeSlot(booking.date, booking.timeSlot)
+        const oldBooking = new Date().getTime() > timeSlotDate.getTime()
+
+        return booking.userName === user.name && !oldBooking
+    })
 
     const updateBookings = async () => {
         //fetch bookings and update
