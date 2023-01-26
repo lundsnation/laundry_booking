@@ -1,11 +1,8 @@
 import Header from "./header/Header"
 import Footer from "./Footer"
-import { AppBar, Grid, Paper } from "@mui/material"
-import React, { useEffect } from "react"
-import { useUser } from "@auth0/nextjs-auth0/client"
-import { useRouter } from "next/router"
-import { UserType } from "../../../utils/types"
-import Loading from "../Loading"
+import { Grid } from "@mui/material"
+import React from "react"
+
 
 
 const img = "/logotyp02.png"
@@ -24,7 +21,7 @@ const styles = {
         opacity: "1",
         flexGrow: 1,
         my: 3,
-        display: { xs: 'block', sm: 'flex' }
+        display: { xs: 'block', sm: 'flex' } //This is to ensure that block view is added to mobile and therefore not ruining mobile view of admin page.
     }
 }
 
@@ -39,9 +36,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             }}
         >
             <Header />
+
             <Grid sx={styles.paperContainer}>
                 <main> {children} </main>
             </Grid>
+
             <Footer />
         </Grid>
     )
