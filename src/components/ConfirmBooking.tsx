@@ -29,7 +29,7 @@ interface Props {
     myTimeSlot: boolean | null,
     timeSlot: string;
     booking: Booking | null;
-    selectedDate: Date;
+    date: Date;
     user: UserType;
     handleOpenConfirmation: (open: boolean) => void;
     snackTrigger: (severity: AlertColor, snackString: string, alignment: SnackbarOrigin) => void;
@@ -37,15 +37,16 @@ interface Props {
 
 export const ConfirmBooking = (props: Props) => {
     //const [open, setOpen] = React.useState(false);
-    const { myTimeSlot, booking, selectedDate, timeSlot, user, open, handleOpenConfirmation, snackTrigger } = props;
+    const { myTimeSlot, booking, date, timeSlot, user, open, handleOpenConfirmation, snackTrigger } = props;
     const snackAlignment: SnackbarOrigin = { vertical: 'bottom', horizontal: 'left' }
-    const date = new Date(dateFromTimeSlot(selectedDate, timeSlot))
+    const dateWithTimeSlot = new Date(dateFromTimeSlot(date, timeSlot))
     let snackString;
+    console.log("Confirm booking being run")
 
     const handleBook = async () => {
         //setDisabled(true)
 
-        const jsonBooking = { userName: (user.name as string), date: date, timeSlot: timeSlot, createdAt: new Date() }
+        const jsonBooking = { userName: (user.name as string), date: dateWithTimeSlot, timeSlot: timeSlot, createdAt: new Date() }
         const response = await fetch("/api/bookings", {
             method: "POST",
             headers: {
@@ -105,7 +106,7 @@ export const ConfirmBooking = (props: Props) => {
                 <DialogContentText>
                     Är du säker på att du vill {!myTimeSlot ? "boka" : "avboka"} tiden?
                     <br />
-                    {date.toLocaleString('sv-SE', { year: 'numeric', month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                    {date.toLocaleString('sv-SE', { year: 'numeric', month: 'numeric', day: 'numeric' }) + ", " + timeSlot}
                 </DialogContentText>
             </DialogContent>
             <DialogActions>

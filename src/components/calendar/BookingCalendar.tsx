@@ -9,8 +9,6 @@ import { Booking, JsonBooking, UserType } from "../../../utils/types";
 import { getDateBookings, compareDates } from "../../../utils/bookingsAPI"
 import { Snack, SnackInterface } from "../Snack"
 import { pusherClient } from '../../../utils/pusherAPI'
-import { DayPicker } from '@mui/x-date-pickers/CalendarPicker/DayPicker';
-import { Scale } from '@mui/icons-material';
 
 interface Props {
     title: string;
@@ -24,6 +22,7 @@ const BookingCalendar = (props: Props) => {
     const [realtimeSnack, setRealtimeSnack] = useState<SnackInterface>({ show: false, snackString: "", severity: "success", alignment: { vertical: "bottom", horizontal: "right" } })
     const todaysDateMinus2Days = new Date(new Date().setDate(new Date().getDate() - 2));
     const { user } = props;
+    const userBookings = bookings.filter(booking => booking.userName === user.name)
 
     const updateBookings = async () => {
         //fetch bookings and update
@@ -201,7 +200,7 @@ const BookingCalendar = (props: Props) => {
                     {bookingButtonGroup}
                 </Grid>
                 <Grid item xs={12} pt={2}>
-                    <BookedTimes bookings={bookings} user={user} snackTrigger={snackTrigger} />
+                    <BookedTimes userBookings={userBookings} user={user} snackTrigger={snackTrigger} />
                 </Grid>
             </Grid>
 

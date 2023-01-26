@@ -19,8 +19,6 @@ const BookingButtonGroup = (props: Props) => {
     const [ready, setReady] = useState(false)
     const timeToBooking: Map<string, Booking> = timeSlotToBooking(bookedBookings);
 
-
-
     useEffect(() => {
         if (!ready) {
             setReady(true)

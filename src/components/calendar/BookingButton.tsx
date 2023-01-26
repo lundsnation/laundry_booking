@@ -53,7 +53,7 @@ const BookingButton = (props: Props) => {
                 myTimeSlot={myTimeSlot}
                 timeSlot={timeSlot}
                 booking={booking}
-                selectedDate={selectedDate}
+                date={selectedDate}
                 user={user}
                 handleOpenConfirmation={handleOpenConfirmation}
                 snackTrigger={snackTrigger}

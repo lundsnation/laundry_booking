@@ -1,66 +1,37 @@
-import React, { useState } from "react";
-import { Card, Box, Grid, Divider, Chip, AlertColor, Typography, Button, List, ListItem, SnackbarOrigin, ButtonGroup, Fade } from "@mui/material";
-import { Booking, timeFromTimeSlot, timeSlots, UserType } from "../../utils/types";
-import { LoadingButton } from "@mui/lab";
-import { format } from "date-fns";
-import { sv } from "date-fns/locale";
-import ConfirmBooking from "./ConfirmBooking";
+import React from "react";
+import { Card, Box, Grid, Divider, AlertColor, Typography, List, ListItem, SnackbarOrigin } from "@mui/material";
+import { Booking, UserType } from "../../utils/types";
+import BookedTimesItem from "./BookedTimesItem";
+
 
 interface Props {
-    bookings: Array<Booking>,
+    userBookings: Array<Booking>,
     user: UserType,
     snackTrigger: (severity: AlertColor, snackString: string, alignment: SnackbarOrigin) => void
 }
 
 const BookedTimes = (props: Props) => {
-    const { bookings, user, snackTrigger } = props;
-    const [openConfirmation, setOpenConfirmation] = useState<boolean>(false);
-    let snackString;
-    const alignment: SnackbarOrigin = { vertical: 'bottom', horizontal: 'left' }
+    const { userBookings, user, snackTrigger } = props;
 
-    const getUserTimes = () => {
-        let res, tempLoading;
-        res = [];
-        if (bookings) {
-            const now = new Date()
-            for (let i = 0; i < bookings.length; i++) {
-                if (bookings[i].userName == user.name && bookings[i].date > now) {
-                    res.push(bookings[i])
-                }
-            }
-        }
-        return res;
-    }
 
-    const handleOpenConfirmation = (open: boolean) => {
-        setOpenConfirmation(open);
-    }
 
-    const handleCancel = async (bookedTime: Booking, index: number) => {
-        const api_url = "/api/bookings" + "/" + (bookedTime?._id);
-        const date = new Date(timeFromTimeSlot(bookedTime.date, bookedTime.timeSlot))
-        const jsonBooking = { userName: (user.name as string), date: date, timeSlot: bookedTime.timeSlot, createdAt: new Date() }
-        const response = await fetch(api_url, {
-            method: "DELETE",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(jsonBooking)
-        });
+    const bookedTimesItems = userBookings.map((booking, idx) => {
+        return (
+            userBookings.length ?
+                <BookedTimesItem
+                    key={booking.date.toString() + idx}
+                    userBooking={booking}
+                    user={user}
+                    snackTrigger={snackTrigger}
+                /> :
+                <ListItem>
+                    <Typography variant="subtitle2" >
+                        Du har inga bokade tider
+                    </Typography>
+                </ListItem>
+        )
+    });
 
-        if (response.ok) {
-            snackString = "Du har avbokat tiden"
-            props.snackTrigger("success", snackString, alignment)
-        } else {
-            let responseContent = await response.json()
-            snackString = responseContent.error
-            props.snackTrigger("error", snackString, alignment)
-        }
-    }
-
-    const stringify = (bookedTime: Booking) => {
-        return format(bookedTime.date, "eeee Do MMM", { locale: sv }) + " " + bookedTime.timeSlot + ", Torkbås: " + (timeSlots.indexOf(bookedTime.timeSlot) + 1)
-    }
 
     return (
         <Card variant={"outlined"}>
@@ -74,51 +45,7 @@ const BookedTimes = (props: Props) => {
                     </Grid>
                     <Grid container direction="column" height={150} sx={{ overflow: 'auto' }}>
                         <List>
-                            {getUserTimes() && getUserTimes()?.length > 0 ?
-                                getUserTimes()?.map((time, i) => {
-                                    return (
-
-                                        <div key={time.date + time.timeSlot}>
-                                            <ConfirmBooking
-                                                open={openConfirmation}
-                                                timeSlot={time.timeSlot}
-                                                myTimeSlot={true}
-                                                booking={time}
-                                                selectedDate={time.date}
-                                                user={user}
-                                                handleOpenConfirmation={handleOpenConfirmation}
-                                                snackTrigger={snackTrigger}
-                                            />
-
-                                            <ListItem key={time.date + time.timeSlot}>
-                                                <Fade in={time != undefined}>
-                                                    <ButtonGroup variant="outlined" fullWidth>
-                                                        <Button disabled fullWidth sx={{ textTransform: 'none' }}>
-                                                            <Typography variant="body2" sx={{ color: "black" }}>
-                                                                {stringify(time)}
-                                                            </Typography>
-                                                        </Button>
-                                                        <LoadingButton
-                                                            onClick={() => handleOpenConfirmation(true)}
-                                                            variant="outlined"
-                                                            color="error"
-                                                            sx={{ width: "50%" }} >
-                                                            <Typography variant="body2">
-                                                                Avboka
-                                                            </Typography>
-                                                        </LoadingButton>
-                                                    </ButtonGroup>
-                                                </Fade>
-                                            </ListItem>
-                                        </div>
-                                    )
-                                }) :
-                                <ListItem>
-                                    <Typography variant="subtitle2" >
-                                        Du har inga bokade tider
-                                    </Typography>
-                                </ListItem>
-                            }
+                            {bookedTimesItems}
                         </List>
                     </Grid>
                 </Grid>
