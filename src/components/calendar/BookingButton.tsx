@@ -21,14 +21,11 @@ const BookingButton = (props: Props) => {
     const [disabled, setDisabled] = useState<boolean>(false)
     const [openConfirmation, setOpenConfirmation] = useState<boolean>(false);
     const [showBookingInfo, setShowBookingInfo] = useState<boolean>(false)
-    const [bookingUser, setBookingUser] = useState<UserType>({} as UserType)
-    const [loadingUser, setLoadingUser] = useState(false)
     const bookedTimeSlot = booking != null;
     const myTimeSlot = user.name == booking?.userName ? bookedTimeSlot : null;
-    const snackAlignment: SnackbarOrigin = { vertical: 'bottom', horizontal: 'left' }
     const timeSlotDate = dateFromTimeSlot(selectedDate, timeSlot)
     const timeSlotHasPassed = new Date().getTime() > timeSlotDate.getTime()
-    let snackString;
+    console.log("BookingButton being run")
 
     useEffect(() => {
         setDisabled(timeSlotHasPassed)
@@ -56,7 +53,7 @@ const BookingButton = (props: Props) => {
                 myTimeSlot={myTimeSlot}
                 timeSlot={timeSlot}
                 booking={booking}
-                selectedDate={selectedDate}
+                date={selectedDate}
                 user={user}
                 handleOpenConfirmation={handleOpenConfirmation}
                 snackTrigger={snackTrigger}

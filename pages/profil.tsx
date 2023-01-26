@@ -1,8 +1,6 @@
 import { Grid, Paper, AlertColor, SnackbarOrigin, Box } from "@mui/material";
 import { useUser } from '@auth0/nextjs-auth0/client';
 import { NextPage } from "next";
-import Header from "../src/components/layout/header/Header";
-import Footer from "../src/components/layout/Footer";
 import { useEffect, useState } from "react";
 import BookedTimes from "../src/components/BookedTimes";
 import { Booking, UserType } from "../utils/types"
@@ -15,7 +13,7 @@ import Layout from "../src/components/layout/Layout";
 
 
 
-const img = process.env.AUTH0_BASE_URL as string + "/logotyp02.png"
+const img = "/logotyp02.png"
 const styles = {
     paperContainer: {
         backgroundImage: `url(${img})`,
@@ -32,25 +30,12 @@ const Profile: NextPage = () => {
     console.log("Inside of profile");
 
     const { user, isLoading, error } = useUser()
-    const [bookings, setBookings] = useState<Array<Booking>>([])
+    const [userBookings, setUserBookings] = useState<Array<Booking>>([])
     const [snack, setSnack] = useState<SnackInterface>({
         show: false,
         snackString: "",
         severity: "success"
     })
-
-
-
-    const updateBookings = async () => {
-        const res = await fetch("/api/bookings")
-        const resBooking: Array<Booking> = await res.json();
-        const bookings: Array<Booking> = [];
-        resBooking.forEach(booking => {
-            const tmpBooking = { ...booking, date: new Date(booking.date) }
-            bookings.push(tmpBooking);
-        });
-        setBookings(bookings);
-    }
 
     useEffect(() => {
         if (!(user || isLoading)) {
@@ -58,12 +43,21 @@ const Profile: NextPage = () => {
         }
     }, [user, isLoading])
 
+    const updateUserBookings = async () => {
+        const jsonBookings: Array<Booking> = await (await fetch("/api/bookings")).json()
+        const userBookings: Array<Booking> = jsonBookings.filter(booking => booking.userName === user?.name)
+            .map(booking => (
+                { ...booking, date: new Date(booking.date) }
+            ));
+
+        setUserBookings(userBookings);
+    }
+
     useEffect(() => {
-        updateBookings()
+        updateUserBookings()
         const pusher = pusherClient()
-        console.log("Useeffect in profile");
         const pusherChannel = pusher.subscribe("bookingUpdates");
-        pusherChannel.bind('bookingUpdate', (data: any) => { updateBookings() })
+        pusherChannel.bind('bookingUpdate', (data: any) => { updateUserBookings() })
         //cleanup function
         return () => {
             pusher.unbind("bookingUpdate");
@@ -93,7 +87,7 @@ const Profile: NextPage = () => {
                             </Grid>
                             <Grid item xs={12}>
                                 <BookedTimes
-                                    bookings={bookings}
+                                    userBookings={userBookings}
                                     user={user as UserType}
                                     snackTrigger={snackTrigger} />
                             </Grid>

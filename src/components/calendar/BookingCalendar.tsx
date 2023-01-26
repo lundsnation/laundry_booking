@@ -5,12 +5,10 @@ import { Grid, Box, SxProps, TextField, AlertColor, Paper, Typography, SnackbarO
 import svLocale from 'date-fns/locale/sv';
 import BookingButtonGroup from "./BookingButtonGroup";
 import BookedTimes from '../BookedTimes';
-import { Booking, UserType } from "../../../utils/types";
+import { Booking, JsonBooking, UserType } from "../../../utils/types";
 import { getDateBookings, compareDates } from "../../../utils/bookingsAPI"
 import { Snack, SnackInterface } from "../Snack"
 import { pusherClient } from '../../../utils/pusherAPI'
-import { DayPicker } from '@mui/x-date-pickers/CalendarPicker/DayPicker';
-import { Scale } from '@mui/icons-material';
 
 interface Props {
     title: string;
@@ -18,30 +16,27 @@ interface Props {
 }
 
 const BookingCalendar = (props: Props) => {
-    console.log("INSIDE OF BOOKINGCALENDAR")
-
-    const [firstRender, setFirstRender] = useState(true);
     const [selectedDate, setSelectedDate] = useState<Date>(new Date());
     const [bookings, setBookings] = useState<Array<Booking>>([]);
     const [snack, setSnack] = useState<SnackInterface>({ show: false, snackString: "", severity: "success", alignment: { vertical: "bottom", horizontal: "left" } })
     const [realtimeSnack, setRealtimeSnack] = useState<SnackInterface>({ show: false, snackString: "", severity: "success", alignment: { vertical: "bottom", horizontal: "right" } })
     const todaysDateMinus2Days = new Date(new Date().setDate(new Date().getDate() - 2));
     const { user } = props;
+    const userBookings = bookings.filter(booking => booking.userName === user.name)
 
     const updateBookings = async () => {
         //fetch bookings and update
-        const res = await fetch("/api/bookings")
-        const resBooking: Array<Booking> = await res.json();
-        const bookings: Array<Booking> = [];
-        resBooking.forEach(booking => {
-            const tmpBooking = { ...booking, date: new Date(booking.date) }
-            bookings.push(tmpBooking);
-        });
+        const jsonBookings: Array<JsonBooking> = await (await fetch("/api/bookings")).json()
+        const bookings = jsonBookings.map(booking => (
+            { ...booking, date: new Date(booking.date) }
+        ));
+
         setBookings(bookings);
     }
 
     useEffect(() => {
-        console.log("USEEFFECT in BOOKINGCALENDAR")
+        updateBookings();
+
         const pusher = pusherClient();
         const pusherChannel = pusher.subscribe("bookingUpdates");
         pusherChannel.bind('bookingUpdate', (data: any) => {
@@ -49,15 +44,12 @@ const BookingCalendar = (props: Props) => {
             const { userName, date, timeSlot } = data
             const isPostRequest = data.request == 'post'
             const tmpDate = new Date(date);
-            const dateString = tmpDate.getFullYear() + "/" + (tmpDate.getMonth() + 1) + "/" + tmpDate.getDay()
-            const snackString = isPostRequest ? userName + ' bokade ' + dateString + ', ' + timeSlot : userName + ' avbokade ' + dateString + ', ' + timeSlot
-            const severity = "info"
-            //const alignment: SnackbarOrigin = {vertical: 'bottom', horizontal: 'right'}
+            const dateString = tmpDate.getFullYear() + "/" + (tmpDate.getMonth() + 1) + "/" + tmpDate.getDay() + ", " + timeSlot
+            const snackString = `${userName} ${isPostRequest ? ' bokade ' : ' avbokade '} ${dateString}`
             const myBooking = userName == user.name
-
             const alignment: SnackbarOrigin = window.innerWidth > 600 ? { vertical: 'bottom', horizontal: 'right' } : { vertical: 'top', horizontal: 'right' }
 
-            !myBooking && setRealtimeSnack({ show: true, snackString: snackString, severity: severity, alignment: alignment })
+            !myBooking && setRealtimeSnack({ show: true, snackString: snackString, severity: "info", alignment: alignment })
         })
 
         //Cleanup function
@@ -155,12 +147,6 @@ const BookingCalendar = (props: Props) => {
         }
     }
 
-    //get initial bookings
-    useEffect(() => {
-        updateBookings()
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
-
     const snackTrigger = (severity: AlertColor, snackString: string, alignment: SnackbarOrigin) => {
         setSnack({ show: true, snackString: snackString, severity: severity, alignment: alignment })
 
@@ -214,7 +200,7 @@ const BookingCalendar = (props: Props) => {
                     {bookingButtonGroup}
                 </Grid>
                 <Grid item xs={12} pt={2}>
-                    <BookedTimes bookings={bookings} user={user} snackTrigger={snackTrigger} />
+                    <BookedTimes userBookings={userBookings} user={user} snackTrigger={snackTrigger} />
                 </Grid>
             </Grid>
 
