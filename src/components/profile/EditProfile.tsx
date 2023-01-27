@@ -1,10 +1,13 @@
-import { Grid, Paper, Typography, List, TextField, ListItem, Button } from "@mui/material"
+import { Grid, Paper, Typography, List, TextField, ListItem, Button, Box, Stack, ButtonGroup, FormControl, FormGroup, Divider } from "@mui/material"
 import { LoadingButton } from "@mui/lab"
 import { UserType } from "../../../utils/types"
 import { useUser } from "@auth0/nextjs-auth0/client"
 import { useState, FormEvent, useEffect } from "react"
 import { SnackInterface } from "../Snack"
 import ChangePasswordDialog from "./ChangePasswordDialog"
+import React from "react"
+import { width } from "@mui/system"
+import { WidthFull } from "@mui/icons-material"
 
 interface props {
     user: UserType,
@@ -57,34 +60,23 @@ const EditProfile = (props: props) => {
     }
 
     return (
-        <Paper elevation={0} variant={"outlined"}>
+        <React.Fragment>
             <ChangePasswordDialog
                 user={user}
                 setSnack={setSnack}
                 showPasswordChangeDialog={showPasswordChangeDialog}
                 setshowPasswordChangeDialog={setShowPasswordChangeDialog} />
-            <Typography align='center' padding={2} variant="h4" >
-                Hej {user?.name}!
-            </Typography>
+            <Paper sx={{ px: 3 }}>
+                <Stack>
 
-            <List>
-                <Typography paddingLeft={2} variant="button" >Ändra lösenord</Typography>
-                <ListItem>
-                    <Grid container>
-                        <Grid item xs={12}>
-                            <Button variant="outlined" fullWidth onClick={() => { setShowPasswordChangeDialog(true) }}>
-                                <Typography variant="body2">
-                                    Ändra Lösenord
-                                </Typography>
-                            </Button>
-                        </Grid>
+                    <form onSubmit={(e) => { handleEditUser(e) }}>
 
-                    </Grid>
+                        <Typography display={'flex'} justifyContent='center' padding={3} variant="h4" >
+                            hej {user?.name}!
+                        </Typography>
 
-                </ListItem>
-                <Typography paddingLeft={2} variant="button">Ändra användaruppgfiter</Typography>
-                <form onSubmit={(e) => { handleEditUser(e) }}>
-                    <ListItem key={"Email"}>
+                        <Typography fontWeight={'medium'} paddingLeft={2}>Ändra användaruppgfiter</Typography>
+
                         <TextField
                             fullWidth
                             label="Ändra E-Post"
@@ -96,8 +88,8 @@ const EditProfile = (props: props) => {
                             defaultValue={editedProfile.email}
                             margin="dense"
                         />
-                    </ListItem>
-                    <ListItem key={"Telephone"}>
+
+
                         <TextField
                             fullWidth
                             label="Ändra Telefon"
@@ -109,22 +101,30 @@ const EditProfile = (props: props) => {
                             variant={textFieldVariant}
                             margin="dense"
                         />
-                    </ListItem>
+                        <Stack
+                            direction="row"
+                            justifyContent="flex-end"
+                            alignItems="center"
+                            spacing={2}
+                            py={2}
+                        >
+                            <Button color={'warning'} variant="outlined" onClick={() => { setShowPasswordChangeDialog(true) }}>
+                                Ändra Lösenord
+                            </Button>
+                            <LoadingButton disabled={!userEditable} loading={wait} variant="outlined" type="submit" >
+                                Spara
+                            </LoadingButton>
 
-                    <ListItem>
-                        <Grid container justifyContent="flex-end">
-                            <Grid item>
-                                <LoadingButton disabled={!userEditable} loading={wait} variant="outlined" sx={{ margin: "16px" }} type="submit" >
-                                    Spara
-                                </LoadingButton>
-                            </Grid>
-                        </Grid>
-                    </ListItem>
-                </form>
-            </List>
+                        </Stack>
+                    </form >
+
+                </Stack>
 
 
-        </Paper>
+            </Paper>
+
+        </React.Fragment >
+
     )
 }
 export default EditProfile;
