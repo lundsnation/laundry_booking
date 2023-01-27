@@ -46,7 +46,7 @@ const BookingButton = (props: Props) => {
     }
 
     return (
-        <Grid container>
+        <Grid container alignItems={'center'}>
             <ConfirmBooking
                 open={openConfirmation}
                 myTimeSlot={myTimeSlot}
@@ -58,9 +58,9 @@ const BookingButton = (props: Props) => {
                 snackTrigger={snackTrigger}
             />
 
-            <Grid item xs={2} md={1}></Grid>
+            <Grid item xs={1} md={1}></Grid>
 
-            <Grid item xs={8} md={10}>
+            <Grid item xs={10} md={10}>
                 <Tooltip
                     title={title}
                     placement={"right"}
@@ -71,7 +71,7 @@ const BookingButton = (props: Props) => {
                         <Button
                             fullWidth
                             size="small"
-                            sx={{ height: 33.6, borderRadius: 0 }}
+                            sx={{ height: { xs: 45, sm: '33.45px' }, borderRadius: 0 }}
                             variant="contained"
                             onClick={() => handleOpenConfirmation(true)}
                             color={!bookedTimeSlot ? 'primary' : 'secondary'}
@@ -92,7 +92,7 @@ const BookingButton = (props: Props) => {
                 </Tooltip>
             </Grid>
 
-            <Grid item alignItems='center' xs={2} md={1} pl={0.5}>
+            <Grid item xs={1} md={1} pl={0.5}>
                 <IconButton disabled={!(bookedTimeSlot && !myTimeSlot)}
                     onClick={() => { setShowBookingInfo(true) }}
                     style={{ height: 33.4, width: 20 }}>

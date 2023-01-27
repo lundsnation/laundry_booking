@@ -30,7 +30,7 @@ const Index: NextPage = () => {
 
       <Terms user={user as UserType} />
       <Rules />
-      <Grid container>
+      <Grid container px={1}>
         <BookingCalendar title="" user={user as UserType} />
       </Grid>
 
