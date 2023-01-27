@@ -93,18 +93,26 @@ const BookingButton = (props: Props) => {
             </Grid>
 
             <Grid item xs={1} md={1} pl={0.5}>
-                <IconButton disabled={!(bookedTimeSlot && !myTimeSlot)}
-                    onClick={() => { setShowBookingInfo(true) }}
-                    style={{ height: 33.4, width: 20 }}>
-                    {(bookedTimeSlot && !myTimeSlot) ?
-                        <InfoOutlinedIcon color="action" />
-                        : null}
-                </IconButton>
-                {booking && <BookingInfo
-                    showBookingInfo={showBookingInfo}
-                    booking={booking}
-                    setShowBookingInfo={setShowBookingInfo}
-                />}
+                <Tooltip title={'Tryck för att visa info om bokning'} placement={'right'}>
+                    <IconButton disabled={!(bookedTimeSlot && !myTimeSlot)}
+                        onClick={() => { setShowBookingInfo(true) }}
+                        style={{ height: 33.4, width: 20 }}
+                    >
+                        {
+                            (bookedTimeSlot &&
+                                !myTimeSlot) ? <InfoOutlinedIcon color="action" /> : null
+                        }
+                    </IconButton>
+                </Tooltip>
+
+                {
+                    booking &&
+                    <BookingInfo
+                        showBookingInfo={showBookingInfo}
+                        booking={booking}
+                        setShowBookingInfo={setShowBookingInfo}
+                    />
+                }
             </Grid >
 
         </Grid>
