@@ -8,8 +8,8 @@ import DialogTitle from '@mui/material/DialogTitle';
 import Paper, { PaperProps } from '@mui/material/Paper';
 import Draggable from 'react-draggable';
 import { AlertColor, Divider, SnackbarOrigin, Typography } from '@mui/material';
-import { dateFromTimeSlot } from '../../utils/bookingsAPI';
-import { Booking, UserType } from '../../utils/types';
+import { dateFromTimeSlot } from '../../../utils/bookingsAPI';
+import { Booking, UserType } from '../../../utils/types';
 
 
 function PaperComponent(props: PaperProps) {

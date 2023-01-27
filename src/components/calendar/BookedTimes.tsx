@@ -1,6 +1,6 @@
 import React from "react";
 import { Card, Box, Grid, Divider, AlertColor, Typography, List, ListItem, SnackbarOrigin } from "@mui/material";
-import { Booking, UserType } from "../../utils/types";
+import { Booking, UserType } from "../../../utils/types";
 import BookedTimesItem from "./BookedTimesItem";
 
 

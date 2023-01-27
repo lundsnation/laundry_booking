@@ -5,7 +5,7 @@ import { Booking, timeFromTimeSlot } from "../../../utils/types"
 import BookingInfo from "./BookingInfo"
 import { UserType } from "../../../utils/types";
 import { dateFromTimeSlot } from "../../../utils/bookingsAPI";
-import ConfirmBooking from "../ConfirmBooking";
+import ConfirmBooking from "./ConfirmBooking";
 
 interface Props {
     boothIndex: number,

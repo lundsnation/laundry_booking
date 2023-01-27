@@ -2,7 +2,7 @@ import { Grid, Paper, AlertColor, SnackbarOrigin, Box } from "@mui/material";
 import { useUser } from '@auth0/nextjs-auth0/client';
 import { NextPage } from "next";
 import { useEffect, useState } from "react";
-import BookedTimes from "../src/components/BookedTimes";
+import BookedTimes from "../src/components/calendar/BookedTimes";
 import { Booking, UserType } from "../utils/types"
 import { Snack, SnackInterface } from "../src/components/Snack";
 import EditProfile from "../src/components/profile/EditProfile";
