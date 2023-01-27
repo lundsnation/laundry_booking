@@ -1,6 +1,5 @@
-import { Box, Container, Typography, Paper } from "@mui/material";
+import { Typography } from "@mui/material";
 import { useUser } from '@auth0/nextjs-auth0/client';
-import NotAuthorized from "../src/components/NotAuthorized";
 import UserGrid from "../src/components/admin/UserGrid";
 import { Grid } from "@mui/material";
 import Loading from "../src/components/Loading";
