@@ -8,8 +8,8 @@ export const RulesText = () => {
     const mx = 3
     return (
         <Box >
-            <Typography align="center" variant="h3" py={2}>
-                Ordningsregler
+            <Typography align="center" variant="h3" padding={2}>
+                Regler
             </Typography >
             <Typography variant="body1" align="left" fontWeight={fontWeight} mx={mx}>
                 Tvättstugan är det viktigaste gemensamma utrymmet vi har på huset, därför är det extremt
