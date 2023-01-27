@@ -22,13 +22,10 @@ const Admin = () => {
         <Layout>
 
             <Grid container justifyContent="center">
-                {user && !isLoading ?
+                {user && !isLoading && user.name == "admin" ?
                     <Grid item xs={12} sx={{ px: { xs: 1 } }}>
-                        <Box>
-                            {user.name == "admin" ?
-                                <UserGrid />
-                                : <NotAuthorized />
-                            }</Box></Grid> : <Loading />
+                        <UserGrid />
+                    </Grid> : <Typography variant={'h1'}>Ej auktoriserad</Typography>
                 }
             </Grid>
 
