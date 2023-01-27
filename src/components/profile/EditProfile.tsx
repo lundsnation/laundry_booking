@@ -67,15 +67,15 @@ const EditProfile = (props: props) => {
                 showPasswordChangeDialog={showPasswordChangeDialog}
                 setshowPasswordChangeDialog={setShowPasswordChangeDialog} />
             <Paper sx={{ px: 3 }}>
-                <Stack>
 
-                    <form onSubmit={(e) => { handleEditUser(e) }}>
+                <form onSubmit={(e) => { handleEditUser(e) }}>
+                    <Stack spacing={2}>
 
-                        <Typography display={'flex'} justifyContent='center' padding={3} variant="h4" >
-                            hej {user?.name}!
+                        <Typography display={'flex'} justifyContent='center' padding={2} variant="h4" >
+                            Hej {user?.name}!
                         </Typography>
 
-                        <Typography fontWeight={'medium'} paddingLeft={2}>Ändra användaruppgfiter</Typography>
+                        <Typography fontWeight={'medium'} paddingLeft={1}>Ändra användauppgifter</Typography>
 
                         <TextField
                             fullWidth
@@ -116,9 +116,10 @@ const EditProfile = (props: props) => {
                             </LoadingButton>
 
                         </Stack>
-                    </form >
+                    </Stack>
 
-                </Stack>
+                </form >
+
 
 
             </Paper>
