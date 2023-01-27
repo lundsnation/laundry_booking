@@ -25,7 +25,7 @@ const Admin = () => {
 
             <Grid container justifyContent="center">
                 {user && !isLoading ?
-                    <Grid item xs={12}>
+                    <Grid item xs={12} sx={{ px: { xs: 1 } }}>
                         <Box>
                             {user.name == "admin" ?
                                 <UserGrid />
