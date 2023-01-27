@@ -42,7 +42,7 @@ const Rules = (props: Props) => {
                         padding: 1,
                         minWidth: 40,
                         left: 0,
-                        top: '20%',
+                        top: '30%',
                         position: 'fixed'
                     }}
                 >
