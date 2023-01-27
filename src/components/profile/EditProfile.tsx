@@ -117,13 +117,9 @@ const EditProfile = (props: props) => {
 
                         </Stack>
                     </Stack>
-
                 </form >
 
-
-
             </Paper>
-
         </React.Fragment >
 
     )

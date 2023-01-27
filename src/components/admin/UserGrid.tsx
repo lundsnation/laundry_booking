@@ -1,4 +1,4 @@
-import { IconButton, InputAdornment, Skeleton, Button, Container, Paper, Grid, TextField, MenuItem, AlertColor, CircularProgress, ButtonGroup, Typography, SnackbarOrigin } from "@mui/material";
+import { IconButton, InputAdornment, Skeleton, Button, Container, Paper, Grid, TextField, MenuItem, AlertColor, CircularProgress, ButtonGroup, Typography, SnackbarOrigin, TableFooter, Stack, Toolbar } from "@mui/material";
 import { Table, TableBody, TableHead, TableRow, TableContainer, TableCell, TablePagination } from "@mui/material"
 import { useUser } from '@auth0/nextjs-auth0/client';
 import { Snack, SnackInterface } from "../Snack"
@@ -139,115 +139,110 @@ const UserGrid = () => {
     }
 
     return (
-        <Container disableGutters>
-            <Paper elevation={0} variant={"outlined"}>
-                <Grid xs={12}>
-                    <Typography variant="h5" sx={{ m: 2 }}> Redigera Användare</Typography>
-                </Grid>
-                <Snack handleClose={() => { setSnack(snack => ({ ...snack, show: false })) }} state={snack}></Snack>
-                <NewUserDialog
-                    showAddDialog={showAddDialog}
-                    setShowAddDialog={setShowAddDialog}
-                    snack={snack}
-                    setSnack={setSnack}
-                    fetchUsers={fetchUsers}
-                />
-                <EditUserDialog
-                    showEditDialog={showEditDialog}
-                    setShowEditDialog={setShowEditDialog}
-                    snack={snack}
-                    setSnack={setSnack}
-                    fetchUsers={fetchUsers}
-                    selected={selected}
-                    setSelected={setSelected}
-                    users={users}
-                />
-                <DeleteUserDialog
-                    showDeleteUserDialog={showDeleteUserDialog}
-                    setShowDeleteUserDialog={setShowDeleteUserDialog}
-                    selected={selected}
-                    setSelected={setSelected}
-                    users={users}
-                    fetchUsers={fetchUsers}
-                    snack={snack}
-                    setSnack={setSnack}
-                />
-                <TableContainer component={Paper}>
-                    <Table sx={{ minWidth: 750 }} size='small' aria-label="simple table">
-                        <TableHead>
-                            <TableRow >
-                                <TableCell></TableCell>
-                                <TableCell padding="none">Användare</TableCell>
-                                <TableCell align="right">E-post</TableCell>
-                                <TableCell align="right">Tillåtna Bokningar</TableCell>
-                                <TableCell align="right">Telefon</TableCell>
+        <Paper sx={{ width: { lg: '1200px' } }} elevation={0} variant={"outlined"}>
+            <Grid xs={12}>
+                <Typography variant="h5" sx={{ m: 2 }}> Redigera Användare</Typography>
+            </Grid>
+            <Snack handleClose={() => { setSnack(snack => ({ ...snack, show: false })) }} state={snack}></Snack>
+            <NewUserDialog
+                showAddDialog={showAddDialog}
+                setShowAddDialog={setShowAddDialog}
+                snack={snack}
+                setSnack={setSnack}
+                fetchUsers={fetchUsers}
+            />
+            <EditUserDialog
+                showEditDialog={showEditDialog}
+                setShowEditDialog={setShowEditDialog}
+                snack={snack}
+                setSnack={setSnack}
+                fetchUsers={fetchUsers}
+                selected={selected}
+                setSelected={setSelected}
+                users={users}
+            />
+            <DeleteUserDialog
+                showDeleteUserDialog={showDeleteUserDialog}
+                setShowDeleteUserDialog={setShowDeleteUserDialog}
+                selected={selected}
+                setSelected={setSelected}
+                users={users}
+                fetchUsers={fetchUsers}
+                snack={snack}
+                setSnack={setSnack}
+            />
+            <TableContainer component={Paper}>
+                <Table sx={{ minWidth: 750 }} size='small' aria-label="simple table">
+                    <TableHead>
+                        <TableRow >
+                            <TableCell></TableCell>
+                            <TableCell padding="none">Användare</TableCell>
+                            <TableCell align="right">E-post</TableCell>
+                            <TableCell align="right">Tillåtna Bokningar</TableCell>
+                            <TableCell align="right">Telefon</TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {users.length > 0 || !loadingData ? getContent() : getTableContentSkelton()}
+                        {emptyRows > 0 && (
+                            <TableRow
+                                style={{
+                                    height: 33 * emptyRows,
+                                }}
+                            >
+                                <TableCell colSpan={6} />
                             </TableRow>
-                        </TableHead>
-                        <TableBody>
-                            {users.length > 0 || !loadingData ? getContent() : getTableContentSkelton()}
-                            {emptyRows > 0 && (
-                                <TableRow
-                                    style={{
-                                        height: 33 * emptyRows,
-                                    }}
-                                >
-                                    <TableCell colSpan={6} />
-                                </TableRow>
-                            )}
-                        </TableBody>
-                    </Table>
-                </TableContainer>
-                <Grid container alignItems='flex-end' justifyContent="stretch">
+                        )}
+                    </TableBody>
+                </Table>
+            </TableContainer>
 
-                    <Grid item xs={12} sm={6} md={3}>
-                        <TextField
-                            fullWidth
-                            size="small"
-                            variant="outlined"
-                            label="Sök efter användare"
-                            onChange={(e) => {
-                                setSearchString(e.target.value)
-                            }}
-                            InputProps={{
-                                endAdornment: (
-                                    <InputAdornment position="end">
-                                        <IconButton>
-                                            <SearchIcon />
-                                        </IconButton>
-                                    </InputAdornment>
-                                )
-                            }}
-                        />
-                    </Grid>
-                    <Grid item xs={12} sm={6} md={3}>
-
-                        <ButtonGroup size="large" variant="outlined" sx={{ height: "105%" }}>
-                            <Button fullWidth onClick={() => { setShowDeleteUserDialog(true) }} disabled={selected.length == 0} size='small' color="error" ><DeleteIcon /> Ta Bort</Button>
-                            <Button fullWidth onClick={() => { setShowEditDialog(true) }} disabled={selected.length == 0} size='small' color="warning" ><EditOutlinedIcon /> Ändra</Button>
-                            <Button fullWidth onClick={() => { setShowAddDialog(true) }} size='small' color="primary"><PersonAddOutlinedIcon /> Lägg Till</Button>
-                        </ButtonGroup>
-
-                    </Grid>
-
-
-
-
-                    <Grid item xs={12} sm={12} md={6}>
-                        <TablePagination
-                            rowsPerPageOptions={[10, 25, 50]}
-                            component="div"
-                            count={users.length}
-                            rowsPerPage={rowsPerPage}
-                            page={page}
-                            onPageChange={handleChangePage}
-                            onRowsPerPageChange={handleChangeRowsPerPage}
-                            labelRowsPerPage="Användare per sida"
-                        />
-                    </Grid>
-
+            <Grid container alignItems='flex-end' justifyContent="stretch">
+                <Grid item xs={12} sm={6} md={2.5}>
+                    <TextField
+                        fullWidth
+                        variant={'outlined'}
+                        size="medium"
+                        label="Sök efter användare"
+                        onChange={(e) => {
+                            setSearchString(e.target.value)
+                        }}
+                        InputProps={{
+                            endAdornment: (
+                                <InputAdornment position="end">
+                                    <IconButton>
+                                        <SearchIcon />
+                                    </IconButton>
+                                </InputAdornment>
+                            )
+                        }}
+                    />
                 </Grid>
-            </Paper>
-        </Container>
+                <Grid item xs={12} sm={6} md={4}>
+
+                    <ButtonGroup fullWidth sx={{ height: '56px' }} orientation='horizontal' size="small" variant="outlined">
+                        <Button fullWidth onClick={() => { setShowDeleteUserDialog(true) }} disabled={selected.length == 0} size='small' color="error" startIcon={<DeleteIcon />}> Ta Bort</Button>
+                        <Button fullWidth onClick={() => { setShowEditDialog(true) }} disabled={selected.length == 0} size='small' color="warning" startIcon={<EditOutlinedIcon />} >Ändra</Button>
+                        <Button fullWidth onClick={() => { setShowAddDialog(true) }} size='small' color="primary" startIcon={<PersonAddOutlinedIcon />}>Lägg till</Button>
+                    </ButtonGroup>
+                </Grid>
+
+                <Grid item md={0.5} />
+
+                <Grid item xs={12} sm={12} md={5} justifyContent={'right'}>
+                    <TablePagination
+                        rowsPerPageOptions={[10, 25, 50]}
+                        component="div"
+                        count={users.length}
+                        rowsPerPage={rowsPerPage}
+                        page={page}
+                        onPageChange={handleChangePage}
+                        onRowsPerPageChange={handleChangeRowsPerPage}
+                        labelRowsPerPage="Användare per sida"
+                    />
+                </Grid>
+            </Grid>
+        </Paper >
     )
 }
 export default UserGrid;

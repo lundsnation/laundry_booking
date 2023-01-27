@@ -47,10 +47,6 @@ const Profile: NextPage = () => {
         setSnack({ show: false, snackString: snack.snackString, severity: snack.severity })
     }
 
-    const snackTrigger = (severity: AlertColor, snackString: string, alignment: SnackbarOrigin) => {
-        setSnack({ show: true, snackString: snackString, severity: severity })
-    }
-
     return (user ?
         <Layout>
             <Snack state={snack} handleClose={resetSnack} />
@@ -60,10 +56,6 @@ const Profile: NextPage = () => {
                 </Grid>
 
             </Grid>
-
-            <Snack state={snack} handleClose={resetSnack} />
-
-
         </Layout > : <Loading />
     )
 }
