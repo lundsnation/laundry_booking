@@ -88,7 +88,8 @@ const UserGrid = () => {
 
     // SEARCH
     useEffect(() => {
-        let searchRes = users.filter(user => user.name.includes(searchString))
+        let searchRes = users.filter(user => user.name.includes(searchString) || user.email.includes(searchString))
+
         setSearchedUsers(searchRes)
     }, [searchString])
 
@@ -131,6 +132,7 @@ const UserGrid = () => {
                         <TableCell align="right">{userEntry.email}</TableCell>
                         <TableCell align="right">{userEntry.app_metadata?.allowedSlots}</TableCell>
                         <TableCell align="right">{userEntry.user_metadata?.telephone}</TableCell>
+                        <TableCell align="right">{userEntry.app_metadata?.acceptedTerms ? "Ja" : "Nej"}</TableCell>
                     </TableRow>
                 )
             }
@@ -180,6 +182,7 @@ const UserGrid = () => {
                             <TableCell align="right">E-post</TableCell>
                             <TableCell align="right">Tillåtna Bokningar</TableCell>
                             <TableCell align="right">Telefon</TableCell>
+                            <TableCell align="right">Accepterat Villkor</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
