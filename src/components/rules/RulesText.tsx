@@ -1,5 +1,7 @@
-import { Box, Grid, List, ListItem, ListItemIcon, ListItemText, Paper, Typography } from "@mui/material";
+import { Box, Grid, List, ListItem, ListItemIcon, ListItemText, Paper, Stack, Typography } from "@mui/material";
+import EmailIcon from '@mui/icons-material/Email';
 import CircleIcon from '@mui/icons-material/Circle';
+import PhoneIcon from '@mui/icons-material/Phone';
 import { Margin } from "@mui/icons-material";
 
 export const RulesText = () => {
@@ -54,16 +56,6 @@ export const RulesText = () => {
                     <ListItemText>
 
                         <Typography fontWeight={fontWeight} mx={mx}>
-                            Torktumlaren är just nu inte i bruk. När den åter är det kommer det gå att köpa
-                            torktumlarpoletter på husexpen.
-                        </Typography>
-                    </ListItemText>
-                </ListItem>
-
-                <ListItem sx={{ display: 'list-item', py: 0 }}>
-                    <ListItemText>
-
-                        <Typography fontWeight={fontWeight} mx={mx}>
                             Torkbåsen ska vara tömda 24 timmar efter ditt tvättpass börjat. Om torkbåset inte är tömt kan du hitta kontaktuppgifter till personen på hemsidan.
                             Observera att detta enbart får användas för detta skäl och att kontaktuppgifterna får
                             inte får missbrukas.
@@ -75,7 +67,6 @@ export const RulesText = () => {
                     <ListItemText>
                         <Typography fontWeight={fontWeight} mx={mx}>
                             När du är klar med tid tvättid bör du se till att tvättstugan lämnas i gott skick.
-
                         </Typography>
                     </ListItemText>
                 </ListItem>
@@ -104,16 +95,25 @@ export const RulesText = () => {
 
             </List>
 
-            <Box my={3}>
-                <Typography fontWeight={'bold'} mx={mx}>
+            <Box my={3} mx={mx}>
+                <Typography fontWeight={'bold'}>
                     Kontaktuppgifter till husförmännen:
                 </Typography >
-                <Typography mx={mx}>
-                    Mail: husforman@lundsnation.se
-                </Typography>
-                <Typography mx={mx}>
-                    Telefon: 0735146065 och 0735146066
-                </Typography>
+                <Stack direction='row' alignItems='center' gap={0}>
+                    <EmailIcon />
+                    <Typography mx={mx}>
+
+                        husforman@lundsnation.se
+                    </Typography>
+                </Stack>
+
+                <Stack direction='row' alignItems='center' gap={0}>
+                    <PhoneIcon />
+                    <Typography mx={mx}>
+                        0735146065 & 0735146066
+                    </Typography>
+                </Stack>
+
             </Box>
 
 
