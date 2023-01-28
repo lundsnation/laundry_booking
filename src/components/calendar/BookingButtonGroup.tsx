@@ -1,7 +1,7 @@
 import BookingButton from "./BookingButton";
 import ButtonGroup from '@mui/material/ButtonGroup';
 import { useEffect, useState } from "react";
-import { AlertColor, SnackbarOrigin, Fade } from "@mui/material"
+import { AlertColor, SnackbarOrigin, Fade, Paper } from "@mui/material"
 import { Booking, UserType } from "../../../utils/types"
 import { timeSlotToBooking, timeSlotToDryingBooth } from "../../../utils/bookingsAPI";
 
