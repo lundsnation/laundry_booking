@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Container, Typography, Box, Grid } from '@mui/material';
+import { Container, Typography, Grid } from '@mui/material';
 
 
 const Footer = () => {
@@ -11,14 +11,19 @@ const Footer = () => {
             }}
         >
             <Grid item xs={12} sm={3} mx={4}>
-                <Box borderBottom={1} sx={{ fontWeight: "bold" }}> LUNDS NATION </Box>
-                <Box>Agardhsgatan 1</Box>
-                <Box>hus@lundsnation.se</Box>
+                <Typography borderBottom={1} sx={{ fontWeight: "bold" }}> LUNDS NATION </Typography>
+                <Typography fontWeight='medium'>Agardhsgatan 1, 223 51, Lund</Typography>
+
             </Grid>
             <Grid item xs={12} sm={3} mx={4}>
-                <Box borderBottom={1} sx={{ fontWeight: "bold" }}>ÖPPETTIDER HUSEXPEN</Box>
-                <Box>Måndagar & Torsdagar 17.00-18.00</Box>
+                <Typography borderBottom={1} fontWeight='bold'>KONTAKT</Typography>
+                <Typography fontWeight='medium'>husforman@lundsnation.se </Typography>
+                <Typography fontWeight='medium'>0735146065 & 0735146066</Typography>
             </Grid>
+            <Grid item xs={12} sm={3} mx={4}>
+                <Typography borderBottom={1} fontWeight='bold'>ÖPPETTIDER HUSEXPEN</Typography>
+                <Typography fontWeight='medium'>Måndagar & Torsdagar 17.00-18.00</Typography>
+            </Grid >
         </Grid >
 
     )

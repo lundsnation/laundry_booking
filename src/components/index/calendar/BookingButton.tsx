@@ -1,11 +1,11 @@
 import { Button, Paper, AlertColor, Grid, IconButton, Typography, Box, SnackbarOrigin, Fade, Tooltip } from "@mui/material"
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import React, { useEffect, useState } from "react";
-import { Booking, timeFromTimeSlot } from "../../../utils/types"
+import { Booking, timeFromTimeSlot } from "../../../../utils/types"
 import BookingInfo from "./BookingInfo"
-import { UserType } from "../../../utils/types";
-import { dateFromTimeSlot } from "../../../utils/bookingsAPI";
-import ConfirmBooking from "./ConfirmBooking";
+import { UserType } from "../../../../utils/types";
+import { dateFromTimeSlot } from "../../../../utils/bookingsAPI";
+import ConfirmBooking from "../ConfirmBooking";
 
 interface Props {
     boothIndex: number,
@@ -68,26 +68,28 @@ const BookingButton = (props: Props) => {
                     {/*The span is a hack to enable tooltip on disabled buttons*/}
                     {/*The sx height is also a hack to make the buttongroup same size as calendar vertically*/}
                     <span>
-                        <Button
-                            fullWidth
-                            size="small"
-                            sx={{ height: { xs: 45, sm: '33.45px' }, borderRadius: 0 }}
-                            variant="contained"
-                            onClick={() => handleOpenConfirmation(true)}
-                            color={!bookedTimeSlot ? 'primary' : 'secondary'}
-                            disabled={(bookedTimeSlot && !myTimeSlot) || disabled}
-                        >
+                        <Paper>
 
-                            <Grid container >
-                                <Grid item xs={7} >
-                                    <Typography variant="button" align="left">{timeSlot}</Typography>
-                                </Grid>
-                                <Grid item xs={5}>
-                                    <Typography variant="button" align="left" sx={{ textTransform: "none" }}>Bås {" " + boothIndex}</Typography>
+                            <Button
+                                fullWidth
+                                size="small"
+                                sx={{ height: { xs: 45, sm: '33.45px' }, borderRadius: 0 }}
+                                variant="contained"
+                                onClick={() => handleOpenConfirmation(true)}
+                                color={!bookedTimeSlot ? 'primary' : 'secondary'}
+                                disabled={(bookedTimeSlot && !myTimeSlot) || disabled}
+                            >
+                                <Grid container >
+                                    <Grid item xs={7} >
+                                        <Typography variant="button" align="left">{timeSlot}</Typography>
+                                    </Grid>
+                                    <Grid item xs={5}>
+                                        <Typography variant="button" align="left" sx={{ textTransform: "none" }}>Bås {" " + boothIndex}</Typography>
+                                    </Grid>
                                 </Grid>
 
-                            </Grid>
-                        </Button>
+                            </Button>
+                        </Paper>
                     </span>
                 </Tooltip>
             </Grid>

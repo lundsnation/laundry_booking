@@ -6,8 +6,8 @@ import { useState, FormEvent, useEffect } from "react"
 import { SnackInterface } from "../Snack"
 import ChangePasswordDialog from "./ChangePasswordDialog"
 import React from "react"
-import { width } from "@mui/system"
-import { WidthFull } from "@mui/icons-material"
+import { isValidPhoneNumber } from 'libphonenumber-js'
+
 
 interface props {
     user: UserType,
@@ -38,25 +38,30 @@ const EditProfile = (props: props) => {
     const handleEditUser = async (e: FormEvent) => {
         e.preventDefault()
         setWait(true);
-        let response: Response
-        response = await fetch("/api/auth/edit", {
-            method: "PATCH",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(editedProfile)
-        })
-        if (response.ok) {
-            setSnack({ show: true, snackString: "Användare sparad", severity: 'success' })
-            user.user_metadata = editedProfile.user_metadata
-            user.email = editedProfile.email
-            user.user_id = user.user_id
+        //Phone number validation
+        const inputPhoneNumber = editedProfile.user_metadata.telephone || ""
+        //const countryCode = inputPhoneNumber.substring(0, 3)
+        if (!isValidPhoneNumber(inputPhoneNumber)) {
+            setSnack({ show: true, snackString: "Ogiltigt format", severity: 'error' })
         } else {
-            setSnack({ show: true, snackString: await response.json(), severity: 'error' })
+            let response: Response
+            response = await fetch("/api/auth/edit", {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(editedProfile)
+            })
+            if (response.ok) {
+                setSnack({ show: true, snackString: "Användare sparad", severity: 'success' })
+                user.user_metadata = editedProfile.user_metadata
+                user.email = editedProfile.email
+                user.user_id = user.user_id
+            } else {
+                setSnack({ show: true, snackString: await response.json(), severity: 'error' })
+            }
         }
-        setWait(false);
-    }
 
-    const handleEditPasswordChange = async (password: string) => {
-        return null
+
+        setWait(false);
     }
 
     return (
@@ -92,15 +97,19 @@ const EditProfile = (props: props) => {
 
                         <TextField
                             fullWidth
-                            label="Ändra Telefon"
+                            label="Ändra telefonnummer"
                             onChange={(e) => {
                                 setEditedProfile({ ...editedProfile, user_metadata: { telephone: e.target.value } })
                             }}
                             type="telephone"
+                            helperText='Ange telefonnummer med landskod (+46...)'
                             defaultValue={editedProfile.user_metadata?.telephone}
                             variant={textFieldVariant}
                             margin="dense"
                         />
+
+
+
                         <Stack
                             direction="row"
                             justifyContent="flex-end"

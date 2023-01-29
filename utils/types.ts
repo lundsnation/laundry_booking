@@ -127,6 +127,8 @@ export const enum ERROR_MSG {
   // User is not authorized
   NOTAUTHORIZED = "Du är ej behörig",
   // Error recieved from Auth0 
-  AUTH0RESPONSEERROR = "Kunde inte updatera användaren"
+  AUTH0RESPONSEERROR = "Kunde inte updatera användaren",
+  // User needs to add phone number
+  NONUMBER = "Telefonnummer krävs för att göra bokningar"
 }
 
