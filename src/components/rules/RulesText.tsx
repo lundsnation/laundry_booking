@@ -1,8 +1,6 @@
-import { Box, Grid, List, ListItem, ListItemIcon, ListItemText, Paper, Stack, Typography } from "@mui/material";
+import { Box, List, ListItem, ListItemText, Stack, Typography } from "@mui/material";
 import EmailIcon from '@mui/icons-material/Email';
-import CircleIcon from '@mui/icons-material/Circle';
 import PhoneIcon from '@mui/icons-material/Phone';
-import { Margin } from "@mui/icons-material";
 
 export const RulesText = () => {
 
@@ -96,7 +94,7 @@ export const RulesText = () => {
             </List>
 
             <Box my={3} mx={mx}>
-                <Typography fontWeight={'bold'}>
+                <Typography fontWeight={'bold'} >
                     Kontaktuppgifter till husförmännen:
                 </Typography >
                 <Stack direction='row' alignItems='center' gap={0}>
