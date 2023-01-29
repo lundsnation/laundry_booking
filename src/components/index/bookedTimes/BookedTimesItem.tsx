@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { AlertColor, Button, ButtonGroup, Fade, ListItem, SnackbarOrigin, Typography } from "@mui/material";
-import ConfirmBooking from "./ConfirmBooking";
+import ConfirmBooking from "../ConfirmBooking";
 import { LoadingButton } from "@mui/lab";
-import { Booking, UserType } from "../../../utils/types";
-import { timeSlotToDryingBooth } from "../../../utils/bookingsAPI";
+import { Booking, UserType } from "../../../../utils/types";
+import { timeSlotToDryingBooth } from "../../../../utils/bookingsAPI";
 
 interface Props {
     userBooking: Booking,

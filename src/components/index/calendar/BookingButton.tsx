@@ -1,11 +1,11 @@
 import { Button, Paper, AlertColor, Grid, IconButton, Typography, Box, SnackbarOrigin, Fade, Tooltip } from "@mui/material"
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import React, { useEffect, useState } from "react";
-import { Booking, timeFromTimeSlot } from "../../../utils/types"
+import { Booking, timeFromTimeSlot } from "../../../../utils/types"
 import BookingInfo from "./BookingInfo"
-import { UserType } from "../../../utils/types";
-import { dateFromTimeSlot } from "../../../utils/bookingsAPI";
-import ConfirmBooking from "./ConfirmBooking";
+import { UserType } from "../../../../utils/types";
+import { dateFromTimeSlot } from "../../../../utils/bookingsAPI";
+import ConfirmBooking from "../ConfirmBooking";
 
 interface Props {
     boothIndex: number,

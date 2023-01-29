@@ -1,18 +1,15 @@
 import * as React from 'react';
 import { useEffect } from "react";
 import type { NextPage } from 'next';
-import { Box, Grid, Paper } from '@mui/material';
+import { Grid } from '@mui/material';
 import { useUser } from '@auth0/nextjs-auth0/client';
-import Header from "../src/components/layout/header/Header";
-import BookingCalendar from '../src/components/calendar/BookingCalendar';
+import BookingCalendar from '../src/components/index/calendar/BookingCalendar';
 import { useRouter } from 'next/router'
-import Footer from '../src/components/layout/Footer';
 import Terms from '../src/components/Terms';
 import { UserType } from '../utils/types';
 import Loading from '../src/components/Loading';
 import Rules from '../src/components/rules/Rules';
 import Layout from '../src/components/layout/Layout';
-
 
 
 const Index: NextPage = () => {

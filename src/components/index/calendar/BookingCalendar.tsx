@@ -4,11 +4,11 @@ import AdapterDateFns from '@date-io/date-fns'
 import { Grid, Box, SxProps, TextField, AlertColor, Paper, Typography, SnackbarOrigin, Badge } from "@mui/material";
 import svLocale from 'date-fns/locale/sv';
 import BookingButtonGroup from "./BookingButtonGroup";
-import BookedTimes from './BookedTimes';
-import { Booking, JsonBooking, UserType } from "../../../utils/types";
-import { getDateBookings, compareDates, dateFromTimeSlot } from "../../../utils/bookingsAPI"
-import { Snack, SnackInterface } from "../Snack"
-import { pusherClient } from '../../../utils/pusherAPI'
+import BookedTimes from '../bookedTimes/BookedTimes';
+import { Booking, JsonBooking, UserType } from "../../../../utils/types";
+import { getDateBookings, compareDates, dateFromTimeSlot } from "../../../../utils/bookingsAPI"
+import { Snack, SnackInterface } from "../../Snack"
+import { pusherClient } from '../../../../utils/pusherAPI'
 
 interface Props {
     title: string;
