@@ -31,6 +31,7 @@
     "json5": "^2.2.2",
     "libphonenumber-js": "^1.10.18",
     "mongoose": "^6.7.2",
+    "mui-image": "^1.0.7",
     "next": "^13.0.5",
     "pusher": "^5.1.2",
     "pusher-js": "^8.0.0",
@@ -41,6 +42,7 @@
     "typescript": "4.9.3"
   },
   "devDependencies": {
+    "@types/mui-image": "^1.0.1",
     "prettier": "^2.8.1"
   }
 }

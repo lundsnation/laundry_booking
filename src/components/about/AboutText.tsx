@@ -1,4 +1,5 @@
-import { Box, Card, CardMedia, Grid, ImageListItem, Link, List, ListItem, ListItemText, Stack, Typography } from "@mui/material";
+import { Box, Card, CardMedia, Grid, Link, List, ListItemText, Typography } from "@mui/material";
+import Image from 'mui-image';
 
 export const AboutText = () => {
 
@@ -10,9 +11,9 @@ export const AboutText = () => {
                 sx: 6, md: 2
             }
         }}>
-            <Grid container>
+            <Grid container rowSpacing={2} display={'flex'} justifyContent={'center'} alignItems={'center'}>
 
-                <Grid item display={'flex'} justifyContent={'center'} alignItems={'center'} xs={12} md={7}>
+                <Grid item xs={12} md={6}>
 
                     <Typography variant="h3" fontWeight={fontWeight} align="center">
                         About us
@@ -20,15 +21,19 @@ export const AboutText = () => {
 
                 </Grid>
 
-                <Grid item xs={12} md={5}>
-                    <Card sx={{ maxWidth: 230, boxShadow: "none" }} >
-                        <CardMedia image={"/about_pic.png"} sx={{ height: 150 }} />
-                    </Card>
+                <Grid item xs={12} md={6}
+                    flexGrow={1}
+                    display={'flex'}
+                    justifyContent={'center'}
+                    alignItems={'center'}
+                    padding={{ xs: 2, md: 0 }}
+                    sx={{ maxWidth: { sm: "50%", md: "100%" } }}>
 
+                    <Image src={"/about_pic.png"} alt={"Image Unavailable"} width={300} />
 
                 </Grid>
 
-                <List>
+                <List sx={{ padding: { xs: 2 } }}>
                     <ListItemText>
                         <Typography fontWeight={fontWeight}>
                             This website was created by Adi Creson, Adam Schlyter Sonesson och Axel Sneitz-Björkman, while living at a corridor by the name of NH2 in Lunds nation, as a means of solving the inadequate laundry booking system at said student accommodation. The project is, for all of the authors, their first venture into the world of web development, and was done as a side project while still being students.
@@ -51,7 +56,7 @@ export const AboutText = () => {
 
                         </Typography>
 
-                        <Link href="https://github.com/lundsnation/laundry_booking">https://github.com/lundsnation/laundry_booking</Link>
+                        <Link href="https://github.com/lundsnation/laundry_booking">Our github repository</Link>
                     </ListItemText>
                 </List>
             </Grid >
