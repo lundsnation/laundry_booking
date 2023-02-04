@@ -3,6 +3,8 @@ import { Container, Typography, Grid } from '@mui/material';
 
 
 const Footer = () => {
+    const groupPic = "/about_pic.png"
+
     return (
         <Grid container display={"flex"} alignItems={"top"} justifyContent={"center"} padding={4}
             sx={{

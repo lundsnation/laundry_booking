@@ -19,7 +19,8 @@ type NavItem = {
 //Admin button is added separately as it is special, same with profileButton
 const navItems: Array<NavItem> = [
     { navText: 'Boka', navLink: "/" },
-    { navText: 'Regler', navLink: "/regler" }
+    { navText: 'Regler', navLink: "/regler" },
+    { navText: 'About', navLink: "/about" }
 ];
 
 const DesktopNav = (props: Props) => {
