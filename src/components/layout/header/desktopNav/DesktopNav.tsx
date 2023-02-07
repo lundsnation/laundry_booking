@@ -20,7 +20,6 @@ type NavItem = {
 const navItems: Array<NavItem> = [
     { navText: 'Boka', navLink: "/" },
     { navText: 'Regler', navLink: "/regler" },
-    { navText: 'About', navLink: "/about" }
 ];
 
 const DesktopNav = (props: Props) => {

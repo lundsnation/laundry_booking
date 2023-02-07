@@ -4,16 +4,19 @@ import Image from 'mui-image';
 export const AboutText = () => {
 
     const fontWeight = 'medium'
+    const groupPic = "/about_pic.png"
+
 
     return (
         <Box sx={{
             padding: {
                 sx: 6, md: 2
             }
+
         }}>
             <Grid container rowSpacing={2} display={'flex'} justifyContent={'center'} alignItems={'center'}>
 
-                <Grid item xs={12} md={6}>
+                <Grid item xs={12} md={7}>
 
                     <Typography variant="h3" fontWeight={fontWeight} align="center">
                         About us
@@ -21,15 +24,20 @@ export const AboutText = () => {
 
                 </Grid>
 
-                <Grid item xs={12} md={6}
+                <Grid item xs={12} md={4}
                     flexGrow={1}
                     display={'flex'}
                     justifyContent={'center'}
                     alignItems={'center'}
                     padding={{ xs: 2, md: 0 }}
-                    sx={{ maxWidth: { sm: "50%", md: "100%" } }}>
+                    sx={{
+                        maxWidth: {
+                            sm: "50%",
+                            md: "100%"
+                        }
+                    }}>
 
-                    <Image src={"/about_pic.png"} alt={"Image Unavailable"} width={300} />
+                    <Image src={groupPic} alt={"Image Unavailable"} width={300} />
 
                 </Grid>
 
