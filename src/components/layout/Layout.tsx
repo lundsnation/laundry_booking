@@ -6,6 +6,8 @@ import React from "react"
 
 
 const img = "/logotyp02.png"
+
+
 const styles = {
     paperContainer: {
         backgroundImage: `url(${img})`,
