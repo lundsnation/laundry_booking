@@ -29,6 +29,7 @@ export const getDateBookings = (bookings: Array<Booking>, selectedDate: Date) =>
 
 //This function needs to be changed if the mappings fron timeSlots -> Drying booths change.
 
+//Should perhaps be refactored into an object instead.
 export const timeSlotToDryingBooth = new Map([
     ["07:00-08:30", 1],
     ["08:30-10:00", 2],
@@ -43,14 +44,12 @@ export const timeSlotToDryingBooth = new Map([
 ]
 )
 
-
-
-
+//Should perhaps be refactored into an object instead.
 export const timeSlotToTime = new Map([
     ["07:00-08:30", 25200000],
     ["08:30-10:00", 30600000],
     ["10:00-11:30", 36000000],
-    ["11:30-13:00", 39600000],
+    ["11:30-13:00", 41400000],
     ["13:00-14:30", 46800000],
     ["14:30-16:00", 52200000],
     ["16:00-17:30", 57600000],
@@ -81,6 +80,7 @@ export const timeSlotToBooking = (bookings: Set<Booking>) => {
     return map;
 }
 
+//Should be refactored to use dates standard library string.
 export const dateToNbrOfBookingsMap = (bookings: Array<Booking>) => {
     const map: Map<string, number> = new Map<string, number>();
 

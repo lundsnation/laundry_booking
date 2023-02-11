@@ -19,8 +19,6 @@ export const HeaderLogo = (props: Props) => {
             <Button
                 color="inherit"
                 aria-label="menu"
-                sx={{
-                }}
                 onClick={handleClick}
                 variant="text"
                 startIcon={
@@ -30,12 +28,28 @@ export const HeaderLogo = (props: Props) => {
                 }
             >
                 <Typography
-                    sx={{ flexGrow: 1 }}
+                    sx={{
+                        flexGrow: 1,
+                        display: { xs: 'none', sm: 'none', md: 'block' }
+                    }}
                     variant="h6"
                 >
 
                     {logoText}
                 </Typography>
+
+                <Typography
+                    sx={{
+                        flexGrow: 1,
+                        display: { sm: 'block', md: 'none' }
+                    }}
+                    variant="h6"
+                    fontSize={13}
+                >
+
+                    {logoText}
+                </Typography>
+
             </Button>
         </Box >
     );

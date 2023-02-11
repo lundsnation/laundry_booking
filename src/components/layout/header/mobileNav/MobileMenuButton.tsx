@@ -3,17 +3,14 @@ import Box from '@mui/material/Box';
 import Menu from '@mui/material/Menu';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
-import Tooltip from '@mui/material/Tooltip';
-import { UserType } from '../../../../utils/types';
+import { UserType } from '../../../../../utils/types';
 import { AccountCircle, Logout } from '@mui/icons-material/';
-import { Button, ListItemIcon, MenuItem, SvgIconTypeMap } from '@mui/material';
-import SvgIcon from '@mui/material';
+import { ListItemIcon, MenuItem, SvgIconTypeMap } from '@mui/material';
 import router from 'next/router';
 import { OverridableComponent } from '@mui/material/OverridableComponent';
-
-interface Props {
-    user: UserType
-}
+import Hamburger from 'hamburger-react';
+import GavelIcon from '@mui/icons-material/Gavel';
+import LocalLaundryServiceIcon from '@mui/icons-material/LocalLaundryService';
 
 type MenuItemType = {
     text: string,
@@ -22,14 +19,15 @@ type MenuItemType = {
 }
 
 const menuItems: Array<MenuItemType> = [
-    { text: "Profil", link: "/profile", Icon: AccountCircle },
-    { text: "Logga ut", link: "api/auth/logout", Icon: Logout }
+    { text: 'Boka', link: "/", Icon: LocalLaundryServiceIcon },
+    { text: "Regler", link: "/regler", Icon: GavelIcon },
+    { text: "Profil", link: "/profil", Icon: AccountCircle },
+    //{ text: "Logga ut", link: "api/auth/logout", Icon: Logout }
 ]
 
-const ProfileMenuButton = (props: Props) => {
+const MobileMenuButton = () => {
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const open = Boolean(anchorEl);
-    const user = props.user;
 
     const handleClick = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorEl(event.currentTarget);
@@ -45,27 +43,17 @@ const ProfileMenuButton = (props: Props) => {
 
     return (
         <React.Fragment>
-
-            <Tooltip title="Profil/Logga ut">
-                <Button
-                    size="large"
-                    color={"inherit"}
-                    startIcon={<AccountCircle />}
-                    onClick={handleClick}
-                    sx={{ ml: 2, color: "#FFFFFF" }}
-                    aria-controls={open ? 'account-menu' : undefined}
-                    aria-haspopup="true"
-                    aria-expanded={open ? 'true' : undefined}
-                >
-                    <Typography
-                        variant={"h6"}
-                        fontSize={16}
-                    >
-                        {user.name}
-                    </Typography>
-
-                </Button>
-            </Tooltip>
+            <IconButton
+                size="small"
+                color={"inherit"}
+                onClick={handleClick}
+                sx={{ color: "#FFFFFF" }}
+                aria-controls={open ? 'account-menu' : undefined}
+                aria-haspopup="true"
+                aria-expanded={open ? 'true' : undefined}
+            >
+                <Hamburger toggled={open} size={24} />
+            </IconButton>
 
             <Menu
                 anchorEl={anchorEl}
@@ -118,6 +106,22 @@ const ProfileMenuButton = (props: Props) => {
 
                     </MenuItem>
                 ))}
+                {/*Logga ut knappen läggs till separat pga röd färg*/}
+                <MenuItem
+                    key={"Logga ut"}
+                    onClick={() => onClick("api/auth/logout")}
+                >
+                    <ListItemIcon>
+                        <Logout color={"error"} fontSize='medium' />
+                    </ListItemIcon>
+                    <Typography
+                        color={"error"}
+                    >
+                        {"Logga ut"}
+                    </Typography>
+
+                </MenuItem>
+
 
             </Menu>
 
@@ -125,5 +129,5 @@ const ProfileMenuButton = (props: Props) => {
     );
 }
 
-export default ProfileMenuButton;
+export default MobileMenuButton;
 

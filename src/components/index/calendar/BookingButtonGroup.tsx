@@ -1,9 +1,9 @@
 import BookingButton from "./BookingButton";
 import ButtonGroup from '@mui/material/ButtonGroup';
 import { useEffect, useState } from "react";
-import { AlertColor, SnackbarOrigin, Fade } from "@mui/material"
-import { Booking, UserType } from "../../../utils/types"
-import { timeSlotToBooking, timeSlotToDryingBooth } from "../../../utils/bookingsAPI";
+import { AlertColor, SnackbarOrigin, Fade, Paper } from "@mui/material"
+import { Booking, UserType } from "../../../../utils/types"
+import { timeSlotToBooking, timeSlotToDryingBooth } from "../../../../utils/bookingsAPI";
 
 interface Props {
     bookedBookings: Set<Booking>;
@@ -16,16 +16,14 @@ interface Props {
 
 const BookingButtonGroup = (props: Props) => {
     const { bookedBookings, timeSlots, selectedDate, user, updateBookings, snackTrigger } = props
-    const [ready,setReady] = useState(false)
+    const [ready, setReady] = useState(false)
     const timeToBooking: Map<string, Booking> = timeSlotToBooking(bookedBookings);
 
-
-
-    useEffect(()=>{
-        if(!ready){
+    useEffect(() => {
+        if (!ready) {
             setReady(true)
         }
-    },[bookedBookings])
+    }, [bookedBookings])
 
     const buttons = timeSlots.map(timeSlot => {
         let booking: null | Booking = null;
@@ -46,11 +44,11 @@ const BookingButtonGroup = (props: Props) => {
             snackTrigger={snackTrigger}
         />
     });
-    
+
     return (
         <Fade in={ready}>
-        <ButtonGroup sx={{ zIndex: 'modal', pt:{xs:2, md:0} }} fullWidth size='medium' orientation='vertical'> {buttons} </ButtonGroup>
-        </Fade>
+            <ButtonGroup fullWidth size='medium' orientation='vertical'> {buttons} </ButtonGroup>
+        </Fade >
     );
 }
 

@@ -6,6 +6,8 @@ import Booking from '../../../models/Booking'
 import { withApiAuthRequired, getSession } from '@auth0/nextjs-auth0';
 import { pusherBackend } from '../../../utils/pusherAPI'
 
+const pusher = pusherBackend();
+
 const handler = withApiAuthRequired(async (req: NextApiRequest, res: NextApiResponse) => {
   const method: keyof ResponseFuncs = req.method as keyof ResponseFuncs
   const catcher = (error: Error) => res.status(400).json({ error : ERROR_MSG.GENERAL })
@@ -33,7 +35,7 @@ const handler = withApiAuthRequired(async (req: NextApiRequest, res: NextApiResp
       } else {
         const { userName, date, timeSlot } = req.body
         const json = await Booking.findByIdAndRemove(id).catch(catcher)
-        await pusherBackend.trigger('bookingUpdates', 'bookingUpdate', {userName,date,timeSlot,request: 'DELETE'})
+        await pusher.trigger('bookingUpdates', 'bookingUpdate', {userName,date,timeSlot,request: 'DELETE'})
         res.status(200).json(json)
       }
       

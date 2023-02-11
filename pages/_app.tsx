@@ -8,8 +8,7 @@ import createEmotionCache from '../src/createEmotionCache';
 import { UserProvider } from '@auth0/nextjs-auth0/client';
 import theme from "../src/theme"
 import { makeStyles, Paper, alpha, Grid } from '@mui/material';
-import Layout from '../src/components/Layout';
-
+import Layout from '../src/components/layout/Layout';
 
 
 // Client-side cache, shared for the whole session of the user in the browser.
@@ -74,4 +73,3 @@ export default function MyApp(props: MyAppProps) {
 
   );
 }
-

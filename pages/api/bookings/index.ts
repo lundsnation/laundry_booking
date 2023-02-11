@@ -1,18 +1,20 @@
 import { NextApiRequest, NextApiResponse } from "next"
 import { connect } from "../../../utils/connection"
 import { logRequest } from "../../../utils/backendLogger"
-import { ResponseFuncs, ERROR_MSG } from "../../../utils/types"
+import { ResponseFuncs, ERROR_MSG, UserType } from "../../../utils/types"
 import Booking from '../../../models/Booking'
 import { withApiAuthRequired, getSession } from "@auth0/nextjs-auth0"
 import { getUsers } from '../../../utils/getAuth0Users'
 import { pusherBackend } from "../../../utils/pusherAPI"
+
+const pusher = pusherBackend();
 
 const handler = withApiAuthRequired(async (req: NextApiRequest, res: NextApiResponse) => {
   //capture request method, we type it as a key of ResponseFunc to reduce typing later
   const method: keyof ResponseFuncs = req.method as keyof ResponseFuncs
   const session = await getSession(req, res)
   const user = session?.user
-  const catcher = (error: Error) => res.status(400).json({ error : ERROR_MSG.GENERAL})
+  const catcher = (error: Error) => res.status(400).json({ error: ERROR_MSG.GENERAL })
   await connect()
 
   const handleCase: ResponseFuncs = {
@@ -25,6 +27,15 @@ const handler = withApiAuthRequired(async (req: NextApiRequest, res: NextApiResp
       logRequest('POST');
       const { date, timeSlot, userName, createdAt } = req.body
 
+      console.log("Number: " + user?.user_metadata?.telephone)
+      console.log("Type: " + typeof user?.user_metadata?.telephone)
+
+      // Check too see if user has added phone Number
+      // Doesn't check if number is correctly formatted. Only done on fronted.
+      if (!user?.user_metadata.telephone) {
+        return res.status(400).json({ error: ERROR_MSG.NONUMBER })
+      }
+
       // Initial  check if booking-request is in the past => invalid
       if (new Date(date).getTime() < Date.now()) {
         return res.status(400).json({ error: ERROR_MSG.SLOTINPAST })
@@ -32,12 +43,12 @@ const handler = withApiAuthRequired(async (req: NextApiRequest, res: NextApiResp
       // Fetching allowed slots from active user session. If undefined, defaults to 1
       const allowedSlots = user?.app_metadata.allowedSlots || 1
       // Fetching slots already booked by the user
-      const slotCheck = await Booking.find({userName: user?.name, date: {$gte: new Date()}})
+      const slotCheck = await Booking.find({ userName: user?.name, date: { $gte: new Date() } })
       if (!slotCheck || slotCheck.length < allowedSlots) {
         const json = await Booking.create(req.body).catch(catcher)
-        await pusherBackend.trigger('bookingUpdates', 'bookingUpdate', {userName,date,timeSlot,request: 'POST'})
+        await pusher.trigger('bookingUpdates', 'bookingUpdate', { userName, date, timeSlot, request: 'POST' })
         return res.status(201).json(json)
-        
+
       }
       return res.status(400).json({ error: ERROR_MSG.TOOMANYSLOTS })
 

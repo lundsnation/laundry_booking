@@ -3,16 +3,14 @@ import { Toolbar, AppBar, Fade, Collapse } from '@mui/material';
 import { useRouter } from 'next/router';
 import { HeaderLogo } from './HeaderLogo';
 import DesktopNav from './desktopNav/DesktopNav';
-import { UserType } from '../../../utils/types';
+import { UserType } from '../../../../utils/types';
 import MobileNav from './mobileNav/MobileNav';
+import { useUser } from '@auth0/nextjs-auth0/client';
+import Loading from '../../Loading';
 
-interface Props {
-    user: UserType
-}
-
-const Header = (props: Props) => {
+const Header = () => {
+    const { user, error, isLoading } = useUser();
     const home = process.env.AUTH0_BASE_URL
-    const user = props.user
     const [menuOpen, setMenuOpen] = React.useState(false)
     const [auth, setAuth] = React.useState(true);
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -32,19 +30,18 @@ const Header = (props: Props) => {
 
     return (
         <React.Fragment>
-            <AppBar position="sticky" color="primary">
+            <AppBar position="fixed" color="primary">
 
                 <Toolbar>
-                    <HeaderLogo logoText={"TVÄTT NH&GH"} />
-                    <DesktopNav user={user} />
-                    <MobileNav user={user} />
+                    <HeaderLogo logoText={"TVÄTT NATIONSHUSET"} />
+                    <DesktopNav user={user as UserType} />
+                    <MobileNav user={user as UserType} />
                 </Toolbar>
             </AppBar>
             {/* Recommended hack when using postiion="sticky" from MUI docs */}
-            <Toolbar />
+            <Toolbar disableGutters />
         </React.Fragment>
     )
-
 };
 
 export default Header;
