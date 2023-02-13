@@ -23,13 +23,7 @@ const Footer = () => {
                         <Typography display={"flex"} alignItems={"top"} justifyContent={"center"} borderBottom={1} sx={{ fontWeight: "bold" }}>EXPEDITION ÖPPETTIDER </Typography>
                         <Typography display={"flex"} alignItems={"top"} justifyContent={"center"} fontWeight='medium'>Agardhsgatan 1, 223 51, Lund</Typography>
                     </Grid>
-                    <Grid item sm={12} md={12} display={"flex"} alignItems={"flex-end"}>
-                        <Grid item sm={12}>
-                            <Typography display={"flex"} alignItems={"top"} justifyContent={"center"} borderBottom={1} fontWeight='bold'>KONTAKT</Typography>
-                            <Typography display={"flex"} alignItems={"top"} justifyContent={"center"} fontWeight='medium'>husforman@lundsnation.se </Typography>
-                            <Typography display={"flex"} alignItems={"top"} justifyContent={"center"} fontWeight='medium'>0735146065 0735146066</Typography>
-                        </Grid>
-                    </Grid>
+                    
 
                 </Grid>
 
@@ -38,16 +32,16 @@ const Footer = () => {
 
             <Grid item xs={12} sm={4} paddingX={4}>
                 <Grid container spacing={2}>
-                    <Grid item xs={12} >
-                        <Typography display={"flex"} alignItems={"top"} justifyContent={"center"} borderBottom={1} sx={{ fontWeight: "bold" }}>NATIONEN </Typography>
-                        <Typography display={"flex"} alignItems={"top"} justifyContent={"center"} fontWeight='medium'>Vardagar 11.00-13.00</Typography>
-                        <Typography display={"flex"} alignItems={"top"} justifyContent={"center"} fontWeight='medium'>Torsdagar 17.00-18.00</Typography>
-                        <Typography display={"flex"} alignItems={"top"} justifyContent={"center"} fontWeight='medium'>Lördagar 13.00-14.00</Typography>
-                    </Grid>
                     <Grid item xs={12}>
-                        <Typography display={"flex"} alignItems={"top"} justifyContent={"center"} borderBottom={1} sx={{ fontWeight: "bold" }}>HUSET </Typography>
-                        <Typography display={"flex"} alignItems={"top"} justifyContent={"center"} fontWeight='medium'>Arkivet 17.00-18.00</Typography>
-                        <Typography display={"flex"} alignItems={"top"} justifyContent={"center"} fontWeight='medium'>Nationshuset 17.00-18.00</Typography>
+                        <Typography display={"flex"} alignItems={"top"} justifyContent={"center"} borderBottom={1} sx={{ fontWeight: "bold" }}>ÖPPETTIDER HUSEXPEN </Typography>
+                        <Typography display={"flex"} alignItems={"top"} justifyContent={"center"} fontWeight='medium'> Mån & Tors 17.00-18.00</Typography>
+                    </Grid>
+                    <Grid item sm={12} md={12} display={"flex"} alignItems={"flex-end"}>
+                        <Grid item sm={12}>
+                            <Typography display={"flex"} alignItems={"top"} justifyContent={"center"} borderBottom={1} fontWeight='bold'>KONTAKT</Typography>
+                            <Typography display={"flex"} alignItems={"top"} justifyContent={"center"} fontWeight='medium'>husforman@lundsnation.se </Typography>
+                            <Typography display={"flex"} alignItems={"top"} justifyContent={"center"} fontWeight='medium'>0735146065 & 0735146066</Typography>
+                        </Grid>
                     </Grid>
                 </Grid>
             </Grid>
