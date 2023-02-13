@@ -5,6 +5,7 @@ import getopt, sys
 from dotenv import load_dotenv
 import requests
 import re
+import time
 
 BUILDINGS = ["NH","GH","ARKIVET"]
 ARKIVET_BUILDINGS = ["A","B","C","D"]
@@ -56,7 +57,7 @@ def assertBuilding(buildingName):
 def run():
     fileDir = "utils/users/userLists" 
     folderName = os.path.join(os.getcwd(),fileDir)
-    nFiles = ["test.csv"]
+    nFiles = ["tenants13223.csv"]
     if(not TESTING_MODE):
         print(os.getcwd())
         nFiles = os.listdir(folderName)
@@ -95,6 +96,7 @@ def run():
             #testReq = requests.Request("POST",endpoint,headers=postHeaders,json=userBodyObject)
             response = requests.post(endpoint, headers=postHeaders , json = userBodyObject)
             #print(response.json())
+            
             if(response.ok):
                 nSucessfull += 1
                 if(VERBOSE):
@@ -104,6 +106,7 @@ def run():
                 if(VERBOSE):
                     print("Failed creation of: "+str(user[CSV_IND["username"]]))
                     print(response.json())
+            time.sleep(0.3)
         print("---SCRIPT SUMMARY---")
         print("Created: "+ str(nSucessfull)+" Failed: "+str(nFail))
     else:

@@ -89,16 +89,27 @@ export class getUsers {
     }
 
     private async _getAllUsers() {
-
         const token = await this.token
-        const options = {
-            method: 'GET',
-            url: "https://lundsnation.eu.auth0.com/api/v2/users",
-            headers: { authorization: 'Bearer ' + token, 'content-type': 'application/json' }
+        let moreUsers = true
+        let page = 0
+        let finalData : Array<Object>= []
+        while(moreUsers){
+            const options = {
+                method: 'GET',
+                url: `https://lundsnation.eu.auth0.com/api/v2/users?page=${page}`,
+                headers: { authorization: 'Bearer ' + token, 'content-type': 'application/json' }
+            }
+            const response = await fetch(options.url, options)
+            const data = await response.json()   
+            finalData.push(...data)
+            if(data.length != 50){
+                moreUsers=false
+            }
+            else{
+                page += 1
+            }
         }
-        const response = await fetch(options.url, options)
-        const data = await response.json()
-        return data    
+        return finalData    
     }
 
     private async _getSpecificUser(key: string, value: string) {
