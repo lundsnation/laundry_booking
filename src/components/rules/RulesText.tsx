@@ -55,7 +55,7 @@ export const RulesText = () => {
 
                         <Typography fontWeight={fontWeight} mx={mx}>
                             Torkbåsen ska vara tömda 24 timmar efter ditt tvättpass börjat. Om torkbåset inte är tömt kan du hitta kontaktuppgifter till personen på hemsidan.
-                            Observera att detta enbart får användas för detta skäl och att kontaktuppgifterna får
+                            Observera att detta enbart får användas för detta skäl och att kontaktuppgifterna
                             inte får missbrukas.
                         </Typography>
                     </ListItemText>
@@ -64,7 +64,7 @@ export const RulesText = () => {
                 <ListItem sx={{ display: 'list-item', py: 0 }}>
                     <ListItemText>
                         <Typography fontWeight={fontWeight} mx={mx}>
-                            När du är klar med tid tvättid bör du se till att tvättstugan lämnas i gott skick.
+                            När du är klar med din tvättid bör du se till att tvättstugan lämnas i gott skick.
                         </Typography>
                     </ListItemText>
                 </ListItem>
