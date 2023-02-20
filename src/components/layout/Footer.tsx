@@ -8,7 +8,7 @@ const Footer = () => {
     const groupPic = "/about_pic.png"
 
     return (
-        <Grid container display={"flex"} alignItems={"top"} justifyContent={"center"} padding={4} flexGrow={1}
+        <Grid container display={"flex"} alignItems={"top"} justifyContent={"center"} padding={4}
             sx={{
                 backgroundColor: "#afa998", //Får den ej att vilja använda sig av themeProvider t.ex. "secondary"
                 color: "#fff",
