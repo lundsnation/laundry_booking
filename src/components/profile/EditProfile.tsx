@@ -27,7 +27,6 @@ const EditProfile = (props: props) => {
     })
 
     useEffect(() => {
-        console.log("trig")
         if (user?.email != editedProfile.email || user?.user_metadata?.telephone != editedProfile.user_metadata.telephone) {
             setUserEditable(true)
         } else {

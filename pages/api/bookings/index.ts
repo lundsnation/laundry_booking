@@ -6,6 +6,7 @@ import Booking from '../../../models/Booking'
 import { withApiAuthRequired, getSession } from "@auth0/nextjs-auth0"
 import { getUsers } from '../../../utils/getAuth0Users'
 import { pusherBackend } from "../../../utils/pusherAPI"
+import { isValidPhoneNumber } from 'libphonenumber-js'
 
 const pusher = pusherBackend();
 
@@ -32,7 +33,7 @@ const handler = withApiAuthRequired(async (req: NextApiRequest, res: NextApiResp
 
       // Check too see if user has added phone Number
       // Doesn't check if number is correctly formatted. Only done on fronted.
-      if (!user?.user_metadata.telephone) {
+      if (!isValidPhoneNumber(user?.user_metadata.telephone)) {
         return res.status(400).json({ error: ERROR_MSG.NONUMBER })
       }
 

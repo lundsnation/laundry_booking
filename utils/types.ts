@@ -129,6 +129,6 @@ export const enum ERROR_MSG {
   // Error recieved from Auth0 
   AUTH0RESPONSEERROR = "Kunde inte updatera användaren",
   // User needs to add phone number
-  NONUMBER = "Telefonnummer krävs för att göra bokningar"
+  NONUMBER = "Lägg till telefonnummer i profil för att kunna göra bokningar."
 }
 

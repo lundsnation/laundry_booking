@@ -67,9 +67,8 @@ const BookingButton = (props: Props) => {
                 >
                     {/*The span is a hack to enable tooltip on disabled buttons*/}
                     {/*The sx height is also a hack to make the buttongroup same size as calendar vertically*/}
-                    <span>
-                        <Paper>
-
+                    <Paper>
+                        <span>
                             <Button
                                 fullWidth
                                 size="small"
@@ -89,22 +88,24 @@ const BookingButton = (props: Props) => {
                                 </Grid>
 
                             </Button>
-                        </Paper>
-                    </span>
+                        </span>
+                    </Paper>
                 </Tooltip>
             </Grid>
 
             <Grid item xs={1} md={1} pl={0.5}>
                 <Tooltip title={'Tryck för att visa info om bokning'} placement={'right'}>
-                    <IconButton disabled={!(bookedTimeSlot && !myTimeSlot)}
-                        onClick={() => { setShowBookingInfo(true) }}
-                        style={{ height: 33.4, width: 20 }}
-                    >
-                        {
-                            (bookedTimeSlot &&
-                                !myTimeSlot) ? <InfoOutlinedIcon color="action" /> : null
-                        }
-                    </IconButton>
+                    <span>
+                        <IconButton disabled={!(bookedTimeSlot && !myTimeSlot)}
+                            onClick={() => { setShowBookingInfo(true) }}
+                            style={{ height: 33.4, width: 20 }}
+                        >
+                            {
+                                (bookedTimeSlot &&
+                                    !myTimeSlot) ? <InfoOutlinedIcon color="action" /> : null
+                            }
+                        </IconButton>
+                    </span>
                 </Tooltip>
 
                 {
@@ -117,7 +118,7 @@ const BookingButton = (props: Props) => {
                 }
             </Grid >
 
-        </Grid>
+        </Grid >
     );
 };
 
