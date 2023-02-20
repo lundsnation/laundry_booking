@@ -29,7 +29,7 @@ const Footer = () => {
             <Grid item xs={12} sm={4} paddingX={4}>
                 <Grid container spacing={2}>
                     <Grid item xs={12}>
-                        <Typography display={"flex"} alignItems={"top"} justifyContent={"center"} borderBottom={1} sx={{ fontWeight: "bold" }}>ÖPPETTIDER HUSEXPEN </Typography>
+                        <Typography display={"flex"} alignItems={"top"} justifyContent={"center"} borderBottom={1} sx={{ fontWeight: "bold" }}> ÖPPETTIDER HUSEXPEDITIONEN </Typography>
                         <Typography display={"flex"} alignItems={"top"} justifyContent={"center"} fontWeight='medium'> Mån & Tors 17.00-18.00</Typography>
                         <Typography display={"flex"} alignItems={"top"} justifyContent={"center"} fontWeight='medium'>Agardhsgatan 1, 223 51, Lund</Typography>
                     </Grid>
