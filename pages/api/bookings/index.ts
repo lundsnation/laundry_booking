@@ -28,12 +28,12 @@ const handler = withApiAuthRequired(async (req: NextApiRequest, res: NextApiResp
       logRequest('POST');
       const { date, timeSlot, userName, createdAt } = req.body
 
-      console.log("Number: " + user?.user_metadata?.telephone)
-      console.log("Type: " + typeof user?.user_metadata?.telephone)
+
+      const nbr = user?.user_metadata.telephone || ""
 
       // Check too see if user has added phone Number
       // Doesn't check if number is correctly formatted. Only done on fronted.
-      if (!isValidPhoneNumber(user?.user_metadata.telephone)) {
+      if (!isValidPhoneNumber(nbr)) {
         return res.status(400).json({ error: ERROR_MSG.NONUMBER })
       }
 
