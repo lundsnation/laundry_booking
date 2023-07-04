@@ -17,7 +17,7 @@ interface Props {
     snackTrigger: (severity: AlertColor, snackString: string, alignment: SnackbarOrigin) => void;
 }
 const BookingButton = (props: Props) => {
-    const { boothIndex, user, booking, selectedDate, timeSlot, updateBookings, snackTrigger } = props
+    const { boothIndex, user, booking, selectedDate, timeSlot, snackTrigger } = props
     const [disabled, setDisabled] = useState<boolean>(false)
     const [openConfirmation, setOpenConfirmation] = useState<boolean>(false);
     const [showBookingInfo, setShowBookingInfo] = useState<boolean>(false)

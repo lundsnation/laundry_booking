@@ -18,6 +18,7 @@ export type Booking = {
 export type JsonBooking = {
   _id?: string,
   userName: string,
+  building: Building
   date: string,
   timeSlot: string,
 }
@@ -86,7 +87,7 @@ const convTimes: Array<number> = [25200000,
 
 
 
-export type Building = "ARKIVET" | "GH" | " NH" | "NYA" | null
+export type Building = "ARKIVET" | "GH" | " NH" | "NYA"
 
 // Returns an object of type building bsed on inputstring
 export function assertBuilding(buildingName: string): Building {

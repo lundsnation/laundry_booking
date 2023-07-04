@@ -16,14 +16,7 @@ interface Props {
 
 const BookingButtonGroup = (props: Props) => {
     const { bookedBookings, timeSlots, selectedDate, user, updateBookings, snackTrigger } = props
-    const [ready, setReady] = useState(false)
     const timeToBooking: Map<string, Booking> = timeSlotToBooking(bookedBookings);
-
-    useEffect(() => {
-        if (!ready) {
-            setReady(true)
-        }
-    }, [bookedBookings])
 
     const buttons = timeSlots.map(timeSlot => {
         let booking: null | Booking = null;
@@ -46,9 +39,7 @@ const BookingButtonGroup = (props: Props) => {
     });
 
     return (
-        <Fade in={ready}>
-            <ButtonGroup fullWidth size='medium' orientation='vertical'> {buttons} </ButtonGroup>
-        </Fade >
+        <ButtonGroup fullWidth size='medium' orientation='vertical'> {buttons} </ButtonGroup>
     );
 }
 

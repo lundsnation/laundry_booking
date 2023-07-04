@@ -1,5 +1,6 @@
 import { Booking } from "./types"
 
+// Added by me
 export const compareDates = (d1: Date, d2: Date): boolean => {
     const bookingYear = d1.getFullYear();
     const bookingMonth = d1.getMonth();
@@ -13,7 +14,7 @@ export const compareDates = (d1: Date, d2: Date): boolean => {
     return sameDate;
 }
 
-
+// Added by me
 export const getDateBookings = (bookings: Array<Booking>, selectedDate: Date) => {
     const dateBookings: Set<Booking> = new Set();
     bookings.forEach(booking => {
@@ -44,6 +45,7 @@ export const timeSlotToDryingBooth = new Map([
 ]
 )
 
+// Används inte?
 //Should perhaps be refactored into an object instead.
 export const timeSlotToTime = new Map([
     ["07:00-08:30", 25200000],
@@ -69,6 +71,7 @@ export const dateFromTimeSlot = (date: Date, timeSlot: string) => {
 //The method timeSlotToBooking and and dateToNbrOfBookingsMap can be combined for further optimization.
 //By combining them, both maps can be created in one iteration instead of two. And since they are both created
 //in bookingCalendar, it is actually unnecessary to create them in two separate methods and loops  
+// Onödig ta bort
 export const timeSlotToBooking = (bookings: Set<Booking>) => {
     const map: Map<string, Booking> = new Map<string, Booking>();
 
