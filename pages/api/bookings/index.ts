@@ -4,7 +4,6 @@ import { logRequest } from "../../../utils/backendLogger"
 import { ResponseFuncs, ERROR_MSG, UserType } from "../../../utils/types"
 import Booking from '../../../models/Booking'
 import { withApiAuthRequired, getSession } from "@auth0/nextjs-auth0"
-import { getUsers } from '../../../utils/getAuth0Users'
 import { pusherBackend } from "../../../utils/pusherAPI"
 import { isValidPhoneNumber } from 'libphonenumber-js'
 
@@ -28,11 +27,9 @@ const handler = withApiAuthRequired(async (req: NextApiRequest, res: NextApiResp
       logRequest('POST');
       const { date, timeSlot, userName, createdAt } = req.body
 
-
-      const nbr = user?.user_metadata.telephone || ""
-
       // Check too see if user has added phone Number
       // Doesn't check if number is correctly formatted. Only done on fronted.
+      const nbr = user?.user_metadata.telephone || ""
       if (!isValidPhoneNumber(nbr)) {
         return res.status(400).json({ error: ERROR_MSG.NONUMBER })
       }
@@ -41,18 +38,23 @@ const handler = withApiAuthRequired(async (req: NextApiRequest, res: NextApiResp
       if (new Date(date).getTime() < Date.now()) {
         return res.status(400).json({ error: ERROR_MSG.SLOTINPAST })
       }
+
       // Fetching allowed slots from active user session. If undefined, defaults to 1
-      const allowedSlots = user?.app_metadata.allowedSlots || 1
+      const allowedNumSlots = user?.app_metadata.allowedSlots || 1
       // Fetching slots already booked by the user
-      const slotCheck = await Booking.find({ userName: user?.name, date: { $gte: new Date() } })
-      if (!slotCheck || slotCheck.length < allowedSlots) {
-        const json = await Booking.create(req.body).catch(catcher)
-        await pusher.trigger('bookingUpdates', 'bookingUpdate', { userName, date, timeSlot, request: 'POST' })
-        return res.status(201).json(json)
-
+      const activeUserSlots = await Booking.find({ userName: user?.name, date: { $gte: new Date() } })
+      if (activeUserSlots.length > allowedNumSlots) {
+        return res.status(400).json({ error: ERROR_MSG.TOOMANYSLOTS })
       }
-      return res.status(400).json({ error: ERROR_MSG.TOOMANYSLOTS })
 
+      const existingBooking = await Booking.findOne({ userName, date });
+      if (existingBooking) {
+        return res.status(400).json({ error: ERROR_MSG.ALREADY_BOOKED })
+      }
+
+      const json = await Booking.create(req.body).catch(catcher)
+      await pusher.trigger('bookingUpdates', 'bookingUpdate', { userName, date, timeSlot, request: 'POST' })
+      return res.status(201).json(json)
     },
   }
 

@@ -1,14 +1,15 @@
 import { StaticDatePicker, LocalizationProvider, PickersDay, PickersDayProps } from '@mui/x-date-pickers';
 import React, { useState, useEffect } from "react";
 import AdapterDateFns from '@date-io/date-fns'
-import { Grid, Box, SxProps, TextField, AlertColor, Paper, Typography, SnackbarOrigin, Badge } from "@mui/material";
+import { Grid, TextField, AlertColor, Paper, Typography, SnackbarOrigin, Badge } from "@mui/material";
 import svLocale from 'date-fns/locale/sv';
 import BookingButtonGroup from "./BookingButtonGroup";
 import BookedTimes from '../bookedTimes/BookedTimes';
-import { Booking, JsonBooking, UserType } from "../../../../utils/types";
-import { getDateBookings, compareDates, dateFromTimeSlot } from "../../../../utils/bookingsAPI"
+import { UserType } from "../../../../utils/types";
 import { Snack, SnackInterface } from "../../Snack"
 import { pusherClient } from '../../../../utils/pusherAPI'
+import Bookings from '../../../classes/Bookings';
+import TimeSlots from '../../../classes/TimeSlots';
 
 interface Props {
     title: string;
@@ -17,28 +18,23 @@ interface Props {
 
 const BookingCalendar = (props: Props) => {
     const [selectedDate, setSelectedDate] = useState<Date>(new Date());
-    const [bookings, setBookings] = useState<Array<Booking>>([]);
+    const [bookings, setBookings] = useState<Bookings>(new Bookings());
     const [snack, setSnack] = useState<SnackInterface>({ show: false, snackString: "", severity: "success", alignment: { vertical: "bottom", horizontal: "left" } })
     const [realtimeSnack, setRealtimeSnack] = useState<SnackInterface>({ show: false, snackString: "", severity: "success", alignment: { vertical: "bottom", horizontal: "right" } })
-    const todaysDateMinus2Days = new Date(new Date().setDate(new Date().getDate() - 2));
+    const timeSlots = TimeSlots.getTimeSlots(selectedDate);
     const { user } = props;
 
-    const userBookings = bookings.filter(booking => {
-        const timeSlotDate = dateFromTimeSlot(booking.date, booking.timeSlot)
-        const oldBooking = new Date().getTime() > timeSlotDate.getTime()
-
-        return booking.userName === user.name && !oldBooking
-    })
+    const activeUserBookings = bookings.getActiveUserBookings(user.name)
 
     const updateBookings = async () => {
-        //fetch bookings and update
-        const jsonBookings: Array<JsonBooking> = await (await fetch("/api/bookings")).json()
-        const bookings = jsonBookings.map(booking => (
-            { ...booking, date: new Date(booking.date) }
-        ));
+        try {
+            const bookings = await Bookings.fetch();
+            setBookings(bookings);
+        } catch (error) {
+            console.error("Error updating bookings:", error);
+        }
+    };
 
-        setBookings(bookings);
-    }
 
     useEffect(() => {
         updateBookings();
@@ -66,18 +62,7 @@ const BookingCalendar = (props: Props) => {
         }
     }, [])
 
-    const timeSlots: Array<string> = ["07:00-08:30",
-        "08:30-10:00",
-        "10:00-11:30",
-        "11:30-13:00",
-        "13:00-14:30",
-        "14:30-16:00",
-        "16:00-17:30",
-        "17:30-19:00",
-        "19:00-20:30",
-        "20:30-22:00"]
-
-
+    const todaysDateMinus2Days = new Date(new Date().setDate(new Date().getDate() - 2));
     const handleRenderDay = (day: Date, _value: Date[], DayComponentProps: PickersDayProps<Date>): JSX.Element => {
         const oldDate = todaysDateMinus2Days.getTime() > day.getTime();
         let hasBookingOnDay = false;
@@ -88,17 +73,17 @@ const BookingCalendar = (props: Props) => {
         !oldDate && bookings.forEach(booking => {
 
 
-            if (compareDates(booking.date, day)) {
+            if (booking.isSameDate(day)) {
                 nbrBookedTimes += 1;
 
-                if (booking.userName == user.name) {
+                if (booking.isUserBooking(user.name)) {
                     hasBookingOnDay = true;
                 }
             }
 
         });
 
-        if (nbrBookedTimes == timeSlots.length && hasBookingOnDay) {
+        if (nbrBookedTimes == TimeSlots.length && hasBookingOnDay) {
             return (
                 <Badge
                     key={day.toString()}
@@ -121,7 +106,7 @@ const BookingCalendar = (props: Props) => {
                         {...DayComponentProps} />
                 </Badge>
             )
-        } else if (nbrBookedTimes != timeSlots.length && hasBookingOnDay) {
+        } else if (nbrBookedTimes != TimeSlots.getLength() && hasBookingOnDay) {
             return (
                 <Badge
                     key={day.toString()}
@@ -133,7 +118,7 @@ const BookingCalendar = (props: Props) => {
                     <PickersDay {...DayComponentProps} />
                 </Badge>
             )
-        } else if (nbrBookedTimes == timeSlots.length && !hasBookingOnDay) {
+        } else if (nbrBookedTimes == TimeSlots.getLength() && !hasBookingOnDay) {
             return (
                 <PickersDay
                     sx={{
@@ -167,7 +152,7 @@ const BookingCalendar = (props: Props) => {
     }
 
     const bookingButtonGroup = (
-        <BookingButtonGroup timeSlots={timeSlots} bookedBookings={getDateBookings(bookings, selectedDate)} selectedDate={selectedDate} user={user} updateBookings={updateBookings} snackTrigger={snackTrigger} />
+        <BookingButtonGroup timeSlots={timeSlots} bookedBookings={bookings.getDateBookings(selectedDate)} selectedDate={selectedDate} user={user} updateBookings={updateBookings} snackTrigger={snackTrigger} />
     )
 
     return (
@@ -206,7 +191,7 @@ const BookingCalendar = (props: Props) => {
                     {bookingButtonGroup}
                 </Grid>
                 <Grid item xs={12} pt={2}>
-                    <BookedTimes userBookings={userBookings} user={user} snackTrigger={snackTrigger} />
+                    <BookedTimes activeUserBookings={activeUserBookings} user={user} snackTrigger={snackTrigger} />
                 </Grid>
             </Grid>
 

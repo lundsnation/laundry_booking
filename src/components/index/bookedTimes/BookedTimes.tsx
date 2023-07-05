@@ -1,23 +1,22 @@
 import React from "react";
 import { Card, Box, Grid, Divider, AlertColor, Typography, List, ListItem, SnackbarOrigin } from "@mui/material";
-import { Booking, UserType } from "../../../../utils/types";
+import { UserType } from "../../../../utils/types";
 import BookedTimesItem from "./BookedTimesItem";
+import Bookings from "../../../classes/Bookings";
 
 
 interface Props {
-    userBookings: Array<Booking>,
+    activeUserBookings: Bookings,
     user: UserType,
     snackTrigger: (severity: AlertColor, snackString: string, alignment: SnackbarOrigin) => void
 }
 
 const BookedTimes = (props: Props) => {
-    const { userBookings, user, snackTrigger } = props;
+    const { activeUserBookings, user, snackTrigger } = props;
 
-
-
-    const bookedTimesItems = userBookings.map((booking, idx) => {
+    const bookedTimesItems = activeUserBookings.map((booking, idx) => {
         return (
-            userBookings.length ?
+            activeUserBookings.length() ?
                 <BookedTimesItem
                     key={booking.date.toString() + idx}
                     userBooking={booking}

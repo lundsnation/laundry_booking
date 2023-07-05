@@ -8,8 +8,9 @@ import DialogTitle from '@mui/material/DialogTitle';
 import Paper, { PaperProps } from '@mui/material/Paper';
 import Draggable from 'react-draggable';
 import { AlertColor, Divider, SnackbarOrigin, Typography } from '@mui/material';
-import { dateFromTimeSlot } from '../../../utils/bookingsAPI';
-import { Booking, UserType } from '../../../utils/types';
+import { UserType } from '../../../utils/types';
+import Booking from '../../classes/Booking';
+import TimeSlot from '../../classes/TimeSlot';
 
 
 function PaperComponent(props: PaperProps) {
@@ -27,7 +28,7 @@ function PaperComponent(props: PaperProps) {
 interface Props {
     open: boolean;
     myTimeSlot: boolean | null,
-    timeSlot: string;
+    timeSlot: TimeSlot;
     booking: Booking | null;
     date: Date;
     user: UserType;
@@ -39,56 +40,59 @@ export const ConfirmBooking = (props: Props) => {
     //const [open, setOpen] = React.useState(false);
     const { myTimeSlot, booking, date, timeSlot, user, open, handleOpenConfirmation, snackTrigger } = props;
     const snackAlignment: SnackbarOrigin = { vertical: 'bottom', horizontal: 'left' }
-    const dateWithTimeSlot = new Date(dateFromTimeSlot(date, timeSlot))
     let snackString;
 
     const handleBook = async () => {
         //setDisabled(true)
+        const booking = new Booking(user.name as string, date, timeSlot);
 
-        const jsonBooking = { userName: (user.name as string), date: dateWithTimeSlot, timeSlot: timeSlot, createdAt: new Date() }
-        const response = await fetch("/api/bookings", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(jsonBooking)
-        });
-        if (response.ok) {
-            snackString = "Du har bokat: " + String(timeSlot)
-            snackTrigger("success", snackString, snackAlignment)
-        } else {
-            let responseContent = await response.json()
-            snackString = responseContent.error
-            snackTrigger("error", snackString, snackAlignment)
+        try {
+            const response = await booking.POST();
+
+            if (response.ok) {
+                snackString = "Du har bokat: " + String(timeSlot);
+                snackTrigger("success", snackString, snackAlignment);
+            } else {
+                const responseContent = await response.json();
+                snackString = responseContent.error;
+                console.log(snackString)
+                snackTrigger("error", snackString, snackAlignment);
+            }
+        } catch (error) {
+            console.error("Error creating booking:", error);
+            // Handle any errors during the POST request
+            snackString = "An error occurred while creating booking";
+            snackTrigger("error", snackString, snackAlignment);
         }
 
         handleOpenConfirmation(false);
         //setDisabled(false)
-    }
+    };
+
 
     const handleCancel = async () => {
-        const api_url = "/api/bookings" + "/" + (booking?._id);
-        const jsonBooking = { userName: (user.name as string), date: date, timeSlot: timeSlot, createdAt: new Date() }
-        const response = await fetch(api_url, {
-            method: "DELETE",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(jsonBooking)
-        });
+        if (!booking) return;
 
-        //updateBookings();
-        if (response.ok) {
-            snackString = "Du har avbokat tiden"
-            snackTrigger("success", snackString, snackAlignment)
-        } else {
-            let responseContent = await response.json()
-            snackString = responseContent.error
-            snackTrigger("error", snackString, snackAlignment)
+        try {
+            const response = await booking.DELETE();
+
+            if (response.ok) {
+                snackString = "Du har avbokat tiden";
+                snackTrigger("success", snackString, snackAlignment);
+            } else {
+                let responseContent = await response.json();
+                snackString = responseContent.error;
+                snackTrigger("error", snackString, snackAlignment);
+            }
+        } catch (error) {
+            console.error("Error canceling booking:", error);
+            snackString = "An error occurred while canceling booking";
+            snackTrigger("error", snackString, snackAlignment);
         }
 
         handleOpenConfirmation(false);
-    }
+    };
+
 
     return (
         <Dialog

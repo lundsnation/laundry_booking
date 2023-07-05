@@ -1,8 +1,9 @@
 import { List, Button, DialogActions, Dialog, DialogTitle, ListItem, Typography, Divider, Skeleton, Grid } from "@mui/material"
 import AlternateEmailIcon from '@mui/icons-material/AlternateEmail';
 import CallIcon from '@mui/icons-material/Call';
-import { Booking, UserType } from "../../../../utils/types"
+import { UserType } from "../../../../utils/types"
 import { useState, useEffect } from "react";
+import Booking from "../../../classes/Booking";
 
 interface Props {
     booking: Booking,

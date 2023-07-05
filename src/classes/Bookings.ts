@@ -1,13 +1,16 @@
 import axios from "axios";
 import Booking from "./Booking";
 import { JsonBooking, Building } from "../../utils/types";
-import { is } from "date-fns/locale";
 
 class Bookings {
     private bookings: Booking[] = [];
 
     constructor() {
         this.bookings = [];
+    }
+
+    length(): number {
+        return this.bookings.length;
     }
 
     addBooking(booking: Booking) {
@@ -38,19 +41,39 @@ class Bookings {
         return filteredBookings;
     }
 
-    async fetch() {
+    map(callback: (booking: Booking, index: number, array: Booking[]) => any): any[] {
+        return this.bookings.map(callback);
+    }
+
+    forEach(callback: (booking: Booking, index: number, array: Booking[]) => void): void {
+        this.bookings.forEach(callback);
+    }
+
+    find(predicate: (booking: Booking) => boolean): Booking | undefined {
+        return this.bookings.find(predicate);
+    }
+
+
+    static async fetch(): Promise<Bookings> {
         try {
             // Perform the Axios request to retrieve bookings from the database
             const response = await axios.get("/api/bookings");
             const data = response.data;
 
+            // Create a new instance of Bookings
+            const bookings = new Bookings();
+
             // Map the retrieved data to Booking instances and update the bookings array
-            this.bookings = data.map((bookingData: JsonBooking) =>
+            bookings.bookings = data.map((bookingData: JsonBooking) =>
                 Booking.fromJSON(bookingData)
             );
+
+            // Return the populated Bookings instance
+            return bookings;
         } catch (error) {
             console.error("Error fetching bookings from the database:", error);
             // Handle the error appropriately
+            throw error;
         }
     }
 
@@ -68,3 +91,5 @@ class Bookings {
         return bookings;
     }
 }
+
+export default Bookings;

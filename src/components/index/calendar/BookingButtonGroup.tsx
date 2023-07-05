@@ -1,13 +1,13 @@
 import BookingButton from "./BookingButton";
-import ButtonGroup from '@mui/material/ButtonGroup';
-import { useEffect, useState } from "react";
-import { AlertColor, SnackbarOrigin, Fade, Paper } from "@mui/material"
-import { Booking, UserType } from "../../../../utils/types"
-import { timeSlotToBooking, timeSlotToDryingBooth } from "../../../../utils/bookingsAPI";
+import { ButtonGroup, AlertColor, SnackbarOrigin } from "@mui/material";
+import { UserType } from "../../../../utils/types";
+import Bookings from "../../../classes/Bookings";
+import Booking from "../../../classes/Booking";
+import TimeSlot from "../../../classes/TimeSlot";
 
 interface Props {
-    bookedBookings: Set<Booking>;
-    timeSlots: Array<string>;
+    bookedBookings: Bookings;
+    timeSlots: TimeSlot[];
     selectedDate: Date;
     user: UserType;
     updateBookings: () => void;
@@ -15,32 +15,35 @@ interface Props {
 }
 
 const BookingButtonGroup = (props: Props) => {
-    const { bookedBookings, timeSlots, selectedDate, user, updateBookings, snackTrigger } = props
-    const timeToBooking: Map<string, Booking> = timeSlotToBooking(bookedBookings);
+    const { bookedBookings, timeSlots, selectedDate, user, updateBookings, snackTrigger } = props;
+    const buttons = timeSlots.map((timeSlot) => {
 
-    const buttons = timeSlots.map(timeSlot => {
-        let booking: null | Booking = null;
-        if (timeToBooking.has(timeSlot)) {
-            booking = timeToBooking.get(timeSlot) as Booking;
+        const booking = bookedBookings.find((bookedBooking) => {
+            return bookedBooking.hasTimeSlot(timeSlot.getTimeSlot())
         }
 
-        const dryingBoothNbr = timeSlotToDryingBooth.get(timeSlot);
+        );
 
-        return <BookingButton
-            key={timeSlot}
-            timeSlot={timeSlot}
-            boothIndex={dryingBoothNbr as number}
-            booking={booking != null ? booking : null}
-            selectedDate={selectedDate}
-            user={user}
-            updateBookings={updateBookings}
-            snackTrigger={snackTrigger}
-        />
+        const dryingBoothNbr = timeSlot.getDryingBooth();
+        return (
+            <BookingButton
+                key={timeSlot.toString()}
+                timeSlot={timeSlot}
+                boothIndex={dryingBoothNbr as number}
+                booking={booking || null}
+                selectedDate={selectedDate}
+                user={user}
+                updateBookings={updateBookings}
+                snackTrigger={snackTrigger}
+            />
+        );
     });
 
     return (
-        <ButtonGroup fullWidth size='medium' orientation='vertical'> {buttons} </ButtonGroup>
+        <ButtonGroup fullWidth size="medium" orientation="vertical">
+            {buttons}
+        </ButtonGroup>
     );
-}
+};
 
 export default BookingButtonGroup;

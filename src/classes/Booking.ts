@@ -1,16 +1,16 @@
-import { Building, JsonBooking } from "../../utils/types";
+import { Building, JsonBooking, TimeSlotType } from "../../utils/types";
+import TimeSlot from "./TimeSlot";
+import TimeSlots from "./TimeSlots";
 
 class Booking {
-    private _id?: string;
+    public _id?: string;
     public userName: string;
-    public building: Building;
     public date: Date;
-    public timeSlot: string;
+    public timeSlot: TimeSlot;
 
-    constructor(userName: string, building: Building, date: Date, timeSlot: string, _id?: string) {
+    constructor(userName: string, date: Date, timeSlot: TimeSlot, _id?: string) {
         this._id = _id;
         this.userName = userName;
-        this.building = building;
         this.date = date;
         this.timeSlot = timeSlot;
     }
@@ -21,6 +21,10 @@ class Booking {
 
     isUserBooking(userName: string): boolean {
         return this.userName === userName;
+    }
+
+    hasTimeSlot(timeSlot: TimeSlot): boolean {
+        return this.timeSlot.getTimeSlot().toString() === timeSlot.getTimeSlot().toString();
     }
 
     isSameDate(date: Date): boolean {
@@ -36,11 +40,60 @@ class Booking {
         return sameDate;
     }
 
-    static fromJSON(json: JsonBooking): Booking {
-        const { _id, userName, building, date, timeSlot } = json;
-        return new Booking(userName, building, new Date(date), timeSlot, _id);
+    async POST(): Promise<Response> {
+        const jsonBooking = JSON.stringify(this.toJSON());
+
+        try {
+            const response = await fetch("/api/bookings", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: jsonBooking
+            });
+            return response;
+        } catch (error) {
+            console.error("Error creating booking:", error);
+            throw error;
+        }
     }
 
+    async DELETE(): Promise<Response> {
+        const api_url = "/api/bookings" + "/" + this._id;
+        try {
+            const response = await fetch(api_url, {
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(this.toJSON())
+            });
+
+            return response;
+        } catch (error) {
+            console.error("Error canceling booking:", error);
+            throw error;
+        }
+    }
+
+    toJSON(): JsonBooking {
+        const { _id, userName, date, timeSlot } = this;
+
+        return {
+            _id: _id,
+            userName: userName,
+            date: timeSlot.toDate(date).toISOString(),
+            timeSlot: timeSlot.toString(),
+            createdAt: new Date().toISOString(),
+        }
+    }
+
+    static fromJSON(json: JsonBooking): Booking {
+        const { _id, userName, date, timeSlot } = json;
+        const dryingBooth = TimeSlots.TIME_SLOT_TO_DRYING_BOOTH.get(timeSlot as TimeSlotType) as number;
+        const tmpDate = new Date(date);
+        return new Booking(userName, tmpDate, new TimeSlot(timeSlot as TimeSlotType, dryingBooth, tmpDate), _id);
+    }
 }
 
 export default Booking
