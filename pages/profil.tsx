@@ -28,7 +28,7 @@ const Profile: NextPage = () => {
         return null
     } else {
         return (
-            <Layout>
+            <Layout user={user as UserType}>
                 <Snack state={snack} handleClose={resetSnack} />
                 <Grid container>
                     <Grid item xs={12} mx={2} my={'10%'}>

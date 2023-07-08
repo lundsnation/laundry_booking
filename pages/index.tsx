@@ -9,6 +9,7 @@ import { getSession, withPageAuthRequired } from '@auth0/nextjs-auth0';
 import { connect } from "../utils/connection";
 import Bookings from '../src/classes/Bookings';
 import Booking from '../models/Booking';
+import { UserType } from '../utils/types';
 
 interface Props {
 	user: UserType;
@@ -16,16 +17,10 @@ interface Props {
 }
 
 const Index: NextPage<Props> = ({ user, fetchedBookings }: Props) => {
-
 	const bookings = Bookings.fromJSON(JSON.parse(fetchedBookings));
-	console.log(bookings)
-
-	console.log(user)
-	console.log(bookings)
-	console.log("====================================\n", user.app_metadata?.roles, "\n====================================")
 
 	return (
-		<Layout user={user}>
+		<Layout user={user as UserType}>
 			<Terms user={user} />
 			<Rules />
 			<Grid container px={1} marginY={10}>
@@ -38,8 +33,9 @@ const Index: NextPage<Props> = ({ user, fetchedBookings }: Props) => {
 export const getServerSideProps = withPageAuthRequired({
 	// returnTo: '/unauthorized',
 	async getServerSideProps(ctx) {
-		const session = await getSession(ctx.req, ctx.res);
-		console.log(session?.user.name)
+		//If session is need
+		//const session = await getSession(ctx.req, ctx.res);
+
 		await connect();
 		const bookings = await Booking.find({});
 		return {

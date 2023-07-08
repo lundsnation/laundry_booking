@@ -5,6 +5,7 @@ import { Grid } from "@mui/material";
 import Loading from "../src/components/Loading";
 import router from "next/router";
 import Layout from "../src/components/layout/Layout";
+import { UserType } from "../utils/types";
 
 const Admin = () => {
     const { user, isLoading, error } = useUser()
@@ -16,7 +17,7 @@ const Admin = () => {
         return null
     } else {
         return (
-            <Layout>
+            <Layout user={user as UserType}>
                 <Grid container justifyContent="center">
                     {user && !isLoading && user.name == "admin" ?
                         <Grid item xs={12} sx={{ px: { xs: 1 } }}>

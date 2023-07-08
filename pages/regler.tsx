@@ -5,6 +5,7 @@ import Loading from "../src/components/Loading";
 import { NextPage } from "next";
 import RulesText from "../src/components/rules/RulesText";
 import Layout from "../src/components/layout/Layout";
+import { UserType } from "../utils/types";
 
 
 const Rules: NextPage = () => {
@@ -18,8 +19,7 @@ const Rules: NextPage = () => {
         return null
     } else {
         return (
-            <Layout>
-
+            <Layout user={user as UserType}>
                 <Grid container justifyContent="center" >
                     <Grid item xs={12} md={6} >
 

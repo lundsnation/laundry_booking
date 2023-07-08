@@ -5,6 +5,7 @@ import { useRouter } from "next/router";
 import { AboutText } from "../src/components/about/AboutText";
 import Layout from "../src/components/layout/Layout";
 import Loading from "../src/components/Loading";
+import { UserType } from "../utils/types";
 
 const About: NextPage = () => {
     const { user, isLoading, error } = useUser()
@@ -17,7 +18,7 @@ const About: NextPage = () => {
         return null
     } else {
         return (
-            <Layout>
+            <Layout user={user as UserType}>
                 <Grid container justifyContent="center" >
                     <Grid item sm={12} md={8} >
 
