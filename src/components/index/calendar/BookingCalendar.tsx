@@ -14,11 +14,12 @@ import TimeSlots from '../../../classes/TimeSlots';
 interface Props {
     title: string;
     user: UserType;
+    initalBookings: Bookings
 }
 
 const BookingCalendar = (props: Props) => {
     const [selectedDate, setSelectedDate] = useState<Date>(new Date());
-    const [bookings, setBookings] = useState<Bookings>(new Bookings());
+    const [bookings, setBookings] = useState<Bookings>(props.initalBookings);
     const [snack, setSnack] = useState<SnackInterface>({ show: false, snackString: "", severity: "success", alignment: { vertical: "bottom", horizontal: "left" } })
     const [realtimeSnack, setRealtimeSnack] = useState<SnackInterface>({ show: false, snackString: "", severity: "success", alignment: { vertical: "bottom", horizontal: "right" } })
     const timeSlots = TimeSlots.getTimeSlots(selectedDate);
@@ -37,7 +38,7 @@ const BookingCalendar = (props: Props) => {
 
 
     useEffect(() => {
-        updateBookings();
+        //updateBookings();
 
         const pusher = pusherClient();
         const pusherChannel = pusher.subscribe("bookingUpdates");

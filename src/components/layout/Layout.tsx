@@ -2,6 +2,7 @@ import Header from "./header/Header"
 import Footer from "./Footer"
 import { Grid } from "@mui/material"
 import React from "react"
+import { UserType } from "../../../utils/types"
 
 
 
@@ -27,7 +28,12 @@ const styles = {
     }
 }
 
-export default function Layout({ children }: { children: React.ReactNode }) {
+interface Props {
+    children: React.ReactNode
+    user: UserType
+}
+
+export default function Layout({ children, user }: Props) {
 
     return (
         <Grid container
@@ -37,7 +43,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 width: '100%',
             }}
         >
-            <Header />
+            <Header user={user} />
 
             <Grid sx={styles.paperContainer}>
                 <main> {children} </main>

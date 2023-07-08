@@ -8,8 +8,12 @@ import MobileNav from './mobileNav/MobileNav';
 import { useUser } from '@auth0/nextjs-auth0/client';
 import Loading from '../../Loading';
 
-const Header = () => {
-    const { user, error, isLoading } = useUser();
+interface Props {
+    user: UserType;
+}
+
+
+const Header = ({ user }: Props) => {
     const home = process.env.AUTH0_BASE_URL
     const [menuOpen, setMenuOpen] = React.useState(false)
     const [auth, setAuth] = React.useState(true);
