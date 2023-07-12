@@ -10,18 +10,26 @@ import { connect } from "../utils/connection";
 import Bookings from '../src/classes/Bookings';
 import Booking from '../models/Booking';
 import { UserType } from '../utils/types';
+import { Users } from '../src/classes/Users';
+import User from '../src/classes/User';
 
 interface Props {
 	user: UserType;
 	fetchedBookings: string; // Update the type of 'bookings' array according to your Booking model
+	fetchedUsers: string;
 }
 
-const Index: NextPage<Props> = ({ user, fetchedBookings }: Props) => {
+const Index: NextPage<Props> = ({ user, fetchedBookings, fetchedUsers }: Props) => {
 	const bookings = Bookings.fromJSON(JSON.parse(fetchedBookings));
+	const userJson = User.fromJSON(user)
+	const [currentUser, setCurrentUser] = React.useState<User>(userJson);
+	const handleSetCurrentUser = (user: User) => {
+		setCurrentUser(user);
+	};
 
 	return (
 		<Layout user={user as UserType}>
-			<Terms user={user} />
+			<Terms user={user} handleSetCurrentUser={handleSetCurrentUser} />
 			<Rules />
 			<Grid container px={1} marginY={10}>
 				<BookingCalendar title="" user={user} initalBookings={bookings} />
@@ -41,6 +49,7 @@ export const getServerSideProps = withPageAuthRequired({
 		return {
 			props: {
 				fetchedBookings: JSON.stringify(bookings),
+
 			},
 		};
 	},

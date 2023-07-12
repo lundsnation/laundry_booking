@@ -30,7 +30,7 @@ const UserGrid = () => {
     const [searchedUsers, setSearchedUsers] = useState<Array<UserType>>([])
     const fetchUsers = async () => {
         setLoadingData(true)
-        const res = await fetch("/api/user")
+        const res = await fetch("/api/users")
         const all: Array<UserType> = await res.json()
         const tempUsers: Array<UserType> = []
         if (res.ok) {

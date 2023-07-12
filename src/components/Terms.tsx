@@ -3,6 +3,7 @@ import { useState } from "react"
 import { LoadingButton } from "@mui/lab";
 import { UserType } from "../../utils/types";
 import { EmailOutlined, Place } from "@mui/icons-material";
+import User from "../classes/User";
 
 const USER_AGREEMENT_MAIN_TITLE = "Användarvillkor"
 const USER_AGREEMENT_TITLE_1 = "GDPR"
@@ -31,10 +32,11 @@ const style = {
 
 interface props {
     user: UserType
+    handleSetCurrentUser: (user: User) => void
 }
 
 export const Terms = (props: props) => {
-    const { user } = props
+    const { user, handleSetCurrentUser } = props
     const [open, setOpen] = useState(true);
     const [loading, setLoading] = useState(false);
     const handleOpen = () => setOpen(true);
@@ -47,8 +49,10 @@ export const Terms = (props: props) => {
     const handleAccept = async () => {
         setLoading(true)
         const response = await fetch("/api/auth/accepted")
+        console.log("RESPONSE: " + response)
         if (response.ok) {
             setLoading(false)
+            // handleSetCurrentUser(response)
             window.location.reload()
             return
         }
