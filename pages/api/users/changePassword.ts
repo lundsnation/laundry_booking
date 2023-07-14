@@ -3,8 +3,8 @@ import { logRequest } from "../../../utils/backendLogger"
 import { ERROR_MSG, ResponseFuncs } from "../../../utils/types"
 import { withApiAuthRequired, getSession } from '@auth0/nextjs-auth0';
 import { getUsers } from '../../../utils/getAuth0Users'
-import Auth0 from "../../../src/classes/Auth0";
 import { AxiosResponse } from "axios";
+import Auth0 from "../../../src/classes/Auth0";
 
 const handler = withApiAuthRequired(async (req: NextApiRequest, res: NextApiResponse) => {
     const method: keyof ResponseFuncs = req.method as keyof ResponseFuncs
@@ -12,29 +12,22 @@ const handler = withApiAuthRequired(async (req: NextApiRequest, res: NextApiResp
     const userFetcher = new getUsers()
     const userSession = await getSession(req, res)
 
-    if (userSession?.user.app_metadata.roles.indexOf("admin") > -1) {
-        return res.status(403).json({ error: ERROR_MSG.NOTAUTHORIZED })
-    }
-
     const handleCase: ResponseFuncs = {
-        GET: async (req: NextApiRequest, res: NextApiResponse) => {
-            logRequest('GET_ALL_USERS')
-            const data = await Auth0.getUsers().catch(catcher)
-            res.status(200).json(data)
-            return
-        },
-
         POST: async (req: NextApiRequest, res: NextApiResponse) => {
-            logRequest('POST_USER')
-            const user = req.body
-            const response = await Auth0.postUser(user).catch(catcher) as AxiosResponse
-            if (response.statusText === "OK") {
-                res.status(200).json({ message: "User created" })
+            logRequest('USER_CHANGEPASSWORD')
+            const { email } = req.body
+            if (userSession?.user.email === email) {
+                res.status(403).json({ error: ERROR_MSG.NOTAUTHORIZED })
                 return
             }
-            res.status(500).json({ error: "Kunde inte skapa användaren" })
-            return
-        },
+
+            const response = await Auth0.userChangePassword(email).catch(catcher) as AxiosResponse
+            if (response.statusText === "OK") {
+                res.status(200).json({ message: "Password changed" })
+                return
+            }
+            res.status(500).json({ error: "Kunde inte byta lösenord" })
+        }
     }
 
     const response = handleCase[method]
