@@ -59,12 +59,12 @@ class Auth0 {
     //Ändra typ eventuellt
     static async postUser(user: any) {
         const token = await this.fetchAccessToken();
+        user = { ...user, connection: "Username-Password-Authentication", email_verified: true }
         const response = await axios.post(this.api_url + 'users', user, {
             headers: {
                 Authorization: 'Bearer ' + token
             }
         })
-
         return response
     }
 
@@ -99,13 +99,14 @@ class Auth0 {
         let page = 0;
         let moreUsers = true;
         while (moreUsers) {
-            const response = await axios.get(this.api_url + 'users', {
+            const response = await axios.get(`https://lundsnation.eu.auth0.com/api/v2/users?page=${page}`, {
                 headers: {
                     Authorization: 'Bearer ' + token
                 }
             })
+
             const userBatch = response.data;
-            users.push(userBatch);
+            users.push(...userBatch);
 
             if (userBatch.length < 50) {
                 moreUsers = false;
