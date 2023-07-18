@@ -16,8 +16,8 @@ interface Props {
 
 const NewUserDialog = (props: Props) => {
     const { showAddDialog, setShowAddDialog, snack, setSnack, fetchUsers } = props
-    const [newUser, setNewUser] = useState<UserType>({} as UserType) //Skapa en ny typ bara innehåller värdena som sättas i formuläret?
-    const [newUserApt, setNewUserApt] = useState("") // Är dessa states verkligen nödvändiga?
+    const [newUser, setNewUser] = useState<UserType>({} as UserType)
+    const [newUserApt, setNewUserApt] = useState("") // Är dessa states verkligen nödvändiga? Du kan väl egentligen bara modifera i din newUser överallt.
     const [newUserBulding, setNewUserBuilding] = useState("") // Är detta nödvändigt
     const [wait, setWait] = useState(false);
     const alignment: SnackbarOrigin = { vertical: 'bottom', horizontal: 'left' }
