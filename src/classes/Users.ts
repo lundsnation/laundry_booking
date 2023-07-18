@@ -83,8 +83,6 @@ export default class Users {
         return this.allUsers.some(user => user.getId === uid);
     }
 
-
-
     remove(user: User): Users {
         const uid = user.getId
         return this.filter(user => user.getId !== uid);
@@ -108,57 +106,66 @@ export default class Users {
         this.allUsers.forEach(callback);
     }
 
-    createUser(user: User | UserType): Promise<Response> {
-        return this._createUser(user);
+    copy(): Users {
+        const copiedUsers = new Users();
+        copiedUsers.allUsers = [...this.allUsers];
+        return copiedUsers;
     }
 
-    modifyUser(userId: string, modification: object): Promise<Response> {
-        return this._modifyUser(userId, modification);
-    }
-
-    deleteUser(userId: string): Promise<Response> {
-        return this._deleteUser(userId);
-    }
+    //createUser(user: User | UserType): Promise<Response> {
+    //    return this._createUser(user);
+    //}
+    //
+    //modifyUser(userId: string, modification: object): Promise<Response> {
+    //    return this._modifyUser(userId, modification);
+    //}
+    //
+    //deleteUser(userId: string): Promise<Response> {
+    //    return this._deleteUser(userId);
+    //}
 
     toJSON(): UserType[] {
         return this.allUsers.map(user => user.toJSON());
     }
 
-    private async _createUser(user: User | UserType): Promise<Response> {
-        try {
-            if (user instanceof User) {
-                return await user.POST();
-            }
-            else {
-                const newUser = User.fromJSON(user);
-                return await newUser.POST();
-            }
-        } catch (error) {
-            console.log(error)
-            return new Response("Error: Error creating user", { status: 500 })
-        }
-    }
+    // Tror alla dessa är onödiga. Funktinoalitet för att skapa modifiera och ta bort användare finns i User.ts. Om du ex vill ta bort så borde du kunna göra en find, få användaren och sen göra USER.delete.
 
+    //private async _createUser(user: User | UserType): Promise<Response> {
+    //    try {
+    //        if (user instanceof User) {
+    //            return await user.POST();
+    //        }
+    //        else {
+    //            const newUser = User.fromJSON(user);
+    //            return await newUser.POST();
+    //        }
+    //    } catch (error) {
+    //        console.log(error)
+    //        return new Response("Error: Error creating user", { status: 500 })
+    //    }
+    //}
+    //
+    //
+    //private async _modifyUser(userId: string, modification?: object): Promise<Response> {
+    //    const user = this.allUsers.find(user => user.getId === userId)
+    //    if (user) {
+    //        return await user.PATCH()
+    //    }
+    //    else {
+    //        return new Response("Error: User not found", { status: 404 })
+    //    }
+    //}
+    //
+    //private async _deleteUser(userId: string): Promise<Response> {
+    //    const user = this.allUsers.find(user => user.getId === userId)
+    //    if (user) {
+    //        return await user.DELETE()
+    //    }
+    //    else {
+    //        return new Response("ERROR: User not found", { status: 404 })
+    //    }
+    //}
 
-    private async _modifyUser(userId: string, modification?: object): Promise<Response> {
-        const user = this.allUsers.find(user => user.getId === userId)
-        if (user) {
-            return await user.PATCH()
-        }
-        else {
-            return new Response("Error: User not found", { status: 404 })
-        }
-    }
-
-    private async _deleteUser(userId: string): Promise<Response> {
-        const user = this.allUsers.find(user => user.getId === userId)
-        if (user) {
-            return await user.DELETE()
-        }
-        else {
-            return new Response("ERROR: User not found", { status: 404 })
-        }
-    }
 
     static fromArray(users: User[]): Users {
         const newUsers = new Users();
@@ -174,7 +181,6 @@ export default class Users {
         return users;
     }
 
-
     static async fetch(): Promise<Users> {
         //TODO: NEEED TO CHANGE URL
         const url = "/api/users"
@@ -185,10 +191,8 @@ export default class Users {
 
 
             users.allUsers = data.map((userData: UserType) => {
-                User.fromJSON(userData as UserType);
+                return User.fromJSON(userData as UserType);
             })
-
-            // console.log(users.allUsers)
 
             return users;
 

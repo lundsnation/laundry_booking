@@ -19,8 +19,7 @@ const handler = withApiAuthRequired(async (req: NextApiRequest, res: NextApiResp
         GET: async (req: NextApiRequest, res: NextApiResponse) => {
             logRequest('GET_ALL_USERS')
             try {
-                const data = await Auth0.getUsers();
-                console.log("GOT HERE");
+                const data = await Auth0.getUsersAsUserType();
                 return res.status(200).json(data);
             } catch (error) {
                 console.log("error")
@@ -31,7 +30,6 @@ const handler = withApiAuthRequired(async (req: NextApiRequest, res: NextApiResp
         POST: async (req: NextApiRequest, res: NextApiResponse) => {
             logRequest('POST_USER')
             const user = req.body;
-            console.log(req.body)
             try {
                 const response = await Auth0.postUser(user);
                 if (response.statusText === "OK") {

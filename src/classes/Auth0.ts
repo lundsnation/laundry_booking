@@ -1,5 +1,6 @@
 import axios, { AxiosResponse } from 'axios';
 import User from './User';
+import { UserType } from '../../utils/types';
 
 class Auth0 {
     private static client_id: string = process.env.AUTH0_CLIENT_ID as string;
@@ -115,6 +116,26 @@ class Auth0 {
         }
 
         return users;
+    }
+
+    static async getUsersAsUserType(): Promise<UserType[]> {
+        const users = await this.getUsers();
+        return users.map(user => {
+            return {
+                sub: user.user_id,
+                name: user.name,
+                email: user.email,
+                user_metadata: {
+                    telephone: user.user_metadata?.telephone,
+                },
+                app_metadata: {
+                    acceptedTerms: user.app_metadata?.acceptedTerms,
+                    allowedSlots: user.app_metadata?.allowedSlots,
+                    roles: user.app_metadata?.roles,
+                    building: user.app_metadata?.building,
+                },
+            }
+        })
     }
 
     //Innebär inte detta att alla kan begära ändring av lösenord för alla användare?

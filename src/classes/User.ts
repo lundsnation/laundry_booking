@@ -66,12 +66,10 @@ export default class User {
                     telephone: modification.telephone ? modification.telephone : "",
                 }),
             })
-            console.log("STATUS: " + res.status)
-            console.log("FÖRE: " + this.telephone)
+
             if (res.status === 200) {
                 this.email = modification.email ? modification.email : this.email;
                 this.telephone = modification.telephone ? modification.telephone : this.telephone;
-                console.log("EFTER:" + this.telephone)
                 return true;
             }
             return false
@@ -80,7 +78,6 @@ export default class User {
             console.log(error)
             return false;
         }
-
     }
 
 
@@ -116,6 +113,20 @@ export default class User {
         }
     }
 
+    public toString(): string {
+        return `
+          Name: ${this.name}
+          Email: ${this.email}
+          User ID: ${this.user_id}
+          Telephone: ${this.telephone || 'N/A'}
+          Building: ${this.building ? this.building.toString() : 'N/A'}
+          Accepted Terms: ${this.acceptedTerms ? 'Yes' : 'No'}
+          Allowed Slots: ${this.allowedSlots || 'N/A'}
+          Roles: ${this.roles.join(', ')}
+          Connection: ${this.connection}
+        `;
+    }
+
     static async fromId(id: string): Promise<User> {
         const newUser = new User("", "", id)
         const newUserCtx = await newUser.GET()
@@ -132,6 +143,7 @@ export default class User {
 
     static fromJSON(json: UserType): User {
         const { name, email, sub, user_metadata, app_metadata } = json;
+
         const roles: string[] = app_metadata?.roles ? app_metadata.roles : [];
         const building: Building | undefined = app_metadata?.building;
         const slots = json.app_metadata?.allowedSlots ? json.app_metadata.allowedSlots : undefined;
@@ -150,10 +162,10 @@ export default class User {
         return user;
     }
 
+    //Borde inte behövas
     static fromUser(user: User): User {
         const { name, email, telephone, allowedSlots, acceptedTerms, building, roles, user_id } = user
         return new User(name, email, user_id, roles, building, telephone, acceptedTerms, allowedSlots)
-
     }
 
     //Fetches a user from the database using id

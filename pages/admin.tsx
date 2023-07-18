@@ -1,36 +1,67 @@
 import { Typography } from "@mui/material";
-import { useUser } from '@auth0/nextjs-auth0/client';
+import { withPageAuthRequired, getSession } from '@auth0/nextjs-auth0';
 import UserGrid from "../src/components/admin/UserGrid";
 import { Grid } from "@mui/material";
-import Loading from "../src/components/Loading";
-import router from "next/router";
 import Layout from "../src/components/layout/Layout";
 import { UserType } from "../utils/types";
 import User from "../src/classes/User";
+import Auth0 from "../src/classes/Auth0";
+import Users from "../src/classes/Users";
 
-const Admin = () => {
-    const { user, isLoading, error } = useUser()
-
-    if (isLoading) return <Loading />
-    if (error) return <div>{error.message}</div>
-    if (!user) {
-        router.push('/api/auth/login')
-        return null
-    } else {
-        const currentUser = User.fromJSON(user as UserType)
-        return (
-
-            <Layout user={currentUser as User}>
-                <Grid container justifyContent="center">
-                    {user && !isLoading && user.name == "admin" ?
-                        <Grid item xs={12} sx={{ px: { xs: 1 } }}>
-                            <UserGrid />
-                        </Grid> : <Typography variant={'h1'}>Ej auktoriserad</Typography>
-                    }
-                </Grid>
-            </Layout>
-        )
-    }
+interface Props {
+    user: UserType;
+    jsonUsers: string;
 }
 
-export default Admin
+// ... (other imports and code remain unchanged)
+
+const Admin = ({ user, jsonUsers }: Props) => {
+    const currentUser = User.fromJSON(user as UserType);
+
+    // Guard protecting the page    
+    if (!currentUser.getRoles.includes('admin')) {
+        return (
+            <Layout user={currentUser as User}>
+                <Typography variant={'h1'}>Ej auktoriserad</Typography>
+            </Layout>
+        );
+    }
+
+
+    const initUsers = Users.fromJSON(JSON.parse(jsonUsers));
+
+    return (
+        <Layout user={currentUser}>
+            <Grid container justifyContent="center">
+                <Grid item xs={12} sx={{ px: { xs: 1 } }}>
+                    <UserGrid user={currentUser} initUsers={initUsers} />
+                </Grid>
+            </Grid>
+        </Layout>
+    );
+};
+
+export const getServerSideProps = withPageAuthRequired({
+    // returnTo: '/unauthorized',
+    async getServerSideProps(ctx) {
+        // If session is needed
+        const session = await getSession(ctx.req, ctx.res);
+        if (!session?.user.app_metadata.roles.includes('admin')) {
+            return {
+                props: {
+                    jsonUsers: JSON.stringify([]), // Use an empty array instead of undefined
+                },
+            };
+        }
+
+        const users = await Auth0.getUsersAsUserType();
+
+        return {
+            props: {
+                jsonUsers: JSON.stringify(users), // Return jsonUsers instead of users
+            },
+        };
+    },
+});
+
+export default Admin;

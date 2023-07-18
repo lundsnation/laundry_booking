@@ -16,9 +16,12 @@ import Auth0 from "../../classes/Auth0";
 import Users from "../../classes/Users";
 import User from "../../classes/User";
 
+interface Props {
+    initUsers: Users
+    user: User
+}
 
-const UserGrid = () => {
-    const { user, isLoading, error } = useUser()
+const UserGrid = ({ initUsers, user }: Props) => {
     const [selected, setSelected] = useState<Users>(new Users());
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -26,11 +29,15 @@ const UserGrid = () => {
     const [showDeleteUserDialog, setShowDeleteUserDialog] = useState(false)
     const [showAddDialog, setShowAddDialog] = useState(false)
     const [loadingData, setLoadingData] = useState(false)
-    const [users, setUsers] = useState<Users>(new Users())
+    const [users, setUsers] = useState<Users>(initUsers)
     const alignment: SnackbarOrigin = { vertical: 'bottom', horizontal: 'left' }
     const [snack, setSnack] = useState<SnackInterface>({ show: false, snackString: "", severity: "info", alignment: alignment })
     const [searchString, setSearchString] = useState("")
     const [searchedUsers, setSearchedUsers] = useState<Users>(new Users())
+
+    //Hela denna kan bytas ut. Vi behöver bara fetcha users en gång egentligen och det är när sidan laddas in, vilket vi gör med getServerSideProps
+    // Därefter skickar vi ner setUsers till alla dialogs och uppdaterar listan därifrån istället för att skicka ner fetchUsers.
+    // Använd copy funktionen i Users för att kopiera listan och sedan ändra i den kopierade listan.
     const fetchUsers = async () => {
         setLoadingData(true)
         let res: Users = new Users()
@@ -51,6 +58,14 @@ const UserGrid = () => {
         setLoadingData(false)
     }
 
+    // Denna borde inte behövas om man bara editerar listen beroende på responsen från servern. Dvs om vi editerar en användare och det går igenom så gör vi det i listan också.
+    // Om vi tar bort en användare så tar vi bort den från listan etc etc. Oavsett måste den ses över för vi får in de initiala users från admin
+    //useEffect(() => {
+    //    console.log("FETCHING USERS")
+    //    fetchUsers()
+    //}, [])
+
+    //Osäker på om denna behövs med tanke på att vi använder getServerSideprops
     const getTableContentSkelton = () => {
         let content = []
         for (let i = 0; i < rowsPerPage; i++) {
@@ -67,10 +82,6 @@ const UserGrid = () => {
         return content
     }
 
-    useEffect(() => {
-        fetchUsers()
-    }, [])
-
     const handleClick = (event: React.MouseEvent<unknown>, user: User) => {
         if (!isSelected(user)) {
             const newSelected: Users = selected.add(user)
@@ -81,12 +92,12 @@ const UserGrid = () => {
         setSelected(newSelected)
     }
 
-    // SEARCH
-    useEffect(() => {
-        let searchRes = users.filter(user => user.name.includes(searchString) || user.email.includes(searchString))
-
-        setSearchedUsers(searchRes)
-    }, [searchString])
+    const handleSearchedUsers = (searchString: string) => {
+        const lowerCaseSearchString = searchString.toLowerCase()
+        setSearchString(searchString)
+        const searchedUsers = users.filter(user => user.name.toLowerCase().includes(lowerCaseSearchString) || user.email.toLowerCase().includes(lowerCaseSearchString))
+        setSearchedUsers(searchedUsers)
+    }
 
     const handleChangePage = (event: unknown, newPage: number) => {
         setPage(newPage);
@@ -102,6 +113,8 @@ const UserGrid = () => {
 
     const getContent = () => {
         let display: Users = searchString != "" ? searchedUsers : users
+        //console.log(searchString)
+        //console.log("Display", display)
         display = display.sort((a, b) => { return a.name.localeCompare(b.name, 'sv') });
         return (
             display.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((userEntry, index) => {
@@ -128,14 +141,14 @@ const UserGrid = () => {
                         <TableCell align="right">{userEntry.hasAcceptedTerms ? "Ja" : "Nej"}</TableCell>
                     </TableRow>
                 )
-            }
-            )
+            })
         )
     }
 
+    //Istället för att fetcha om users efter varje ändring så kan vi bara ändra i listan. 
     return (
         <Paper sx={{ width: { lg: '1200px' } }} elevation={0} variant={"outlined"}>
-            <Grid xs={12}>
+            <Grid item xs={12}>
                 <Typography variant="h5" sx={{ m: 2 }}> Redigera Användare</Typography>
             </Grid>
             <Snack handleClose={() => { setSnack(snack => ({ ...snack, show: false })) }} state={snack}></Snack>
@@ -201,7 +214,7 @@ const UserGrid = () => {
                         size="medium"
                         label="Sök efter användare"
                         onChange={(e) => {
-                            setSearchString(e.target.value)
+                            handleSearchedUsers(e.target.value)
                         }}
                         InputProps={{
                             endAdornment: (
@@ -215,7 +228,6 @@ const UserGrid = () => {
                     />
                 </Grid>
                 <Grid item xs={12} sm={6} md={4}>
-
                     <ButtonGroup fullWidth sx={{ height: '56px' }} orientation='horizontal' size="small" variant="outlined">
                         <Button fullWidth onClick={() => { setShowDeleteUserDialog(true) }} disabled={selected.length() === 0} size='small' color="error" startIcon={<DeleteIcon />}> Ta Bort</Button>
                         <Button fullWidth onClick={() => { setShowEditDialog(true) }} disabled={selected.length() === 0} size='small' color="warning" startIcon={<EditOutlinedIcon />} >Ändra</Button>
