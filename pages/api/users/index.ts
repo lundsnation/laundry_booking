@@ -11,8 +11,8 @@ const handler = withApiAuthRequired(async (req: NextApiRequest, res: NextApiResp
     const userFetcher = new getUsers()
     const userSession = await getSession(req, res)
 
-    if (!userSession || !userSession.user.app_metadata.roles.includes("admin")) {
-        return res.status(403).json({ error: ERROR_MSG.NOTAUTHORIZED })
+    if (!userSession?.user.app_metadata.roles.includes("admin")) {
+        return res.status(401).json({ error: ERROR_MSG.NOTAUTHORIZED })
     }
 
     const handleCase: ResponseFuncs = {

@@ -8,14 +8,16 @@ import { Axios, AxiosResponse } from "axios";
 
 const handler = withApiAuthRequired(async (req: NextApiRequest, res: NextApiResponse) => {
     const method: keyof ResponseFuncs = req.method as keyof ResponseFuncs
-    const catcher = (error: Error) => res.status(400).json({ error: ERROR_MSG.GENERAL })
+    const catcher = (error: Error) => res.status(400).json({ error: ERROR_MSG.GENERAL + ", " + error })
     const userFetcher = new getUsers()
     // Request is user.name (*/api/user/NH1111 for example)
     const userSession = await getSession(req, res)
     const id: string = req.query.id as string
 
+
     //Guard clause to prevent non-admins from accessing this endpoint
-    if (userSession?.user.app_metadata.roles.indexOf("admin") > -1) {
+    if (!userSession?.user.app_metadata.roles.includes("admin")) {
+        console.log("NOT ADMIN")
         return res.status(401).json({ error: ERROR_MSG.NOTAUTHORIZED })
     }
 
@@ -23,31 +25,30 @@ const handler = withApiAuthRequired(async (req: NextApiRequest, res: NextApiResp
         GET: async (req: NextApiRequest, res: NextApiResponse) => {
             logRequest('GET_USER')
 
-            const response = await Auth0.getUser(id).catch(catcher) as AxiosResponse //Vet ej varför detta behövs. Det borde vara en axiosResponse som returneras.
-            if (response.statusText === "OK") {
+            const response = await Auth0.getUser(id).catch(catcher) //Vet ej varför detta behövs. Det borde vara en axiosResponse som returneras.
+            if (response?.statusText === "OK") {
                 res.status(200).json(response.data)
-            } else {
-                res.status(500).json({ error: "Kunde inte hämta användaren" })
+                return
             }
 
 
         },
         PATCH: async (req: NextApiRequest, res: NextApiResponse) => {
             logRequest('PATCH_USERS')
-            const userSession = await getSession(req, res)
             // Allows partial modification of data if admin or users own account
             const modification = req.body
-            const response = await Auth0.patchUser(id, modification).catch(catcher) as AxiosResponse
-            if (response.statusText === "OK") {
+            const response = await Auth0.patchUser(id, modification).catch(catcher)
+            if (response?.statusText === "OK") {
+                // if (response.status === 200) {
                 //Kan skicka den patchade avändaren här men bör ej behövas
                 res.status(200).json({ message: "User updated" })
                 return
             }
-            res.status(500).json({ error: ERROR_MSG.AUTH0RESPONSEERROR })
         },
+
         DELETE: async (req: NextApiRequest, res: NextApiResponse) => {
-            const response = await Auth0.deleteUser(id).catch(catcher) as AxiosResponse
-            if (response.statusText === "OK") {
+            const response = await Auth0.deleteUser(id).catch(catcher)
+            if (response?.statusText === "OK") {
                 res.status(200).json({ message: "User deleted" })
                 return
             } else {

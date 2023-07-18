@@ -6,10 +6,12 @@ import { NextPage } from "next";
 import RulesText from "../src/components/rules/RulesText";
 import Layout from "../src/components/layout/Layout";
 import { UserType } from "../utils/types";
+import User from "../src/classes/User";
 
 
 const Rules: NextPage = () => {
     const { user, error, isLoading } = useUser();
+    const currentUser = User.fromJSON(user as UserType)
     const router = useRouter()
 
     if (isLoading) return <Loading />
@@ -19,7 +21,7 @@ const Rules: NextPage = () => {
         return null
     } else {
         return (
-            <Layout user={user as UserType}>
+            <Layout user={currentUser}>
                 <Grid container justifyContent="center" >
                     <Grid item xs={12} md={6} >
 

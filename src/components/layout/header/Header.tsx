@@ -3,13 +3,13 @@ import { Toolbar, AppBar, Fade, Collapse } from '@mui/material';
 import { useRouter } from 'next/router';
 import { HeaderLogo } from './HeaderLogo';
 import DesktopNav from './desktopNav/DesktopNav';
-import { UserType } from '../../../../utils/types';
 import MobileNav from './mobileNav/MobileNav';
 import { useUser } from '@auth0/nextjs-auth0/client';
 import Loading from '../../Loading';
+import User from '../../../classes/User';
 
 interface Props {
-    user: UserType;
+    user: User;
 }
 
 
@@ -38,8 +38,8 @@ const Header = ({ user }: Props) => {
 
                 <Toolbar>
                     <HeaderLogo logoText={"TVÄTT NATIONSHUSET"} />
-                    <DesktopNav user={user as UserType} />
-                    <MobileNav user={user as UserType} />
+                    <DesktopNav user={user} />
+                    <MobileNav user={user} />
                 </Toolbar>
             </AppBar>
             {/* Recommended hack when using postiion="sticky" from MUI docs */}

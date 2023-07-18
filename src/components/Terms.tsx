@@ -4,6 +4,7 @@ import { LoadingButton } from "@mui/lab";
 import { UserType } from "../../utils/types";
 import { EmailOutlined, Place } from "@mui/icons-material";
 import User from "../classes/User";
+import { getSession } from "@auth0/nextjs-auth0";
 
 const USER_AGREEMENT_MAIN_TITLE = "Användarvillkor"
 const USER_AGREEMENT_TITLE_1 = "GDPR"
@@ -32,11 +33,10 @@ const style = {
 
 interface props {
     user: UserType
-    handleSetCurrentUser: (user: User) => void
 }
 
 export const Terms = (props: props) => {
-    const { user, handleSetCurrentUser } = props
+    const { user } = props
     const [open, setOpen] = useState(true);
     const [loading, setLoading] = useState(false);
     const handleOpen = () => setOpen(true);
@@ -49,13 +49,19 @@ export const Terms = (props: props) => {
     const handleAccept = async () => {
         setLoading(true)
         const response = await fetch("/api/auth/accepted")
-        console.log("RESPONSE: " + response)
+        const session = await response.json()
+        console.log(session.user)
+
+
         if (response.ok) {
+
             setLoading(false)
-            // handleSetCurrentUser(response)
             window.location.reload()
+            // const updatedUser = User.fromJSON(session.user as UserType)
+            // handleCurrentUser(updatedUser)
             return
         }
+
         setLoading(false)
     }
     return (

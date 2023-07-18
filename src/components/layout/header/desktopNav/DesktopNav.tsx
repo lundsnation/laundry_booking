@@ -6,9 +6,10 @@ import { UserType } from '../../../../../utils/types';
 import AdminButton from './DeskAdminButton'
 import { Typography } from '@mui/material';
 import ProfileMenuButton from './ProfileMenuButton';
+import { User } from '../../../../classes/User';
 
 interface Props {
-    user: UserType
+    user: User
 }
 
 type NavItem = {
@@ -46,7 +47,7 @@ const DesktopNav = (props: Props) => {
                     </Typography>
                 </Button>
             ))}
-            {user.app_metadata?.roles?.includes("admin") && <AdminButton />}
+            {user.getRoles.includes("admin") && <AdminButton />}
             <ProfileMenuButton user={user} />
         </Box >
     );

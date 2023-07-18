@@ -12,33 +12,37 @@ import EditUserDialog from "./EditUserDialog";
 import DeleteIcon from '@mui/icons-material/DeleteOutlined';
 import DeleteUserDialog from "./DeleteUserDialog";
 import SearchIcon from '@mui/icons-material/Search';
+import Auth0 from "../../classes/Auth0";
+import Users from "../../classes/Users";
+import User from "../../classes/User";
 
 
 const UserGrid = () => {
     const { user, isLoading, error } = useUser()
-    const [selected, setSelected] = useState<readonly string[]>([]);
+    const [selected, setSelected] = useState<Users>(new Users());
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const [showEditDialog, setShowEditDialog] = useState(false)
     const [showDeleteUserDialog, setShowDeleteUserDialog] = useState(false)
     const [showAddDialog, setShowAddDialog] = useState(false)
     const [loadingData, setLoadingData] = useState(false)
-    const [users, setUsers] = useState<Array<UserType>>([])
+    const [users, setUsers] = useState<Users>(new Users())
     const alignment: SnackbarOrigin = { vertical: 'bottom', horizontal: 'left' }
     const [snack, setSnack] = useState<SnackInterface>({ show: false, snackString: "", severity: "info", alignment: alignment })
     const [searchString, setSearchString] = useState("")
-    const [searchedUsers, setSearchedUsers] = useState<Array<UserType>>([])
+    const [searchedUsers, setSearchedUsers] = useState<Users>(new Users())
     const fetchUsers = async () => {
         setLoadingData(true)
-        const res = await fetch("/api/users")
-        const all: Array<UserType> = await res.json()
-        const tempUsers: Array<UserType> = []
-        if (res.ok) {
+        let res: Users = new Users()
+        try {
+            res = await Users.fetch()
+        } catch (error) {
+            throw new Error("Error fetching users -> Users.fetch(), in /admin/UserGrid.tsx: " + error)
+        }
+
+        if (res.ok()) {
             try {
-                all.forEach(element => {
-                    tempUsers.push(element)
-                    setUsers(tempUsers)
-                })
+                setUsers(res)
             } catch (error: any) {
                 setSnack({ show: true, severity: 'error', snackString: String(error) })
                 console.log(error)
@@ -67,23 +71,14 @@ const UserGrid = () => {
         fetchUsers()
     }, [])
 
-    const handleClick = (event: React.MouseEvent<unknown>, name: string) => {
-        const selectedIndex = selected.indexOf(name);
-        let newSelected: readonly string[] = [];
-
-        if (selectedIndex === -1) {
-            newSelected = newSelected.concat(selected, name);
-        } else if (selectedIndex === 0) {
-            newSelected = newSelected.concat(selected.slice(1));
-        } else if (selectedIndex === selected.length - 1) {
-            newSelected = newSelected.concat(selected.slice(0, -1));
-        } else if (selectedIndex > 0) {
-            newSelected = newSelected.concat(
-                selected.slice(0, selectedIndex),
-                selected.slice(selectedIndex + 1),
-            );
+    const handleClick = (event: React.MouseEvent<unknown>, user: User) => {
+        if (!isSelected(user)) {
+            const newSelected: Users = selected.add(user)
+            setSelected(newSelected)
+            return
         }
-        setSelected(newSelected);
+        const newSelected: Users = selected.remove(user)
+        setSelected(newSelected)
     }
 
     // SEARCH
@@ -101,24 +96,22 @@ const UserGrid = () => {
         setRowsPerPage(parseInt(event.target.value, 10));
         setPage(0);
     }
-    const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - users.length) : 0;
+    const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - users.length()) : 0;
 
-    const isSelected = (name: string) => selected.indexOf(name) !== -1;
+    const isSelected = (user: User) => selected.contains(user);
 
     const getContent = () => {
-        let display: Array<UserType> = searchString != "" ? searchedUsers : users
-        display = display.sort((a, b) => {
-            return a.name.localeCompare(b.name, 'sv');
-        });
+        let display: Users = searchString != "" ? searchedUsers : users
+        display = display.sort((a, b) => { return a.name.localeCompare(b.name, 'sv') });
         return (
             display.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((userEntry, index) => {
-                const isItemSelected = isSelected(userEntry.name)
+                const isItemSelected = isSelected(userEntry)
                 const labelId = `enhanced-table-checkbox-${index}`;
                 return (
                     <TableRow
                         hover
                         role="checkbox"
-                        onClick={(event) => handleClick(event, userEntry.name)}
+                        onClick={(event) => handleClick(event, userEntry)}
                         key={userEntry.name}
                         tabIndex={-1}
                         sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
@@ -130,9 +123,9 @@ const UserGrid = () => {
                             {userEntry.name}
                         </TableCell>
                         <TableCell align="right">{userEntry.email}</TableCell>
-                        <TableCell align="right">{userEntry.app_metadata?.allowedSlots}</TableCell>
-                        <TableCell align="right">{userEntry.user_metadata?.telephone}</TableCell>
-                        <TableCell align="right">{userEntry.app_metadata?.acceptedTerms ? "Ja" : "Nej"}</TableCell>
+                        <TableCell align="right">{userEntry.allowedSlots}</TableCell>
+                        <TableCell align="right">{userEntry.telephone}</TableCell>
+                        <TableCell align="right">{userEntry.hasAcceptedTerms ? "Ja" : "Nej"}</TableCell>
                     </TableRow>
                 )
             }
@@ -186,7 +179,7 @@ const UserGrid = () => {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {users.length > 0 || !loadingData ? getContent() : getTableContentSkelton()}
+                        {users.length() > 0 || !loadingData ? getContent() : getTableContentSkelton()}
                         {emptyRows > 0 && (
                             <TableRow
                                 style={{
@@ -224,8 +217,8 @@ const UserGrid = () => {
                 <Grid item xs={12} sm={6} md={4}>
 
                     <ButtonGroup fullWidth sx={{ height: '56px' }} orientation='horizontal' size="small" variant="outlined">
-                        <Button fullWidth onClick={() => { setShowDeleteUserDialog(true) }} disabled={selected.length == 0} size='small' color="error" startIcon={<DeleteIcon />}> Ta Bort</Button>
-                        <Button fullWidth onClick={() => { setShowEditDialog(true) }} disabled={selected.length == 0} size='small' color="warning" startIcon={<EditOutlinedIcon />} >Ändra</Button>
+                        <Button fullWidth onClick={() => { setShowDeleteUserDialog(true) }} disabled={selected.length() === 0} size='small' color="error" startIcon={<DeleteIcon />}> Ta Bort</Button>
+                        <Button fullWidth onClick={() => { setShowEditDialog(true) }} disabled={selected.length() === 0} size='small' color="warning" startIcon={<EditOutlinedIcon />} >Ändra</Button>
                         <Button fullWidth onClick={() => { setShowAddDialog(true) }} size='small' color="primary" startIcon={<PersonAddOutlinedIcon />}>Lägg till</Button>
                     </ButtonGroup>
                 </Grid>
@@ -236,7 +229,7 @@ const UserGrid = () => {
                     <TablePagination
                         rowsPerPageOptions={[10, 25, 50]}
                         component="div"
-                        count={users.length}
+                        count={users.length()}
                         rowsPerPage={rowsPerPage}
                         page={page}
                         onPageChange={handleChangePage}

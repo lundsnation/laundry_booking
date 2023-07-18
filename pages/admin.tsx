@@ -6,6 +6,7 @@ import Loading from "../src/components/Loading";
 import router from "next/router";
 import Layout from "../src/components/layout/Layout";
 import { UserType } from "../utils/types";
+import User from "../src/classes/User";
 
 const Admin = () => {
     const { user, isLoading, error } = useUser()
@@ -16,8 +17,10 @@ const Admin = () => {
         router.push('/api/auth/login')
         return null
     } else {
+        const currentUser = User.fromJSON(user as UserType)
         return (
-            <Layout user={user as UserType}>
+
+            <Layout user={currentUser as User}>
                 <Grid container justifyContent="center">
                     {user && !isLoading && user.name == "admin" ?
                         <Grid item xs={12} sx={{ px: { xs: 1 } }}>

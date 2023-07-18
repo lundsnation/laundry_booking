@@ -2,7 +2,7 @@ import Header from "./header/Header"
 import Footer from "./Footer"
 import { Grid } from "@mui/material"
 import React from "react"
-import { UserType } from "../../../utils/types"
+import User from "../../classes/User"
 
 
 
@@ -30,7 +30,7 @@ const styles = {
 
 interface Props {
     children: React.ReactNode
-    user: UserType
+    user: User
 }
 
 export default function Layout({ children, user }: Props) {

@@ -4,6 +4,7 @@ import { ERROR_MSG, UserType, assertBuilding } from "../../../utils/types";
 import AddIcon from '@mui/icons-material/Add';
 import { SnackInterface } from "../Snack";
 import { LoadingButton } from "@mui/lab";
+import User from "../../classes/User";
 
 interface Props {
     showAddDialog: boolean,
@@ -25,22 +26,12 @@ const NewUserDialog = (props: Props) => {
     const handleAddUser = async (event: FormEvent) => {
         event.preventDefault();
         setWait(true)
-        const response = await fetch("/api/user", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                ...newUser,
-                app_metadata: { ...newUser.app_metadata, acceptedTerms: false, roles: ['user'] }
-            }
-            )
-        });
+        const user = User.fromJSON(newUser)
+        const response = await user.POST()
         setWait(false);
 
         if (response.ok) {
-            const test = await response.json()
-            setSnack({ show: true, snackString: "Skapade " + newUser.name, severity: 'success', alignment: alignment })
+            setSnack({ show: true, snackString: "Skapade " + user.name, severity: 'success', alignment: alignment })
             setNewUser({} as UserType)
             setNewUserBuilding("")
             setNewUserApt("")

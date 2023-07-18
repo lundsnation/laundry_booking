@@ -1,32 +1,43 @@
-import { Building, UserType } from "../../utils/types";
+import axios from "axios";
+import { Building, UserEdit, UserType } from "../../utils/types";
 import Booking from "./Booking";
-import { getUsers } from "../../utils/getAuth0Users";
-import auth0UserManager from "../../utils/auth0UserManager";
 import { ca, th } from "date-fns/locale";
 
-class User {
-    private user_id?: string
-    private acceptedTerms?: boolean
-    private roles: string[];
-    public building?: Building;
+export default class User {
     public name: string;
     public email: string;
+    private user_id: string
     public telephone?: string;
+    public building?: Building;
+    private acceptedTerms?: boolean
     public allowedSlots?: number;
-    // private _activeBookings: Booking[] = [];
-    // private _bookings: Booking[] = [];
+    private roles: string[];
+    public connection: string;
+
+    // public props: UserType = {
+    //     user_id: undefined,
+    //     name: "",
+    //     email: "",
+    //     roles: undefined
+    // .........
+    // }
 
 
-    constructor(name: string, email: string, roles?: string[], building?: Building, telephone?: string, acceptedTerms?: boolean, user_id?: string, allowedSlots?: number) {
-        this.name = name;
-        this.email = email;
-        this.roles = roles ? roles : [];
+
+    constructor(name?: string, email?: string, user_id?: string, roles?: string[], building?: Building, telephone?: string, acceptedTerms?: boolean, allowedSlots?: number) {
+
+        this.name = name ? name : "";
+        this.email = email ? email : "";
+        this.user_id = user_id ? user_id : "";
+        this.roles = roles ? roles : ['user'];
         this.telephone = telephone;
         this.allowedSlots = allowedSlots;
         this.building = building;
-        this.user_id = user_id;
-        this.acceptedTerms = acceptedTerms;
+        this.acceptedTerms = acceptedTerms ? acceptedTerms : false;
+        this.connection = "Username-Password-Authentication";
     }
+
+
 
     set setAcceptedTerms(acceptedTerms: boolean) {
         this.acceptedTerms = acceptedTerms;
@@ -45,15 +56,52 @@ class User {
         return this.acceptedTerms ? true : false;
     }
 
-    setId(id: string) {
-        this.user_id = id;
+    async editProfile(modification: UserEdit): Promise<boolean> {
+        try {
+            const url = "/api/auth/edit"
+            const res = await fetch(url, {
+                method: "PATCH",
+                body: JSON.stringify({
+                    email: modification.email ? modification.email : "",
+                    telephone: modification.telephone ? modification.telephone : "",
+                }),
+            })
+            console.log("STATUS: " + res.status)
+            console.log("FÖRE: " + this.telephone)
+            if (res.status === 200) {
+                this.email = modification.email ? modification.email : this.email;
+                this.telephone = modification.telephone ? modification.telephone : this.telephone;
+                console.log("EFTER:" + this.telephone)
+                return true;
+            }
+            return false
+
+        } catch (error) {
+            console.log(error)
+            return false;
+        }
+
+    }
+
+
+    merge(other: User): void {
+        const { roles, building, telephone, allowedSlots, acceptedTerms } = other;
+        this.roles = roles ? roles : this.roles;
+        this.building = building ? building : this.building;
+        this.telephone = telephone ? telephone : this.telephone;
+        this.allowedSlots = allowedSlots ? allowedSlots : this.allowedSlots;
+        this.acceptedTerms = acceptedTerms ? acceptedTerms : this.acceptedTerms;
+    }
+
+    toProfile(): UserEdit {
+        return { email: this.email, telephone: this.telephone ? this.telephone : undefined }
     }
 
     toJSON(): UserType {
         const { user_id, acceptedTerms, name, email, building, telephone, allowedSlots, roles } = this;
 
         return {
-            user_id: user_id ? user_id : undefined,
+            sub: user_id ? user_id : undefined,
             name: name,
             email: email,
             user_metadata: {
@@ -65,54 +113,53 @@ class User {
                 roles: roles ? roles : undefined,
                 building: building ? building : undefined,
             },
-            connection: "Username-Password-Authentication"
         }
     }
 
+    static async fromId(id: string): Promise<User> {
+        const newUser = new User("", "", id)
+        const newUserCtx = await newUser.GET()
+        const json = await newUserCtx.data
+        newUser.name = json.name
+        newUser.email = json.email
+        newUser.telephone = json.user_metadata?.telephone
+        newUser.building = json.app_metadata?.building
+        newUser.roles = json.app_metadata?.roles
+        newUser.allowedSlots = json.app_metadata?.allowedSlots
+        newUser.acceptedTerms = json.app_metadata?.acceptedTerms
+        return newUser
+    }
+
     static fromJSON(json: UserType): User {
-        const { name, email, user_id, user_metadata, app_metadata } = json;
+        const { name, email, sub, user_metadata, app_metadata } = json;
         const roles: string[] = app_metadata?.roles ? app_metadata.roles : [];
         const building: Building | undefined = app_metadata?.building;
-        const slots = json.app_metadata?.allowedSlots ? json.app_metadata.allowedSlots.toString() : undefined;
-        const id = user_id ? Number.parseInt(user_id) : undefined;
+        const slots = json.app_metadata?.allowedSlots ? json.app_metadata.allowedSlots : undefined;
+        const id = sub ? sub : undefined;
 
         const user = new User(
             name,
             email,
+            id,
             roles,
             building,
             user_metadata?.telephone,
             app_metadata?.acceptedTerms,
-            slots,
-            id);
+            slots);
 
         return user;
     }
 
-    async GET_ID(): Promise<string | null> {
-        const res = await this.GET()
-        const json = await res.json()
-        return json.user_id
+    static fromUser(user: User): User {
+        const { name, email, telephone, allowedSlots, acceptedTerms, building, roles, user_id } = user
+        return new User(name, email, user_id, roles, building, telephone, acceptedTerms, allowedSlots)
+
     }
 
-    //Fetches a user from the database using Name ex: NH1105
-    async GET(): Promise<Response> {
-        const jsonUser = JSON.stringify(this.toJSON())
+    //Fetches a user from the database using id
+    async GET() {
         try {
-            const specified = `name : ${this.name}`
-            const searchParams = new URLSearchParams({
-                q: specified,
-                search_engine: 'v3',
-            })
-            const response = await fetch("/api/users/" + this.name, {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: jsonUser,
-
-            });
-
+            const response = await axios.get("/api/users/" + this.user_id);
             return response;
         }
         catch (error) {
@@ -121,14 +168,31 @@ class User {
         }
     }
 
-    async PATCH(modification: object): Promise<Response> {
+    // async PATCH(modification: object): Promise<Response> {
+    //     try {
+    //         const response = fetch("/api/users/" + this.name, {
+    //             method: "PATCH",
+    //             headers: {
+    //                 "Content-Type": "application/json"
+    //             },
+    //             body: JSON.stringify(modification)
+    //         });
+    //         return response;
+
+    //     } catch (error) {
+    //         console.error("Error patching user:", error);
+    //         throw error;
+    //     }
+    // }
+
+    async PATCH(): Promise<Response> {
         try {
-            const response = fetch("/api/users/" + this.name, {
+            const response = fetch("/api/users/" + this.user_id, {
                 method: "PATCH",
                 headers: {
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify(modification)
+                body: JSON.stringify(this.toJSON())
             });
             return response;
 
@@ -150,6 +214,7 @@ class User {
                 body: jsonUser
             });
             return response;
+
         } catch (error) {
             console.error("Error creating user:", error);
             throw error;
@@ -157,7 +222,7 @@ class User {
     }
 
     async DELETE(): Promise<Response> {
-        const api_url = "/api/users/" + this.name;
+        const api_url = "/api/users/" + this.user_id;
         try {
             const response = await fetch(api_url, {
                 method: "DELETE",
@@ -176,4 +241,3 @@ class User {
     }
 }
 
-export default User;

@@ -1,125 +1,101 @@
-import {  Button, Typography,  Grid, Dialog, DialogActions, DialogTitle,List,ListItem,Divider, ListItemIcon, DialogContent, SnackbarOrigin} from "@mui/material";
+import { Button, Typography, Grid, Dialog, DialogActions, DialogTitle, List, ListItem, Divider, ListItemIcon, DialogContent, SnackbarOrigin } from "@mui/material";
 import { useState } from "react";
 import { UserType } from "../../../utils/types";
 import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
 import { LoadingButton } from "@mui/lab";
 import PersonIcon from '@mui/icons-material/Person';
 import { SnackInterface } from "../Snack";
+import Users from "../../classes/Users";
+import User from "../../classes/User";
 
-interface Props{
-    showDeleteUserDialog : boolean,
-    setShowDeleteUserDialog : (state:boolean) => void,
-    selected : readonly string[],
-    setSelected : (input: string[]) => void,
-    users : Array<UserType>,
-    fetchUsers : () => void,
+interface Props {
+    showDeleteUserDialog: boolean,
+    setShowDeleteUserDialog: (state: boolean) => void,
+    selected: Users,
+    setSelected: (input: Users) => void,
+    users: Users,
+    fetchUsers: () => void,
     snack: SnackInterface,
-    setSnack : (snackState: SnackInterface) => void,
+    setSnack: (snackState: SnackInterface) => void,
 }
 
-const DeleteUserDialog = (props: Props) =>{
-    const {showDeleteUserDialog,setShowDeleteUserDialog,selected,users,fetchUsers,snack,setSnack,setSelected} = props 
+const DeleteUserDialog = (props: Props) => {
+    const { showDeleteUserDialog, setShowDeleteUserDialog, selected, users, fetchUsers, snack, setSnack, setSelected } = props
     const [loading, setLoading] = useState(false)
-    const alignment: SnackbarOrigin = {vertical: 'bottom', horizontal: 'left' }
-    
-    const handleDeleteUser = async () =>{
+    const alignment: SnackbarOrigin = { vertical: 'bottom', horizontal: 'left' }
+
+    const handleDeleteUser = async () => {
         setLoading(true)
-        const deletedUsers = []
-        const selectedUsers = getSelectedUsers()
-        let nbrOkDeletions = 0
-        for(let i =0;i<selectedUsers.length;i++){
-            try{
-                const response = await fetch("/api/user/"+selectedUsers[i].user_id, {method: "Delete"})
-                if(response.ok){
-                    nbrOkDeletions ++
-                    deletedUsers.push(selectedUsers[i].name + " ")
-                }
-            }catch(error){
-                console.log(error)
+        const deletedUsers: string[] = []
+        const selectedUsers = selected
+
+        const resAll = await Promise.all(selectedUsers.map(async (selectedUser: User) => {
+            const res = await selectedUser.DELETE()
+            if (res.ok) {
+                deletedUsers.push(selectedUser.name)
+
+                return res
+            } else {
+                console.log("Error Deleting user: " + selectedUser.name)
             }
-        }
-        fetchUsers()
+        }))
+
+
         setLoading(false);
         setShowDeleteUserDialog(false)
-        if(nbrOkDeletions==selectedUsers.length){
-            setSnack({show: true, snackString: "Tog bort "+ nbrOkDeletions+" användare: " + deletedUsers as string, severity:'success', alignment: alignment})
-        }else if(nbrOkDeletions>0){
-            setSnack({show: true, snackString: "Tog bort "+ nbrOkDeletions+" användare: " + deletedUsers as string, severity:'info', alignment: alignment})
-        }else{
-            setSnack({show: true, snackString: "Borttagning misslyckad", severity:'error', alignment: alignment})
-        }
-            setSelected([])
-        }
-        
+        if (resAll.every((res) => res.ok)) {
+            setSnack({ show: true, snackString: "Tog bort " + deletedUsers.length + " användare", severity: 'success', alignment: alignment })
 
-    const getSelectedUsers = () : Array<UserType> =>{
-        if(selected.length === 1 ){
-            for(let i=0;i<users.length;i++){
-                    if (users[i].name == selected[0]){
-                        return [users[i]]
-                    }
-            }
-            return [{} as UserType]
+        } else {
+            setSnack({ show: true, snackString: "Fel vid borttagning av användare", severity: 'error', alignment: alignment })
         }
-        const selectedUsers : Array<UserType> = []
-        selected.forEach(userName => {
-            users.forEach( userObject =>{
-                if(userObject.name == userName){
-                    selectedUsers.push(userObject)
-                }}
-            )} 
-        )
-        return selectedUsers 
+        setSelected(new Users())
+        fetchUsers()
     }
 
-    const getUserNames = () =>{
-        if(!selected){
+
+    const getUserNames = () => {
+        if (!selected) {
             return ""
         }
-        if(selected.length === 1){
+        if (selected.length() === 1) {
             return <ListItem key={"userName"}>
-                        <ListItemIcon>
-                            <PersonIcon/>
-                                {selected[0]}
-                        </ListItemIcon>
-                    </ListItem>
+                <ListItemIcon>
+                    <PersonIcon />
+                    {selected.get(0).name}
+                </ListItemIcon>
+            </ListItem>
         }
-        let nameArray : string[] = []
-        selected.forEach(e=>{
-            nameArray.push(e)
-        })
-        return nameArray.map((e,index) =>{
+        return selected.map((user, index) => {
             return <ListItem key={index}>
-                    <ListItemIcon>
-                        <PersonIcon/>
-                        {e}
-                    </ListItemIcon>
-                </ListItem>
+                <ListItemIcon>
+                    <PersonIcon />
+                    {user.name}
+                </ListItemIcon>
+            </ListItem>
         })
-        
     }
-
-    return(
-        <Dialog 
-            open={showDeleteUserDialog} 
-            onClose = {()=>{setShowDeleteUserDialog(false)}}
+    return (
+        <Dialog
+            open={showDeleteUserDialog}
+            onClose={() => { setShowDeleteUserDialog(false) }}
         >
             <DialogTitle> Radera</DialogTitle>
-            <Divider variant="middle"/>
+            <Divider variant="middle" />
             <DialogContent>
                 <Typography> Är du säker att du vill radera följande användare? </Typography>
                 <List dense >{getUserNames()}</List>
             </DialogContent>
             <DialogActions>
-                <Grid  container alignItems='center' justifyContent='center'>
+                <Grid container alignItems='center' justifyContent='center'>
                     <Grid item>
-                        <Button sx={{margin:"12px",marginTop:0}} color='warning' variant="outlined" onClick={()=>{setShowDeleteUserDialog(false)}}>Nej</Button>
+                        <Button sx={{ margin: "12px", marginTop: 0 }} color='warning' variant="outlined" onClick={() => { setShowDeleteUserDialog(false) }}>Nej</Button>
                     </Grid>
                     <Grid item>
-                        <LoadingButton type="submit" loading={loading} variant="outlined" color='error' endIcon={<DeleteOutlinedIcon/>} sx={{margin:"12px",marginTop:0}}onClick={handleDeleteUser}>Ja</LoadingButton>
+                        <LoadingButton type="submit" loading={loading} variant="outlined" color='error' endIcon={<DeleteOutlinedIcon />} sx={{ margin: "12px", marginTop: 0 }} onClick={handleDeleteUser}>Ja</LoadingButton>
                     </Grid>
                 </Grid>
-                
+
             </DialogActions>
         </Dialog>
     )

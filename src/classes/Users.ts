@@ -3,11 +3,27 @@ import User from "./User";
 import { UserType } from "../../utils/types";
 import { ca } from "date-fns/locale";
 
-export class Users {
-    private allUsers: User[];
+export default class Users {
+
+    private allUsers: User[] = [];
 
     constructor() {
         this.allUsers = [];
+    }
+
+    get(i: number): User {
+        return this.allUsers[i];
+    }
+
+    indexOf(user_id: string): number {
+        let index = 0;
+        for (const user of this.allUsers) {
+            if (user.getId === user_id) {
+                return index;
+            }
+            index++;
+        }
+        return -1;
     }
 
     /**
@@ -15,6 +31,25 @@ export class Users {
     */
     find(predicate: (user: User) => boolean): User | undefined {
         return this.allUsers.find(predicate);
+    }
+
+    ok(): boolean {
+        return this.allUsers.length > 0;
+    }
+
+    sort(arg0: (a: User, b: User) => any): Users {
+        const sortedUsers = new Users();
+        sortedUsers.allUsers = this.allUsers.sort(arg0);
+        return sortedUsers;
+    }
+
+    /**
+     * Returns a copy of a section of an array
+    */
+    slice(start?: number, end?: number): Users {
+        const slicedUsers = new Users();
+        slicedUsers.allUsers = this.allUsers.slice(start, end);
+        return slicedUsers;
     }
 
     /** 
@@ -27,9 +62,34 @@ export class Users {
     /**
     * Adds a user to allUsers
     */
-    addUser(user: User): void {
-        this.allUsers.push(user);
+    push(users: User | Users): void {
+        if (users instanceof User) {
+            this.allUsers.push(users as User);
+            return
+        }
+        users.forEach(user => this.allUsers.push(user));
+
+
     }
+
+    add(user: User): Users {
+        const newUsers = new Users();
+        newUsers.allUsers = [...this.allUsers, user];
+        return newUsers;
+    }
+
+    contains(user: User): boolean {
+        const uid = user.getId;
+        return this.allUsers.some(user => user.getId === uid);
+    }
+
+
+
+    remove(user: User): Users {
+        const uid = user.getId
+        return this.filter(user => user.getId !== uid);
+    }
+
     getUsers(): User[] {
         return this.allUsers;
     }
@@ -60,6 +120,10 @@ export class Users {
         return this._deleteUser(userId);
     }
 
+    toJSON(): UserType[] {
+        return this.allUsers.map(user => user.toJSON());
+    }
+
     private async _createUser(user: User | UserType): Promise<Response> {
         try {
             if (user instanceof User) {
@@ -71,17 +135,18 @@ export class Users {
             }
         } catch (error) {
             console.log(error)
-            return new Response("ERROR: Error creating user", { status: 500 })
+            return new Response("Error: Error creating user", { status: 500 })
         }
     }
 
-    private async _modifyUser(userId: string, modification: object): Promise<Response> {
+
+    private async _modifyUser(userId: string, modification?: object): Promise<Response> {
         const user = this.allUsers.find(user => user.getId === userId)
         if (user) {
-            return await user.PATCH(modification)
+            return await user.PATCH()
         }
         else {
-            return new Response("ERROR: User not found", { status: 404 })
+            return new Response("Error: User not found", { status: 404 })
         }
     }
 
@@ -109,20 +174,19 @@ export class Users {
         return users;
     }
 
+
     static async fetch(): Promise<Users> {
         //TODO: NEEED TO CHANGE URL
-        const url = "http://localhost:3000/api/users"
+        const url = "/api/users"
         try {
-            const response = await fetch(url)
-            console.log(response.status)
-            const data = await response.json()
-            console.log("DATA!!!!! : " + JSON.stringify(data))
+            const response = await axios.get(url)
+            const data = await response.data
             const users = new Users();
 
 
-            // users.allUsers = data.for((userData: UserType) => {
-            //     User.fromJSON(userData as JsonUser);
-            // })
+            users.allUsers = data.map((userData: UserType) => {
+                User.fromJSON(userData as UserType);
+            })
 
             // console.log(users.allUsers)
 

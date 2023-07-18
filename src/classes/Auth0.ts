@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, { AxiosResponse } from 'axios';
 import User from './User';
 
 class Auth0 {
@@ -69,14 +69,13 @@ class Auth0 {
     }
 
     //Ändra typ eventuellt
-    static async patchUser(id: string, modification: object) {
+    static async patchUser(id: string, modification: object): Promise<AxiosResponse> {
         const token = await this.fetchAccessToken();
         const response = await axios.patch(this.api_url + 'users/' + id, modification, {
             headers: {
                 Authorization: 'Bearer ' + token
             }
         })
-
         return response
 
     }

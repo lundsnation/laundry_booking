@@ -37,7 +37,7 @@ export type TimeSlotType =
 
 // User object, as defined by 
 export type UserType = {
-  user_id?: string,
+  sub?: string,
   name: string,
   email: string,
   app_metadata?: {
@@ -47,8 +47,12 @@ export type UserType = {
     building?: Building
   },
   user_metadata?: { telephone?: string },
-  connection: "Username-Password-Authentication",
   password?: string
+}
+
+export type UserEdit = {
+  email?: string,
+  telephone?: string
 }
 // ENUM to keep track of button state
 export const enum BUTTON_STATES {

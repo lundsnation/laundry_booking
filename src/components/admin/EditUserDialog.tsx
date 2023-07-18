@@ -4,6 +4,8 @@ import { UserType, assertBuilding } from "../../../utils/types";
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import { SnackInterface } from "../Snack";
 import { LoadingButton } from "@mui/lab";
+import Users from "../../classes/Users";
+import User from "../../classes/User";
 
 interface Props {
     showEditDialog: boolean,
@@ -11,99 +13,65 @@ interface Props {
     snack: SnackInterface,
     setSnack: (snackState: SnackInterface) => void,
     fetchUsers: () => void,
-    selected: readonly string[],
-    setSelected: (input: string[]) => void,
-    users: Array<UserType>,
+    selected: Users,
+    setSelected: (input: Users) => void,
+    users: Users,
 }
 
 const EditUserDialog = (props: Props) => {
     const { showEditDialog, setShowEditDialog, snack, setSnack, fetchUsers, selected, setSelected, users } = props
-    const [newUser, setNewUser] = useState<UserType>({} as UserType)
+    const [modification, setModification] = useState<UserType>({} as UserType)
     const [newUserApt, setNewUserApt] = useState("")
     const [newUserBuldingName, setNewUserBuildingName] = useState("")
     const [wait, setWait] = useState(false);
     const alignment: SnackbarOrigin = { vertical: 'bottom', horizontal: 'left' }
 
     useEffect(() => {
-        setNewUser({
-            ...newUser,
+        setModification({
+            ...modification,
             name: newUserBuldingName + newUserApt as string,
-            app_metadata: { ...newUser.app_metadata, building: assertBuilding(newUserBuldingName) }
+            app_metadata: { ...modification.app_metadata, building: assertBuilding(newUserBuldingName) }
         })
-
     }, [newUserApt, newUserBuldingName])
 
     const handleEditUser = async (e: FormEvent) => {
         e.preventDefault()
         setWait(true);
-        const selectedUsers = getSelectedUsers()
-        const editedUsers = []
-        if (selectedUsers.length > 0) {
-            let tempUser: UserType
-            let userID: string | undefined
-            let response: Response
-            //TODO: Implement new class User PATCH() method to patch
-            for (let i = 0; i < selectedUsers.length; i++) {
-                tempUser = { ...newUser, app_metadata: { ...selectedUsers[i].app_metadata, ...newUser.app_metadata } }
-                if (tempUser.name == "") {
-                    tempUser.name = selectedUsers[i].name
-                }
-                // If e-mail has changed, set acceptedTerms = false
-                if (tempUser.email != selectedUsers[i].email) {
-                    tempUser = { ...tempUser, app_metadata: { ...tempUser.app_metadata, acceptedTerms: false } }
-                }
-                userID = selectedUsers[i].user_id
-                response = await fetch("/api/user/" + userID, {
-                    method: "PATCH",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(tempUser)
-                })
-                if (response.ok) {
-                    editedUsers.push(selectedUsers[i].name)
-                }
-            }
-        }
-        fetchUsers()
-        setWait(false);
-        if (editedUsers.length == selectedUsers.length) {
-            setSnack({ show: true, snackString: "Ändrade " + editedUsers.length + " användare: " + editedUsers as string, severity: 'success', alignment: alignment })
-        } else if (editedUsers.length > 0) {
-            setSnack({ show: true, snackString: "Ändrade " + editedUsers.length + " användare: " + editedUsers as string, severity: 'info', alignment: alignment })
+        const resAll = await Promise.all(selected.map(async (selectedUser: User) => {
+            const tempUser = User.fromJSON(modification)
+            selectedUser.merge(tempUser)
+            return await selectedUser.PATCH()
+        }))
+
+        if (resAll.every((res) => res.ok)) {
+            setSnack({ show: true, snackString: "Uppdaterade " + selected.length + " användare", severity: 'success', alignment: alignment })
+
         } else {
-            setSnack({ show: true, snackString: "Ändring misslyckad", severity: 'error', alignment: alignment })
+            setSnack({ show: true, snackString: "Fel vid uppdatering av användare", severity: 'error', alignment: alignment })
         }
-        setSelected([])
-        setNewUser({} as UserType)
+
+        setSelected(new Users())
+        setModification({} as UserType)
         setNewUserBuildingName("")
         setNewUserApt("")
         setShowEditDialog(false)
     }
 
-    const getSelectedUsers = (): Array<UserType> => {
-        if (selected.length === 1) {
-            for (let i = 0; i < users.length; i++) {
-                if (selected[0] == users[i].name) {
-                    return [users[i]]
-                }
-            }
+    const dialogTitle = () => {
+        if (selected.length() > 1) {
+            return <Typography>Ändra: {selected.length()} användare</Typography>
+        } else if (selected.length() === 1) {
+            return <Typography>Ändra: {selected.get(0).name}</Typography>
+        } else {
+            return <Typography> </Typography>
         }
-        const selectedUsers: Array<UserType> = []
-        selected.forEach(userName => {
-            users.forEach(userObject => {
-                if (userObject.name == userName) {
-                    selectedUsers.push(userObject)
-                }
-            }
-            )
-        }
-        )
-        return selectedUsers
     }
+
 
 
     return (
         <Dialog open={showEditDialog} onClose={() => { setShowEditDialog(false) }}>
-            <DialogTitle> Ändra : {selected.length > 1 ? "Flera användare" : selected[0]}</DialogTitle>
+            <DialogTitle>{dialogTitle()}</DialogTitle>
             <Divider variant="middle" />
             <form onSubmit={(e) => { handleEditUser(e) }}>
                 <List >
@@ -112,7 +80,7 @@ const EditUserDialog = (props: Props) => {
                             id="select-building"
                             margin="dense"
                             select
-                            disabled={selected.length > 1}
+                            disabled={selected.length() > 1}
                             fullWidth
                             value={newUserBuldingName}
                             onChange={(e) => {
@@ -148,7 +116,7 @@ const EditUserDialog = (props: Props) => {
                             }}
                             margin="dense"
                             fullWidth
-                            disabled={selected.length > 1}
+                            disabled={selected.length() > 1}
                             id="input-apt-number"
                             label="Lägenhetsnummer"
                             helperText="4 siffror"
@@ -156,12 +124,12 @@ const EditUserDialog = (props: Props) => {
                     </ListItem>
                     <ListItem>
                         <TextField
-                            disabled={selected.length > 1}
+                            disabled={selected.length() > 1}
                             margin="dense"
                             fullWidth
-                            defaultValue={selected.length === 1 ? getSelectedUsers()[0].user_metadata?.telephone : null}
+                            defaultValue={selected.length() === 1 ? selected.get(0).telephone : null}
                             onChange={(e) => {
-                                setNewUser({ ...newUser, user_metadata: { ...newUser.user_metadata, telephone: e.target.value } })
+                                setModification({ ...modification, user_metadata: { ...modification.user_metadata, telephone: e.target.value } })
                             }}
                             id="input-phone-number"
                             label="Telefon"
@@ -172,10 +140,10 @@ const EditUserDialog = (props: Props) => {
                         <TextField
                             margin="dense"
                             fullWidth
-                            defaultValue={selected.length === 1 ? getSelectedUsers()[0].email : null}
-                            disabled={selected.length > 1}
+                            defaultValue={selected.length() === 1 ? selected.get(0).email : null}
+                            disabled={selected.length() > 1}
                             onChange={(e) => {
-                                setNewUser({ ...newUser, email: e.target.value })
+                                setModification({ ...modification, email: e.target.value })
                             }}
                             id="input-email"
                             label="E-post"
@@ -185,10 +153,10 @@ const EditUserDialog = (props: Props) => {
                         <TextField
                             margin="dense"
                             fullWidth
-                            defaultValue={selected.length === 1 ? getSelectedUsers()[0].app_metadata?.allowedSlots : null}
+                            defaultValue={selected.length() === 1 ? selected.get(0).allowedSlots : null}
                             type="number"
                             onChange={(e) => {
-                                setNewUser({ ...newUser, app_metadata: { ...newUser.app_metadata, allowedSlots: +e.target.value } })
+                                setModification({ ...modification, app_metadata: { ...modification.app_metadata, allowedSlots: +e.target.value } })
                             }}
                             id="select-allowedSlots"
                             label="Tillåtna Bokningar"
