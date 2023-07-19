@@ -33,7 +33,7 @@ const UserGrid = ({ initUsers, user }: Props) => {
     const alignment: SnackbarOrigin = { vertical: 'bottom', horizontal: 'left' }
     const [snack, setSnack] = useState<SnackInterface>({ show: false, snackString: "", severity: "info", alignment: alignment })
     const [searchString, setSearchString] = useState("")
-    const [searchedUsers, setSearchedUsers] = useState<Users>(new Users())
+    const [searchedUsers, setSearchedUsers] = useState<Users>(users)
 
     //Hela denna kan bytas ut. Vi behöver bara fetcha users en gång egentligen och det är när sidan laddas in, vilket vi gör med getServerSideProps
     // Därefter skickar vi ner setUsers till alla dialogs och uppdaterar listan därifrån istället för att skicka ner fetchUsers.
@@ -93,6 +93,9 @@ const UserGrid = ({ initUsers, user }: Props) => {
     }
 
     const handleSearchedUsers = (searchString: string) => {
+        if (searchString === "") {
+            setSearchedUsers(users)
+        }
         const lowerCaseSearchString = searchString.toLowerCase()
         setSearchString(searchString)
         const searchedUsers = users.filter(user => user.name.toLowerCase().includes(lowerCaseSearchString) || user.email.toLowerCase().includes(lowerCaseSearchString))
@@ -112,7 +115,9 @@ const UserGrid = ({ initUsers, user }: Props) => {
     const isSelected = (user: User) => selected.contains(user);
 
     const getContent = () => {
-        let display: Users = searchString != "" ? searchedUsers : users
+        // let display: Users = searchString != "" ? searchedUsers : users
+        let display: Users = searchedUsers
+
         //console.log(searchString)
         //console.log("Display", display)
         display = display.sort((a, b) => { return a.name.localeCompare(b.name, 'sv') });
@@ -168,6 +173,7 @@ const UserGrid = ({ initUsers, user }: Props) => {
                 selected={selected}
                 setSelected={setSelected}
                 users={users}
+                setUsers={setUsers}
             />
             <DeleteUserDialog
                 showDeleteUserDialog={showDeleteUserDialog}
@@ -175,6 +181,7 @@ const UserGrid = ({ initUsers, user }: Props) => {
                 selected={selected}
                 setSelected={setSelected}
                 users={users}
+                setUsers={setUsers}
                 fetchUsers={fetchUsers}
                 snack={snack}
                 setSnack={setSnack}

@@ -1,6 +1,6 @@
 import { Button, Container, Typography, Paper, Grid, Dialog, DialogActions, DialogTitle, List, ListItem, Divider, TextField, MenuItem, AlertColor, SnackbarOrigin } from "@mui/material";
 import { FormEvent, useEffect, useState } from "react";
-import { UserType, assertBuilding } from "../../../utils/types";
+import { ModificationObject, UserType, assertBuilding } from "../../../utils/types";
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import { SnackInterface } from "../Snack";
 import { LoadingButton } from "@mui/lab";
@@ -16,42 +16,52 @@ interface Props {
     selected: Users,
     setSelected: (input: Users) => void,
     users: Users,
+    setUsers: (input: Users) => void
 }
 
 const EditUserDialog = (props: Props) => {
-    const { showEditDialog, setShowEditDialog, snack, setSnack, fetchUsers, selected, setSelected, users } = props
-    const [modification, setModification] = useState<UserType>({} as UserType)
+    const { showEditDialog, setShowEditDialog, snack, setSnack, fetchUsers, selected, setSelected, users, setUsers } = props
+    const [modification, setModification] = useState({} as ModificationObject)
     const [newUserApt, setNewUserApt] = useState("")
     const [newUserBuldingName, setNewUserBuildingName] = useState("")
     const [wait, setWait] = useState(false);
     const alignment: SnackbarOrigin = { vertical: 'bottom', horizontal: 'left' }
 
-    useEffect(() => {
-        setModification({
-            ...modification,
-            name: newUserBuldingName + newUserApt as string,
-            app_metadata: { ...modification.app_metadata, building: assertBuilding(newUserBuldingName) }
-        })
-    }, [newUserApt, newUserBuldingName])
+    // useEffect(() => {
+    //     setModification({
+    //         ...modification,
+    //         name: newUserBuldingName + newUserApt as string,
+    //         app_metadata: { ...modification.app_metadata, building: assertBuilding(newUserBuldingName) }
+    //     })
+    // }, [newUserApt, newUserBuldingName])
 
     const handleEditUser = async (e: FormEvent) => {
         e.preventDefault()
         setWait(true);
-        const resAll = await Promise.all(selected.map(async (selectedUser: User) => {
-            const tempUser = User.fromJSON(modification)
-            selectedUser.merge(tempUser)
-            return await selectedUser.PATCH()
-        }))
 
-        if (resAll.every((res) => res.ok)) {
-            setSnack({ show: true, snackString: "Uppdaterade " + selected.length + " användare", severity: 'success', alignment: alignment })
+        try {
+            const allPatches: Promise<Response>[] = selected.map(async (user: User) => {
+                console.log(user)
+                const res = await user.PATCH(modification)
+                return res
+            })
+            const results: Response[] = await Promise.all(allPatches)
 
-        } else {
+            if (results.every(res => res.ok)) {
+                selected.forEach((user: User) => {
+                    user.update(modification)
+                })
+                setSnack({ show: true, snackString: "Uppdaterade " + selected.length() + " användare", severity: 'success', alignment: alignment })
+            } else {
+                setSnack({ show: true, snackString: "Fel vid uppdatering av användare", severity: 'error', alignment: alignment })
+            }
+        } catch (error) {
+            console.log(error)
             setSnack({ show: true, snackString: "Fel vid uppdatering av användare", severity: 'error', alignment: alignment })
         }
-
+        setWait(false);
         setSelected(new Users())
-        setModification({} as UserType)
+        setModification({} as ModificationObject)
         setNewUserBuildingName("")
         setNewUserApt("")
         setShowEditDialog(false)

@@ -15,6 +15,10 @@ export interface ResponseFuncs {
 //   timeSlot: string,
 // }
 
+export interface ModificationObject {
+  [key: string]: any
+}
+
 export type JsonBooking = {
   _id?: string,
   userName: string,

@@ -1,7 +1,8 @@
 import axios from "axios";
-import { Building, UserEdit, UserType } from "../../utils/types";
+import { Building, UserEdit, UserType, ModificationObject } from "../../utils/types";
 import Booking from "./Booking";
 import { ca, th } from "date-fns/locale";
+
 
 export default class User {
     public name: string;
@@ -13,6 +14,7 @@ export default class User {
     public allowedSlots?: number;
     private roles: string[];
     public connection: string;
+
 
     // public props: UserType = {
     //     user_id: undefined,
@@ -81,13 +83,23 @@ export default class User {
     }
 
 
-    merge(other: User): void {
+    mergeUser(other: User): void {
         const { roles, building, telephone, allowedSlots, acceptedTerms } = other;
         this.roles = roles ? roles : this.roles;
         this.building = building ? building : this.building;
         this.telephone = telephone ? telephone : this.telephone;
         this.allowedSlots = allowedSlots ? allowedSlots : this.allowedSlots;
         this.acceptedTerms = acceptedTerms ? acceptedTerms : this.acceptedTerms;
+    }
+    update(modification: object): void {
+        //Update attributes in this instance with this.modification
+        //setModification used to PATCH
+        const { acceptedTerms, email, building, telephone, allowedSlots } = modification as User
+        this.email = email ? email : this.email
+        this.telephone = telephone ? telephone : this.telephone
+        this.building = building ? building : this.building
+        this.allowedSlots = allowedSlots ? allowedSlots : this.allowedSlots
+        this.acceptedTerms = acceptedTerms ? acceptedTerms : this.acceptedTerms
     }
 
     toProfile(): UserEdit {
@@ -180,31 +192,14 @@ export default class User {
         }
     }
 
-    // async PATCH(modification: object): Promise<Response> {
-    //     try {
-    //         const response = fetch("/api/users/" + this.name, {
-    //             method: "PATCH",
-    //             headers: {
-    //                 "Content-Type": "application/json"
-    //             },
-    //             body: JSON.stringify(modification)
-    //         });
-    //         return response;
-
-    //     } catch (error) {
-    //         console.error("Error patching user:", error);
-    //         throw error;
-    //     }
-    // }
-
-    async PATCH(): Promise<Response> {
+    async PATCH(modification: ModificationObject): Promise<Response> {
         try {
             const response = fetch("/api/users/" + this.user_id, {
                 method: "PATCH",
                 headers: {
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify(this.toJSON())
+                body: JSON.stringify(modification)
             });
             return response;
 
@@ -213,6 +208,27 @@ export default class User {
             throw error;
         }
     }
+
+    // async PATCH(): Promise<Response> {
+
+    //     try {
+    //         const response = await fetch("/api/users/" + this.user_id, {
+    //             method: "PATCH",
+    //             headers: {
+    //                 "Content-Type": "application/json"
+    //             },
+    //             body: JSON.stringify(this.modification)
+    //         });
+
+    //         this.modification = {}
+
+    //         return response;
+
+    //     } catch (error) {
+    //         console.error("Error patching user:", error);
+    //         throw error;
+    //     }
+    // }
 
     //Kan bli konstigt med attributen när en användare skapas
     async POST(): Promise<Response> {

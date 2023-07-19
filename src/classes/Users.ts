@@ -7,9 +7,12 @@ export default class Users {
 
     private allUsers: User[] = [];
 
+
     constructor() {
         this.allUsers = [];
     }
+
+
 
     get(i: number): User {
         return this.allUsers[i];
@@ -62,15 +65,14 @@ export default class Users {
     /**
     * Adds a user to allUsers
     */
-    push(users: User | Users): void {
-        if (users instanceof User) {
-            this.allUsers.push(users as User);
-            return
-        }
-        users.forEach(user => this.allUsers.push(user));
-
-
+    push(users: User): void {
+        this.allUsers.push(users as User);
+        console.log(this.allUsers)
+        return
     }
+
+
+
 
     add(user: User): Users {
         const newUsers = new Users();
@@ -120,7 +122,7 @@ export default class Users {
     //    return this._modifyUser(userId, modification);
     //}
     //
-    //deleteUser(userId: string): Promise<Response> {
+    //deleteUser(userId: string): Promise<Response> {s
     //    return this._deleteUser(userId);
     //}
 

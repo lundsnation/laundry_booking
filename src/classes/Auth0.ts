@@ -1,6 +1,6 @@
 import axios, { AxiosResponse } from 'axios';
 import User from './User';
-import { UserType } from '../../utils/types';
+import { ModificationObject, UserType } from '../../utils/types';
 
 class Auth0 {
     private static client_id: string = process.env.AUTH0_CLIENT_ID as string;
@@ -70,9 +70,9 @@ class Auth0 {
     }
 
     //Ändra typ eventuellt
-    static async patchUser(id: string, modification: object): Promise<AxiosResponse> {
+    static async patchUser(id: string, modification: ModificationObject): Promise<AxiosResponse> {
         const token = await this.fetchAccessToken();
-        const response = await axios.patch(this.api_url + 'users/' + id, modification, {
+        const response = await axios.patch(this.api_url + 'users/' + id, JSON.stringify(modification), {
             headers: {
                 Authorization: 'Bearer ' + token
             }
