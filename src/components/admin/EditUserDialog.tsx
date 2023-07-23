@@ -1,11 +1,12 @@
 import { Button, Container, Typography, Paper, Grid, Dialog, DialogActions, DialogTitle, List, ListItem, Divider, TextField, MenuItem, AlertColor, SnackbarOrigin } from "@mui/material";
 import { FormEvent, useEffect, useState } from "react";
-import { ModificationObject, UserType, assertBuilding } from "../../../utils/types";
+import { Building, ModificationObject, UserType, assertBuilding, extractAppartment, extractBuilding } from "../../../utils/types";
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import { SnackInterface } from "../Snack";
 import { LoadingButton } from "@mui/lab";
 import Users from "../../classes/Users";
 import User from "../../classes/User";
+import { set } from "mongoose";
 
 interface Props {
     showEditDialog: boolean,
@@ -41,7 +42,7 @@ const EditUserDialog = (props: Props) => {
 
         try {
             const allPatches: Promise<Response>[] = selected.map(async (user: User) => {
-                console.log(user)
+                console.log(modification)
                 const res = await user.PATCH(modification)
                 return res
             })
@@ -51,6 +52,7 @@ const EditUserDialog = (props: Props) => {
                 selected.forEach((user: User) => {
                     user.update(modification)
                 })
+                setUsers(users)
                 setSnack({ show: true, snackString: "Uppdaterade " + selected.length() + " användare", severity: 'success', alignment: alignment })
             } else {
                 setSnack({ show: true, snackString: "Fel vid uppdatering av användare", severity: 'error', alignment: alignment })
@@ -59,11 +61,10 @@ const EditUserDialog = (props: Props) => {
             console.log(error)
             setSnack({ show: true, snackString: "Fel vid uppdatering av användare", severity: 'error', alignment: alignment })
         }
+
         setWait(false);
         setSelected(new Users())
         setModification({} as ModificationObject)
-        setNewUserBuildingName("")
-        setNewUserApt("")
         setShowEditDialog(false)
     }
 
@@ -77,8 +78,6 @@ const EditUserDialog = (props: Props) => {
         }
     }
 
-
-
     return (
         <Dialog open={showEditDialog} onClose={() => { setShowEditDialog(false) }}>
             <DialogTitle>{dialogTitle()}</DialogTitle>
@@ -90,11 +89,20 @@ const EditUserDialog = (props: Props) => {
                             id="select-building"
                             margin="dense"
                             select
+                            // defaultValue={selected.length() === 1 ? selected.get(0).building : null}
                             disabled={selected.length() > 1}
                             fullWidth
-                            value={newUserBuldingName}
+                            value={extractBuilding(modification.name)}
                             onChange={(e) => {
-                                setNewUserBuildingName(e.target.value)
+                                const apt = modification.name ? extractAppartment(modification.name) : extractAppartment(selected.get(0).name)
+                                console.log("byggnad")
+                                setModification({
+                                    ...modification,
+                                    name: e.target.value + apt,
+                                    app_metadata: {
+                                        ...modification.app_metadata, building: assertBuilding(e.target.value)
+                                    }
+                                })
                             }}
                             label="Välj Byggnad"
                             helperText="Välj Byggnad"
@@ -122,9 +130,14 @@ const EditUserDialog = (props: Props) => {
                     <ListItem>
                         <TextField
                             onChange={(e) => {
-                                setNewUserApt(e.target.value as string)
+                                if (e.target.value.length > 3) {
+                                    console.log("nummer")
+                                    const building = modification.name ? extractBuilding(modification.name) : extractBuilding(selected.get(0).name)
+                                    setModification({ ...modification, name: building + e.target.value })
+                                }
                             }}
                             margin="dense"
+
                             fullWidth
                             disabled={selected.length() > 1}
                             id="input-apt-number"

@@ -94,12 +94,19 @@ export default class User {
     update(modification: object): void {
         //Update attributes in this instance with this.modification
         //setModification used to PATCH
-        const { acceptedTerms, email, building, telephone, allowedSlots } = modification as User
+        const { name, acceptedTerms, email, user_metadata, app_metadata } = modification as ModificationObject
+        this.name = name ? name : this.name
         this.email = email ? email : this.email
-        this.telephone = telephone ? telephone : this.telephone
-        this.building = building ? building : this.building
-        this.allowedSlots = allowedSlots ? allowedSlots : this.allowedSlots
         this.acceptedTerms = acceptedTerms ? acceptedTerms : this.acceptedTerms
+        if (user_metadata) {
+            this.telephone = user_metadata.telephone ? user_metadata.telephone : this.telephone
+        }
+
+        if (app_metadata) {
+            this.building = app_metadata.building ? app_metadata.building : this.building
+            this.allowedSlots = app_metadata.allowedSlots ? app_metadata.allowedSlots : this.allowedSlots
+        }
+
     }
 
     toProfile(): UserEdit {
@@ -178,6 +185,33 @@ export default class User {
     static fromUser(user: User): User {
         const { name, email, telephone, allowedSlots, acceptedTerms, building, roles, user_id } = user
         return new User(name, email, user_id, roles, building, telephone, acceptedTerms, allowedSlots)
+    }
+
+    clone(): User {
+        const {
+            name,
+            email,
+            user_id,
+            roles,
+            building,
+            telephone,
+            acceptedTerms,
+            allowedSlots,
+        } = this;
+
+        // Create a new User instance with the same properties as the current instance (this)
+        const clonedUser = new User(
+            name,
+            email,
+            user_id,
+            [...roles], // Copy the roles array to prevent modification of the original array
+            building ? building : undefined, // Copy the building object if it exists
+            telephone,
+            acceptedTerms,
+            allowedSlots
+        );
+
+        return clonedUser;
     }
 
     //Fetches a user from the database using id

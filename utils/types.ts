@@ -102,6 +102,11 @@ export function assertBuilding(buildingName: string): Building {
   }
   return null
 }
+
+export const extractBuilding = (name: string): string => (name?.match(/[a-zA-Z]+/) || [])[0] || "";
+
+export const extractAppartment = (name: string): string => (name?.match(/\d+/) || [])[0] || "";
+
 // Manual check is object is of type Building
 function isBuilding(obj: any): obj is Building {
   switch (obj) {

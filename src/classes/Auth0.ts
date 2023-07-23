@@ -72,7 +72,7 @@ class Auth0 {
     //Ändra typ eventuellt
     static async patchUser(id: string, modification: ModificationObject): Promise<AxiosResponse> {
         const token = await this.fetchAccessToken();
-        const response = await axios.patch(this.api_url + 'users/' + id, JSON.stringify(modification), {
+        const response = await axios.patch(this.api_url + 'users/' + id, modification, {
             headers: {
                 Authorization: 'Bearer ' + token
             }
