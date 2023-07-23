@@ -71,7 +71,7 @@ const EditUserDialog = (props: Props) => {
     }
 
     return (
-        <Dialog open={showEditDialog} onClose={() => { setShowEditDialog(false) }}>
+        <Dialog open={showEditDialog} onClose={() => { setShowEditDialog(false), setModification({}) }}>
             <DialogTitle>{dialogTitle()}</DialogTitle>
             <Divider variant="middle" />
             <form onSubmit={(e) => { handleEditUser(e) }}>
@@ -182,7 +182,7 @@ const EditUserDialog = (props: Props) => {
                 <DialogActions>
                     <Grid container alignItems='center' justifyContent='center'>
                         <Grid item>
-                            <Button sx={{ margin: "12px", marginTop: 0 }} color='warning' variant="outlined" onClick={() => { setShowEditDialog(false) }}>Stäng</Button>
+                            <Button sx={{ margin: "12px", marginTop: 0 }} color='warning' variant="outlined" onClick={() => { setShowEditDialog(false), setModification({}) }}>Stäng</Button>
                         </Grid>
                         <Grid item>
                             <LoadingButton type="submit" loading={wait} variant="outlined" endIcon={<EditOutlinedIcon />} sx={{ margin: "12px", marginTop: 0 }}>Ändra</LoadingButton>
