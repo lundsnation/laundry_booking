@@ -28,14 +28,6 @@ const EditUserDialog = (props: Props) => {
     const [wait, setWait] = useState(false);
     const alignment: SnackbarOrigin = { vertical: 'bottom', horizontal: 'left' }
 
-    // useEffect(() => {
-    //     setModification({
-    //         ...modification,
-    //         name: newUserBuldingName + newUserApt as string,
-    //         app_metadata: { ...modification.app_metadata, building: assertBuilding(newUserBuldingName) }
-    //     })
-    // }, [newUserApt, newUserBuldingName])
-
     const handleEditUser = async (e: FormEvent) => {
         e.preventDefault()
         setWait(true);
