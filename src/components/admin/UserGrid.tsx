@@ -15,6 +15,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import Auth0 from "../../classes/Auth0";
 import Users from "../../classes/Users";
 import User from "../../classes/User";
+import { set } from "mongoose";
 
 interface Props {
     initUsers: Users
@@ -38,6 +39,8 @@ const UserGrid = ({ initUsers, user }: Props) => {
     //Hela denna kan bytas ut. Vi behöver bara fetcha users en gång egentligen och det är när sidan laddas in, vilket vi gör med getServerSideProps
     // Därefter skickar vi ner setUsers till alla dialogs och uppdaterar listan därifrån istället för att skicka ner fetchUsers.
     // Använd copy funktionen i Users för att kopiera listan och sedan ändra i den kopierade listan.
+
+    //Tog bort fetchUsers från EditUserDialog och DeleteUserDialog -Adam
     const fetchUsers = async () => {
         setLoadingData(true)
         let res: Users = new Users()
@@ -58,12 +61,6 @@ const UserGrid = ({ initUsers, user }: Props) => {
         setLoadingData(false)
     }
 
-    // Denna borde inte behövas om man bara editerar listen beroende på responsen från servern. Dvs om vi editerar en användare och det går igenom så gör vi det i listan också.
-    // Om vi tar bort en användare så tar vi bort den från listan etc etc. Oavsett måste den ses över för vi får in de initiala users från admin
-    //useEffect(() => {
-    //    console.log("FETCHING USERS")
-    //    fetchUsers()
-    //}, [])
 
     //Osäker på om denna behövs med tanke på att vi använder getServerSideprops
     const getTableContentSkelton = () => {
@@ -88,7 +85,7 @@ const UserGrid = ({ initUsers, user }: Props) => {
             setSelected(newSelected)
             return
         }
-        const newSelected: Users = selected.remove(user)
+        const newSelected = selected.remove(user)
         setSelected(newSelected)
     }
 
@@ -169,7 +166,6 @@ const UserGrid = ({ initUsers, user }: Props) => {
                 setShowEditDialog={setShowEditDialog}
                 snack={snack}
                 setSnack={setSnack}
-                fetchUsers={fetchUsers}
                 selected={selected}
                 setSelected={setSelected}
                 users={users}
@@ -180,9 +176,10 @@ const UserGrid = ({ initUsers, user }: Props) => {
                 setShowDeleteUserDialog={setShowDeleteUserDialog}
                 selected={selected}
                 setSelected={setSelected}
+                searchedUsers={searchedUsers}
+                setSearchedUsers={setSearchedUsers}
                 users={users}
                 setUsers={setUsers}
-                fetchUsers={fetchUsers}
                 snack={snack}
                 setSnack={setSnack}
             />

@@ -48,8 +48,8 @@ const handler = withApiAuthRequired(async (req: NextApiRequest, res: NextApiResp
 
         DELETE: async (req: NextApiRequest, res: NextApiResponse) => {
             const response = await Auth0.deleteUser(id).catch(catcher)
-            if (response?.statusText === "OK") {
-                res.status(200).json({ message: "User deleted" })
+            if (response?.status === 204) {
+                res.status(200).json({ message: "User deleted" }) //får konstigt meddelande if res.status(204) så skickar 200 istället
                 return
             } else {
                 res.status(500).json({ error: "Kunde inte ta bort användaren" })

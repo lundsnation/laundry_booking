@@ -14,43 +14,46 @@ interface Props {
     selected: Users,
     setSelected: (input: Users) => void,
     users: Users,
-    fetchUsers: () => void,
+    setUsers: (users: Users) => void
+    searchedUsers: Users,
+    setSearchedUsers: (users: Users) => void,
     snack: SnackInterface,
     setSnack: (snackState: SnackInterface) => void,
 }
 
 const DeleteUserDialog = (props: Props) => {
-    const { showDeleteUserDialog, setShowDeleteUserDialog, selected, users, fetchUsers, snack, setSnack, setSelected } = props
+    const { showDeleteUserDialog, setShowDeleteUserDialog, selected, users, setUsers, searchedUsers, setSearchedUsers, snack, setSnack, setSelected } = props
     const [loading, setLoading] = useState(false)
     const alignment: SnackbarOrigin = { vertical: 'bottom', horizontal: 'left' }
 
     const handleDeleteUser = async () => {
         setLoading(true)
         const deletedUsers: string[] = []
-        const selectedUsers = selected
 
-        const resAll = await Promise.all(selectedUsers.map(async (selectedUser: User) => {
-            const res = await selectedUser.DELETE()
-            if (res.ok) {
-                deletedUsers.push(selectedUser.name)
-
-                return res
-            } else {
-                console.log("Error Deleting user: " + selectedUser.name)
-            }
-        }))
-
-
-        setLoading(false);
-        setShowDeleteUserDialog(false)
-        if (resAll.every((res) => res.ok)) {
+        const allDeletes: Promise<Response>[] = selected.map(async (user: User) => {
+            const res = await user.DELETE()
+            return res
+        })
+        const results: Response[] = await Promise.all(allDeletes)
+        if (results.every(res => res.ok)) {
+            let newUsers = users.copy()
+            let newSearched = searchedUsers.copy()
+            selected.forEach((user: User) => {
+                deletedUsers.push(user.name)
+                newUsers = newUsers.remove(user)
+                newSearched = newSearched.remove(user)
+            })
+            setUsers(newUsers)
+            setSearchedUsers(newSearched)
+            // setSearchedUsers(searchedUsers)
             setSnack({ show: true, snackString: "Tog bort " + deletedUsers.length + " användare", severity: 'success', alignment: alignment })
-
         } else {
             setSnack({ show: true, snackString: "Fel vid borttagning av användare", severity: 'error', alignment: alignment })
         }
         setSelected(new Users())
-        fetchUsers()
+        setLoading(false);
+        setShowDeleteUserDialog(false)
+
     }
 
 

@@ -13,7 +13,6 @@ interface Props {
     setShowEditDialog: (state: boolean) => void,
     snack: SnackInterface,
     setSnack: (snackState: SnackInterface) => void,
-    fetchUsers: () => void,
     selected: Users,
     setSelected: (input: Users) => void,
     users: Users,
@@ -21,7 +20,7 @@ interface Props {
 }
 
 const EditUserDialog = (props: Props) => {
-    const { showEditDialog, setShowEditDialog, snack, setSnack, fetchUsers, selected, setSelected, users, setUsers } = props
+    const { showEditDialog, setShowEditDialog, snack, setSnack, selected, setSelected, users, setUsers } = props
     const [modification, setModification] = useState({} as ModificationObject)
     const [newUserApt, setNewUserApt] = useState("")
     const [newUserBuldingName, setNewUserBuildingName] = useState("")

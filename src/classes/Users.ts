@@ -85,9 +85,12 @@ export default class Users {
         return this.allUsers.some(user => user.getId === uid);
     }
 
+    //method that removes user from allUsers and returns a new Users object
     remove(user: User): Users {
-        const uid = user.getId
-        return this.filter(user => user.getId !== uid);
+        const uid = user.getId;
+        const newUsers = Users.fromArray(this.allUsers);
+        newUsers.allUsers = this.allUsers.filter(user => user.getId !== uid);
+        return newUsers;
     }
 
     getUsers(): User[] {
