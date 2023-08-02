@@ -1,9 +1,7 @@
 import { IconButton, InputAdornment, Skeleton, Button, Container, Paper, Grid, TextField, MenuItem, AlertColor, CircularProgress, ButtonGroup, Typography, SnackbarOrigin, TableFooter, Stack, Toolbar } from "@mui/material";
 import { Table, TableBody, TableHead, TableRow, TableContainer, TableCell, TablePagination } from "@mui/material"
-import { useUser } from '@auth0/nextjs-auth0/client';
 import { Snack, SnackInterface } from "../Snack"
-import { FormEvent, useEffect, useState } from "react";
-import { UserType } from "../../../utils/types";
+import { useState } from "react";
 import { Checkbox } from '@mui/material';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import PersonAddOutlinedIcon from '@mui/icons-material/PersonAddOutlined';
@@ -12,10 +10,8 @@ import EditUserDialog from "./EditUserDialog";
 import DeleteIcon from '@mui/icons-material/DeleteOutlined';
 import DeleteUserDialog from "./DeleteUserDialog";
 import SearchIcon from '@mui/icons-material/Search';
-import Auth0 from "../../classes/Auth0";
 import Users from "../../classes/Users";
 import User from "../../classes/User";
-import { set } from "mongoose";
 
 interface Props {
     initUsers: Users
@@ -35,32 +31,6 @@ const UserGrid = ({ initUsers, user }: Props) => {
     const [snack, setSnack] = useState<SnackInterface>({ show: false, snackString: "", severity: "info", alignment: alignment })
     const [searchString, setSearchString] = useState("")
     const [searchedUsers, setSearchedUsers] = useState<Users>(users)
-
-    //Hela denna kan bytas ut. Vi behöver bara fetcha users en gång egentligen och det är när sidan laddas in, vilket vi gör med getServerSideProps
-    // Därefter skickar vi ner setUsers till alla dialogs och uppdaterar listan därifrån istället för att skicka ner fetchUsers.
-    // Använd copy funktionen i Users för att kopiera listan och sedan ändra i den kopierade listan.
-
-    //Tog bort fetchUsers från EditUserDialog och DeleteUserDialog -Adam
-    const fetchUsers = async () => {
-        setLoadingData(true)
-        let res: Users = new Users()
-        try {
-            res = await Users.fetch()
-        } catch (error) {
-            throw new Error("Error fetching users -> Users.fetch(), in /admin/UserGrid.tsx: " + error)
-        }
-
-        if (res.ok()) {
-            try {
-                setUsers(res)
-            } catch (error: any) {
-                setSnack({ show: true, severity: 'error', snackString: String(error) })
-                console.log(error)
-            }
-        }
-        setLoadingData(false)
-    }
-
 
     //Osäker på om denna behövs med tanke på att vi använder getServerSideprops
     const getTableContentSkelton = () => {
@@ -159,7 +129,7 @@ const UserGrid = ({ initUsers, user }: Props) => {
                 setShowAddDialog={setShowAddDialog}
                 snack={snack}
                 setSnack={setSnack}
-                fetchUsers={fetchUsers}
+                setUsers={setUsers}
             />
             <EditUserDialog
                 showEditDialog={showEditDialog}

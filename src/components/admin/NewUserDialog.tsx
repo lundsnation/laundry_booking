@@ -1,55 +1,44 @@
 import { Button, Grid, Dialog, DialogActions, DialogTitle, List, ListItem, Divider, TextField, MenuItem, SnackbarOrigin } from "@mui/material";
-import { ChangeEvent, FormEvent, useEffect, useState } from "react";
-import { ERROR_MSG, UserType, assertBuilding } from "../../../utils/types";
+import { ChangeEvent, FormEvent, useState } from "react";
+import { Building, ERROR_MSG, UserType } from "../../../utils/types";
 import AddIcon from '@mui/icons-material/Add';
 import { SnackInterface } from "../Snack";
 import { LoadingButton } from "@mui/lab";
 import User from "../../classes/User";
+import Users from "../../classes/Users";
 
 interface Props {
     showAddDialog: boolean,
     setShowAddDialog: (state: boolean) => void,
     snack: SnackInterface,
     setSnack: (snackState: SnackInterface) => void,
-    fetchUsers: () => void,
+    setUsers: React.Dispatch<React.SetStateAction<Users>>;
 }
 
 const NewUserDialog = (props: Props) => {
-    const { showAddDialog, setShowAddDialog, snack, setSnack, fetchUsers } = props
-    const [newUser, setNewUser] = useState<UserType>({} as UserType)
-    const [newUserApt, setNewUserApt] = useState("") // Är dessa states verkligen nödvändiga? Du kan väl egentligen bara modifera i din newUser överallt.
-    const [newUserBulding, setNewUserBuilding] = useState("") // Är detta nödvändigt
+    const { showAddDialog, setShowAddDialog, snack, setSnack, setUsers } = props
+    const [newUser, setNewUser] = useState<UserType>({ name: "", email: "", app_metadata: { building: "NH" } });
     const [wait, setWait] = useState(false);
     const alignment: SnackbarOrigin = { vertical: 'bottom', horizontal: 'left' }
-
 
     const handleAddUser = async (event: FormEvent) => {
         event.preventDefault();
         setWait(true)
-        const user = User.fromJSON(newUser)
+        const user = User.fromUserType(newUser)
         const response = await user.POST()
         setWait(false);
 
-        if (response.ok) {
+        if (response.status === 200 || response.status === 201) {
+            const createdUser = User.fromJSON(response.data)
             setSnack({ show: true, snackString: "Skapade " + user.name, severity: 'success', alignment: alignment })
-            setNewUser({} as UserType)
-            setNewUserBuilding("")
-            setNewUserApt("")
+            setNewUser({ name: "", email: "", app_metadata: { building: "NH" } })
             setShowAddDialog(false)
-            fetchUsers()
-            return
+            setUsers((prevUsers: Users) => prevUsers.add(createdUser));
+        } else {
+            console.log("Error creating user")
+            setSnack({ show: true, snackString: ERROR_MSG.AUTH0RESPONSEERROR, severity: "error", alignment: alignment })
         }
-        setSnack({ show: true, snackString: ERROR_MSG.AUTH0RESPONSEERROR, severity: "error", alignment: alignment })
     }
-
-    // Updates newUser object whenever newUserApt or newUserBuilding changes
-    useEffect(() => {
-        setNewUser({
-            ...newUser,
-            name: newUserBulding + newUserApt as string,
-            app_metadata: { ...newUser.app_metadata, building: assertBuilding(newUserBulding) }
-        })
-    }, [newUserApt, newUserBulding])
 
     return (
         <Dialog open={showAddDialog} onClose={() => { setShowAddDialog(false) }}>
@@ -63,9 +52,14 @@ const NewUserDialog = (props: Props) => {
                             margin="dense"
                             select
                             fullWidth
-                            value={newUserBulding}
+                            value={newUser.app_metadata?.building}
                             onChange={(e) => {
-                                setNewUserBuilding(e.target.value)
+                                const apartment = newUser.app_metadata?.apartment ? newUser.app_metadata?.apartment : ""
+                                setNewUser({
+                                    ...newUser,
+                                    name: e.target.value + apartment as string,
+                                    app_metadata: { ...newUser.app_metadata, building: e.target.value as Building }
+                                })
                             }}
                             label="Välj Byggnad"
                             helperText="Välj Byggnad"
@@ -94,7 +88,11 @@ const NewUserDialog = (props: Props) => {
                         <TextField
                             required
                             onChange={(e) => {
-                                setNewUserApt(e.target.value as string)
+                                setNewUser({
+                                    ...newUser,
+                                    name: newUser.app_metadata?.building + e.target.value as string,
+                                    app_metadata: { ...newUser.app_metadata, apartment: e.target.value }
+                                })
                             }}
                             margin="dense"
                             fullWidth

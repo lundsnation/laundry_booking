@@ -32,9 +32,10 @@ const handler = withApiAuthRequired(async (req: NextApiRequest, res: NextApiResp
             const user = req.body;
             try {
                 const response = await Auth0.postUser(user);
-                if (response.statusText === "OK") {
-                    return res.status(200).json(response.data);
+                if (response.status == 201) { //Statuscode of 201 indicates that the user was created
+                    return res.status(201).json(response.data);
                 } else {
+                    console.log("error: ", response)
                     return res.status(500).json({ error: "Kunde inte skapa användaren" });
                 }
             } catch (error) {

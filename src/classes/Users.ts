@@ -71,9 +71,6 @@ export default class Users {
         return
     }
 
-
-
-
     add(user: User): Users {
         const newUsers = new Users();
         newUsers.allUsers = [...this.allUsers, user];

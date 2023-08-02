@@ -42,6 +42,7 @@ export type TimeSlotType =
 // User object, as defined by 
 export type UserType = {
   sub?: string,
+  user_id?: string,
   name: string,
   email: string,
   app_metadata?: {
@@ -49,8 +50,11 @@ export type UserType = {
     allowedSlots?: number,
     roles?: Array<string>,
     building?: Building
+    apartment?: string
   },
   user_metadata?: { telephone?: string },
+  connection?: string,
+  email_verified?: boolean,
   password?: string
 }
 
@@ -91,17 +95,19 @@ export const timeSlots: Array<string> = ["07:00-08:30",
   "19:00-20:30",
   "20:30-22:00"]
 
-export type Building = "ARKIVET" | "GH" | " NH" | "NYA" | null
+export type Building = Arkivet | "GH" | "NH" | "NYA" | null
+type Arkivet = "A" | "B" | "C" | "D"
+
 
 // Returns an object of type building bsed on inputstring
-export function assertBuilding(buildingName: string): Building {
-  if (arkivetBuildingNames.indexOf(buildingName) > -1) {
-    return "ARKIVET"
-  } else if (isBuilding(buildingName)) {
-    return buildingName
-  }
-  return null
-}
+//export function assertBuilding(buildingName: string): Building {
+//  if (arkivetBuildingNames.indexOf(buildingName) > -1) {
+//    return "ARKIVET"
+//  } else if (isBuilding(buildingName)) {
+//    return buildingName
+//  }
+//  return null
+//}
 
 export const extractBuilding = (name: string): string => (name?.match(/[a-zA-Z]+/) || [])[0] || "";
 

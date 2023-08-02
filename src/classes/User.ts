@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 import { Building, UserEdit, UserType, ModificationObject } from "../../utils/types";
 import Booking from "./Booking";
 import { ca, th } from "date-fns/locale";
@@ -13,6 +13,8 @@ export default class User {
     private acceptedTerms?: boolean
     public allowedSlots?: number;
     private roles: string[];
+    private password?: string;
+    email_verified?: boolean;
     public connection: string;
 
 
@@ -26,8 +28,7 @@ export default class User {
 
 
 
-    constructor(name?: string, email?: string, user_id?: string, roles?: string[], building?: Building, telephone?: string, acceptedTerms?: boolean, allowedSlots?: number) {
-
+    constructor(name?: string, email?: string, user_id?: string, roles?: string[], building?: Building, telephone?: string, acceptedTerms?: boolean, allowedSlots?: number, password?: string, email_verified?: boolean) {
         this.name = name ? name : "";
         this.email = email ? email : "";
         this.user_id = user_id ? user_id : "";
@@ -37,6 +38,8 @@ export default class User {
         this.building = building;
         this.acceptedTerms = acceptedTerms ? acceptedTerms : false;
         this.connection = "Username-Password-Authentication";
+        this.password = password;
+        this.email_verified = email_verified;
     }
 
 
@@ -91,6 +94,7 @@ export default class User {
         this.allowedSlots = allowedSlots ? allowedSlots : this.allowedSlots;
         this.acceptedTerms = acceptedTerms ? acceptedTerms : this.acceptedTerms;
     }
+
     update(modification: object): void {
         //Update attributes in this instance with this.modification
         //setModification used to PATCH
@@ -106,7 +110,6 @@ export default class User {
             this.building = app_metadata.building ? app_metadata.building : this.building
             this.allowedSlots = app_metadata.allowedSlots ? app_metadata.allowedSlots : this.allowedSlots
         }
-
     }
 
     toProfile(): UserEdit {
@@ -114,12 +117,15 @@ export default class User {
     }
 
     toJSON(): UserType {
-        const { user_id, acceptedTerms, name, email, building, telephone, allowedSlots, roles } = this;
+        const { user_id, acceptedTerms, name, email, building, telephone, allowedSlots, roles, password, email_verified } = this;
 
         return {
             sub: user_id ? user_id : undefined,
             name: name,
             email: email,
+            password: password,
+            email_verified: email_verified,
+
             user_metadata: {
                 telephone: telephone ? telephone : undefined,
             },
@@ -166,7 +172,7 @@ export default class User {
         const roles: string[] = app_metadata?.roles ? app_metadata.roles : [];
         const building: Building | undefined = app_metadata?.building;
         const slots = json.app_metadata?.allowedSlots ? json.app_metadata.allowedSlots : undefined;
-        const id = sub ? sub : undefined;
+        const id = sub ? sub : json.user_id;
 
         const user = new User(
             name,
@@ -179,6 +185,21 @@ export default class User {
             slots);
 
         return user;
+    }
+
+    static fromUserType(user: UserType): User {
+        return new User(
+            user.name,
+            user.email,
+            user.sub,
+            user.app_metadata?.roles,
+            user.app_metadata?.building,
+            user.user_metadata?.telephone,
+            user.app_metadata?.acceptedTerms,
+            user.app_metadata?.allowedSlots,
+            user.password,
+            user.email_verified
+        )
     }
 
     //Borde inte behövas
@@ -243,40 +264,14 @@ export default class User {
         }
     }
 
-    // async PATCH(): Promise<Response> {
 
-    //     try {
-    //         const response = await fetch("/api/users/" + this.user_id, {
-    //             method: "PATCH",
-    //             headers: {
-    //                 "Content-Type": "application/json"
-    //             },
-    //             body: JSON.stringify(this.modification)
-    //         });
-
-    //         this.modification = {}
-
-    //         return response;
-
-    //     } catch (error) {
-    //         console.error("Error patching user:", error);
-    //         throw error;
-    //     }
-    // }
 
     //Kan bli konstigt med attributen när en användare skapas
-    async POST(): Promise<Response> {
-        const jsonUser = JSON.stringify(this.toJSON())
+    async POST(): Promise<AxiosResponse> {
+        const jsonUser = this.toJSON();
         try {
-            const response = await fetch("/api/users", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: jsonUser
-            });
+            const response = await axios.post("/api/users", jsonUser);
             return response;
-
         } catch (error) {
             console.error("Error creating user:", error);
             throw error;

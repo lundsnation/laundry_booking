@@ -58,8 +58,9 @@ class Auth0 {
     }
 
     //Ändra typ eventuellt
-    static async postUser(user: any) {
+    static async postUser(user: UserType) {
         const token = await this.fetchAccessToken();
+
         user = { ...user, connection: "Username-Password-Authentication", email_verified: true }
         const response = await axios.post(this.api_url + 'users', user, {
             headers: {
