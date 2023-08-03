@@ -4,9 +4,8 @@ import { useRouter } from 'next/router';
 import { HeaderLogo } from './HeaderLogo';
 import DesktopNav from './desktopNav/DesktopNav';
 import MobileNav from './mobileNav/MobileNav';
-import { useUser } from '@auth0/nextjs-auth0/client';
-import Loading from '../../Loading';
 import User from '../../../classes/User';
+import { getBuilding } from '../../../../utils/helperFunctions';
 
 interface Props {
     user: User;
@@ -21,7 +20,7 @@ const Header = ({ user }: Props) => {
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setAuth(event.target.checked);
     };
-    const router = useRouter()
+    const logoText = "TVÄTT " + getBuilding(user.name)
 
     const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorEl(event.currentTarget);
@@ -37,7 +36,7 @@ const Header = ({ user }: Props) => {
             <AppBar position="fixed" color="primary">
 
                 <Toolbar>
-                    <HeaderLogo logoText={"TVÄTT NATIONSHUSET"} />
+                    <HeaderLogo logoText={logoText} />
                     <DesktopNav user={user} />
                     <MobileNav user={user} />
                 </Toolbar>

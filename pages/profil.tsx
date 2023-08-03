@@ -30,9 +30,6 @@ const Profile: NextPage<Props> = ({ user }: Props) => {
         setSnack({ show: false, snackString: snack.snackString, severity: snack.severity })
     }
 
-    console.log("FROM PROFILE: " + currentUser.telephone)
-
-
     return (
         <Layout user={currentUser}>
             <Snack state={snack} handleClose={resetSnack} />

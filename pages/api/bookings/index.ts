@@ -6,6 +6,8 @@ import Booking from '../../../models/Booking'
 import { withApiAuthRequired, getSession } from "@auth0/nextjs-auth0"
 import { pusherBackend } from "../../../utils/pusherAPI"
 import { isValidPhoneNumber } from 'libphonenumber-js'
+import User from "../../../src/classes/User"
+import { getBuilding } from "../../../utils/helperFunctions"
 
 const pusher = pusherBackend();
 
@@ -14,13 +16,28 @@ const handler = withApiAuthRequired(async (req: NextApiRequest, res: NextApiResp
   const method: keyof ResponseFuncs = req.method as keyof ResponseFuncs
   const session = await getSession(req, res)
   const user = session?.user
-  const catcher = (error: Error) => res.status(400).json({ error: ERROR_MSG.GENERAL })
+
+  const catcher = (error: Error) => {
+    console.log(error)
+    res.status(400).json({ error: ERROR_MSG.GENERAL })
+  }
   await connect()
 
   const handleCase: ResponseFuncs = {
     GET: async (req: NextApiRequest, res: NextApiResponse) => {
       logRequest('GET');
-      res.status(200).json(await Booking.find({}).catch(catcher))
+      const bookingsFromLastTwoDays = await Booking.find({ date: { $gte: new Date(new Date().setDate(new Date().getDate() - 2)) } });
+      if (bookingsFromLastTwoDays) {
+        const buildingBookings = bookingsFromLastTwoDays.filter((booking) => {
+          const userBuilding = getBuilding(user?.name)
+          const bookingBuilding = getBuilding(booking.userName)
+          return userBuilding === bookingBuilding
+        })
+
+        return res.status(200).json(buildingBookings)
+      } else {
+        return res.status(400).json({ error: ERROR_MSG.NOBOOKING })
+      }
     },
 
     POST: async (req: NextApiRequest, res: NextApiResponse) => {
@@ -28,7 +45,6 @@ const handler = withApiAuthRequired(async (req: NextApiRequest, res: NextApiResp
       const { date, timeSlot, userName, createdAt } = req.body
 
       // Check too see if user has added phone Number
-      // Doesn't check if number is correctly formatted. Only done on fronted.
       const nbr = user?.user_metadata.telephone || ""
       if (!isValidPhoneNumber(nbr)) {
         return res.status(400).json({ error: ERROR_MSG.NONUMBER })
@@ -47,8 +63,15 @@ const handler = withApiAuthRequired(async (req: NextApiRequest, res: NextApiResp
         return res.status(400).json({ error: ERROR_MSG.TOOMANYSLOTS })
       }
 
-      const existingBooking = await Booking.findOne({ userName, date });
-      if (existingBooking) {
+      //
+      const dateBookings = await Booking.find({ date });
+      const buildingBookingExists = dateBookings.some((booking) => {
+        const userBuilding = getBuilding(userName)
+        const bookingBuilding = getBuilding(booking.userName)
+        return userBuilding === bookingBuilding
+      })
+
+      if (buildingBookingExists) {
         return res.status(400).json({ error: ERROR_MSG.ALREADY_BOOKED })
       }
 

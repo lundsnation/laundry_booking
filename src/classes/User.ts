@@ -1,7 +1,5 @@
 import axios, { AxiosResponse } from "axios";
 import { Building, UserEdit, UserType, ModificationObject } from "../../utils/types";
-import Booking from "./Booking";
-import { ca, th } from "date-fns/locale";
 
 
 export default class User {
@@ -50,6 +48,11 @@ export default class User {
 
     get getRoles(): string[] {
         return this.roles;
+    }
+
+    //Returns only characters in name "NH0000" => "NH"
+    get buildingFromName(): string {
+        return this.name.replace(/[^a-zA-Z]/g, "");
     }
 
 

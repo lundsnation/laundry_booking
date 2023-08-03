@@ -67,7 +67,6 @@ export default class Users {
     */
     push(users: User): void {
         this.allUsers.push(users as User);
-        console.log(this.allUsers)
         return
     }
 

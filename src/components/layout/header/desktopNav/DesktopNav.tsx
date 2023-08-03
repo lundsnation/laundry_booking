@@ -6,7 +6,7 @@ import { UserType } from '../../../../../utils/types';
 import AdminButton from './DeskAdminButton'
 import { Typography } from '@mui/material';
 import ProfileMenuButton from './ProfileMenuButton';
-import { User } from '../../../../classes/User';
+import User from "../../../../classes/User"
 
 interface Props {
     user: User

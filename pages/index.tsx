@@ -12,6 +12,7 @@ import Booking from '../models/Booking';
 import { UserType } from '../utils/types';
 import Users from '../src/classes/Users';
 import User from '../src/classes/User';
+import { getBuilding } from '../utils/helperFunctions';
 
 interface Props {
 	user: UserType;
@@ -39,14 +40,20 @@ export const getServerSideProps = withPageAuthRequired({
 	// returnTo: '/unauthorized',
 	async getServerSideProps(ctx) {
 		//If session is need
-		//const session = await getSession(ctx.req, ctx.res);
+		const session = await getSession(ctx.req, ctx.res);
 
 		await connect();
-		const bookings = await Booking.find({});
+		const bookingsFromLastTwoDays = await Booking.find({ date: { $gte: new Date(new Date().setDate(new Date().getDate() - 2)) } });
+
+		const buildingBookings = bookingsFromLastTwoDays.filter((booking) => {
+			const userBuilding = getBuilding(session?.user.name)
+			const bookingBuilding = getBuilding(booking.userName)
+			return userBuilding === bookingBuilding
+		})
+
 		return {
 			props: {
-				fetchedBookings: JSON.stringify(bookings),
-
+				fetchedBookings: JSON.stringify(buildingBookings),
 			},
 		};
 	},
