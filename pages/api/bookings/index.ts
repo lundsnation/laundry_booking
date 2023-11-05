@@ -76,7 +76,7 @@ const handler = withApiAuthRequired(async (req: NextApiRequest, res: NextApiResp
       }
 
       const json = await Booking.create(req.body).catch(catcher)
-      await pusher.trigger('bookingUpdates', 'bookingUpdate', { userName, date, timeSlot, request: 'POST' })
+      await pusher.trigger(getBuilding(userName) + 'bookingUpdates', 'bookingUpdate', { userName, date, timeSlot, request: 'POST' })
       return res.status(201).json(json)
     },
   }

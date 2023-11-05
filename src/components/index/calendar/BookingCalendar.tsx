@@ -10,6 +10,7 @@ import { Snack, SnackInterface } from "../../Snack"
 import { pusherClient } from '../../../../utils/pusherAPI'
 import Bookings from '../../../classes/Bookings';
 import TimeSlots from '../../../classes/TimeSlots';
+import {getBuilding} from "../../../../utils/helperFunctions";
 
 interface Props {
     title: string;
@@ -41,11 +42,11 @@ const BookingCalendar = (props: Props) => {
         //updateBookings();
 
         const pusher = pusherClient();
-        const pusherChannel = pusher.subscribe("bookingUpdates");
+        const pusherChannel = pusher.subscribe(getBuilding(user.name) + "bookingUpdates");
         pusherChannel.bind('bookingUpdate', (data: any) => {
             updateBookings();
             const { userName, date, timeSlot } = data
-            const isPostRequest = data.request == 'post'
+            const isPostRequest = data.request == 'POST'
             const tmpDate = new Date(date);
             const dateString = tmpDate.getFullYear() + "/" + (tmpDate.getMonth() + 1) + "/" + tmpDate.getDay() + ", " + timeSlot
             const snackString = `${userName} ${isPostRequest ? ' bokade ' : ' avbokade '} ${dateString}`
