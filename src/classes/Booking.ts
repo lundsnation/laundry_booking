@@ -1,4 +1,4 @@
-import { Building, JsonBooking, TimeSlotType } from "../../utils/types";
+import {JsonBooking, TimeSlotType} from "../../utils/types";
 import TimeSlot from "./TimeSlot";
 import TimeSlots from "./TimeSlots";
 
@@ -7,16 +7,25 @@ class Booking {
     public userName: string;
     public date: Date;
     public timeSlot: TimeSlot;
+    public createdAt?: Date;
 
-    constructor(userName: string, date: Date, timeSlot: TimeSlot, _id?: string) {
+    constructor(userName: string, date: Date, timeSlot: TimeSlot, _id?: string, createdAt?: Date) {
         this._id = _id;
         this.userName = userName;
         this.date = date;
         this.timeSlot = timeSlot;
+        this.createdAt = createdAt;
     }
 
     hasPassed(): boolean {
         return new Date().getTime() > this.date.getTime();
+    }
+
+    get building(): string {
+        const building = this.userName.replace(/[^a-zA-Z]/g, "")
+        if (["A", "B", "C", "D"].includes(building)) return "ARKIVET"
+        if (["NH", "GH", "admin"].includes(building)) return "NATIONSHUSET"
+        return "UNKNOWN";
     }
 
     isUserBooking(userName: string): boolean {
@@ -77,7 +86,7 @@ class Booking {
     }
 
     toJSON(): JsonBooking {
-        const { _id, userName, date, timeSlot } = this;
+        const {_id, userName, date, timeSlot} = this;
 
         return {
             _id: _id,
@@ -89,7 +98,7 @@ class Booking {
     }
 
     static fromJSON(json: JsonBooking): Booking {
-        const { _id, userName, date, timeSlot } = json;
+        const {_id, userName, date, timeSlot} = json;
         const dryingBooth = TimeSlots.TIME_SLOT_TO_DRYING_BOOTH.get(timeSlot as TimeSlotType) as number;
         const tmpDate = new Date(date);
         return new Booking(userName, tmpDate, new TimeSlot(timeSlot as TimeSlotType, dryingBooth, tmpDate), _id);

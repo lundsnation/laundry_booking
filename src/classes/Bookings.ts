@@ -1,6 +1,6 @@
 import axios from "axios";
 import Booking from "./Booking";
-import { JsonBooking, Building } from "../../utils/types";
+import {JsonBooking, Building} from "../../utils/types";
 
 class Bookings {
     private bookings: Booking[] = [];

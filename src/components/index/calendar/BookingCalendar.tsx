@@ -1,13 +1,13 @@
-import { StaticDatePicker, LocalizationProvider, PickersDay, PickersDayProps } from '@mui/x-date-pickers';
-import React, { useState, useEffect } from "react";
+import {StaticDatePicker, LocalizationProvider, PickersDay, PickersDayProps} from '@mui/x-date-pickers';
+import React, {useState, useEffect} from "react";
 import AdapterDateFns from '@date-io/date-fns'
-import { Grid, TextField, AlertColor, Paper, Typography, SnackbarOrigin, Badge } from "@mui/material";
+import {Grid, TextField, AlertColor, Paper, Typography, SnackbarOrigin, Badge} from "@mui/material";
 import svLocale from 'date-fns/locale/sv';
 import BookingButtonGroup from "./BookingButtonGroup";
 import BookedTimes from '../bookedTimes/BookedTimes';
-import { UserType } from "../../../../utils/types";
-import { Snack, SnackInterface } from "../../Snack"
-import { pusherClient } from '../../../../utils/pusherAPI'
+import {UserType} from "../../../../utils/types";
+import {Snack, SnackInterface} from "../../Snack"
+import {FrontendPusher, BookingUpdate} from '../../../../utils/pusherApi'
 import Bookings from '../../../classes/Bookings';
 import TimeSlots from '../../../classes/TimeSlots';
 import {getBuilding} from "../../../../utils/helperFunctions";
@@ -21,10 +21,20 @@ interface Props {
 const BookingCalendar = (props: Props) => {
     const [selectedDate, setSelectedDate] = useState<Date>(new Date());
     const [bookings, setBookings] = useState<Bookings>(props.initalBookings);
-    const [snack, setSnack] = useState<SnackInterface>({ show: false, snackString: "", severity: "success", alignment: { vertical: "bottom", horizontal: "left" } })
-    const [realtimeSnack, setRealtimeSnack] = useState<SnackInterface>({ show: false, snackString: "", severity: "success", alignment: { vertical: "bottom", horizontal: "right" } })
+    const [snack, setSnack] = useState<SnackInterface>({
+        show: false,
+        snackString: "",
+        severity: "success",
+        alignment: {vertical: "bottom", horizontal: "left"}
+    })
+    const [realtimeSnack, setRealtimeSnack] = useState<SnackInterface>({
+        show: false,
+        snackString: "",
+        severity: "success",
+        alignment: {vertical: "bottom", horizontal: "right"}
+    })
     const timeSlots = TimeSlots.getTimeSlots(selectedDate);
-    const { user } = props;
+    const {user} = props;
 
     const activeUserBookings = bookings.getActiveUserBookings(user.name)
 
@@ -41,26 +51,34 @@ const BookingCalendar = (props: Props) => {
     useEffect(() => {
         //updateBookings();
 
-        const pusher = pusherClient();
-        const pusherChannel = pusher.subscribe(getBuilding(user.name) + "bookingUpdates");
-        pusherChannel.bind('bookingUpdate', (data: any) => {
+        const frontendPusher = new FrontendPusher();
+        // const pusherChannel = pusher.subscribe(getBuilding(user.name) + "bookingUpdates");
+        const channel = frontendPusher.bookingUpdatesSubscribe(getBuilding(user.name));
+
+        channel.bind(frontendPusher.bookingUpdateEvent, (bookingUpdate: BookingUpdate) => {
             updateBookings();
-            const { userName, date, timeSlot } = data
-            const isPostRequest = data.request == 'POST'
+            const {userName, date, timeSlot, method} = bookingUpdate
+            const isPostRequest = method === frontendPusher.bookingUpdateMethod.POST
             const tmpDate = new Date(date);
             const dateString = tmpDate.getFullYear() + "/" + (tmpDate.getMonth() + 1) + "/" + tmpDate.getDay() + ", " + timeSlot
             const snackString = `${userName} ${isPostRequest ? ' bokade ' : ' avbokade '} ${dateString}`
             const myBooking = userName == user.name
-            const alignment: SnackbarOrigin = window.innerWidth > 600 ? { vertical: 'bottom', horizontal: 'right' } : { vertical: 'top', horizontal: 'right' }
+            const alignment: SnackbarOrigin = window.innerWidth > 600 ? {
+                vertical: 'bottom',
+                horizontal: 'right'
+            } : {vertical: 'top', horizontal: 'right'}
 
-            !myBooking && setRealtimeSnack({ show: true, snackString: snackString, severity: "info", alignment: alignment })
+            !myBooking && setRealtimeSnack({
+                show: true,
+                snackString: snackString,
+                severity: "info",
+                alignment: alignment
+            })
         })
 
         //Cleanup function
         return () => {
-            pusher.unbind("bookingUpdate");
-            pusher.unsubscribe("bookingUpdates");
-            pusher.disconnect();
+            frontendPusher.cleanup();
         }
     }, [])
 
@@ -141,20 +159,27 @@ const BookingCalendar = (props: Props) => {
     }
 
     const snackTrigger = (severity: AlertColor, snackString: string, alignment: SnackbarOrigin) => {
-        setSnack({ show: true, snackString: snackString, severity: severity, alignment: alignment })
+        setSnack({show: true, snackString: snackString, severity: severity, alignment: alignment})
 
     }
 
     const resetSnack = () => {
-        setSnack({ show: false, snackString: snack.snackString, severity: snack.severity, alignment: snack.alignment })
+        setSnack({show: false, snackString: snack.snackString, severity: snack.severity, alignment: snack.alignment})
     }
 
     const resetRealtimeSnack = () => {
-        setRealtimeSnack({ show: false, snackString: realtimeSnack.snackString, severity: realtimeSnack.severity, alignment: realtimeSnack.alignment })
+        setRealtimeSnack({
+            show: false,
+            snackString: realtimeSnack.snackString,
+            severity: realtimeSnack.severity,
+            alignment: realtimeSnack.alignment
+        })
     }
 
     const bookingButtonGroup = (
-        <BookingButtonGroup timeSlots={timeSlots} bookedBookings={bookings.getDateBookings(selectedDate)} selectedDate={selectedDate} user={user} updateBookings={updateBookings} snackTrigger={snackTrigger} />
+        <BookingButtonGroup timeSlots={timeSlots} bookedBookings={bookings.getDateBookings(selectedDate)}
+                            selectedDate={selectedDate} user={user} updateBookings={updateBookings}
+                            snackTrigger={snackTrigger}/>
     )
 
     return (
@@ -162,8 +187,8 @@ const BookingCalendar = (props: Props) => {
             container
             maxWidth={600}
         >
-            <Snack state={realtimeSnack} handleClose={resetRealtimeSnack} />
-            <Snack state={snack} handleClose={resetSnack} />
+            <Snack state={realtimeSnack} handleClose={resetRealtimeSnack}/>
+            <Snack state={snack} handleClose={resetSnack}/>
             <Grid container>
                 <Grid item xs={12} md={7}>
                     <Paper elevation={0} variant={"outlined"}>
@@ -189,11 +214,11 @@ const BookingCalendar = (props: Props) => {
                         </LocalizationProvider>
                     </Paper>
                 </Grid>
-                <Grid item xs={12} md={5} sx={{ pt: { xs: 2, sm: 0 } }}>
+                <Grid item xs={12} md={5} sx={{pt: {xs: 2, sm: 0}}}>
                     {bookingButtonGroup}
                 </Grid>
                 <Grid item xs={12} pt={2}>
-                    <BookedTimes activeUserBookings={activeUserBookings} user={user} snackTrigger={snackTrigger} />
+                    <BookedTimes activeUserBookings={activeUserBookings} user={user} snackTrigger={snackTrigger}/>
                 </Grid>
             </Grid>
 
