@@ -57,7 +57,7 @@ export const logRequest = (method: string) => {
                 break;
 
             default:
-                console.log("LOGGER: [ Receved unknown " + method + " request \t\t" + new Date().toLocaleString() + " ] ")
+                console.log("LOGGER: [ Received unknown " + method + " request \t\t" + new Date().toLocaleString() + " ] ")
         }
     }
 }
