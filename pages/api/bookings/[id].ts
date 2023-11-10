@@ -1,54 +1,48 @@
 import {NextApiRequest, NextApiResponse} from "next"
 import {connect} from "../../../utils/connection"
-import {logRequest} from "../../../utils/backendLogger"
-import {ERROR_MSG, ResponseFuncs} from "../../../utils/types"
 import Booking from '../../../src/backend/mongooseModels/Booking'
 import {withApiAuthRequired, getSession} from '@auth0/nextjs-auth0';
 import {BackendPusher} from '../../../utils/pusherApi'
 import {getBuilding} from "../../../utils/helperFunctions";
+import withErrorHandler from "../../../src/backend/errors/withErrorHandler";
+import HttpError from "../../../src/backend/errors/HttpError";
 
 const backendPusher = new BackendPusher();
-
-const handler = withApiAuthRequired(async (req: NextApiRequest, res: NextApiResponse) => {
-    const method: keyof ResponseFuncs = req.method as keyof ResponseFuncs
-    const catcher = (error: Error) => res.status(400).json({error: ERROR_MSG.GENERAL})
+const handler = withApiAuthRequired(withErrorHandler(async (req: NextApiRequest, res: NextApiResponse) => {
     const session = await getSession(req, res)
-    const user = session?.user.name
+    if (!session) {
+        throw new HttpError(HttpError.StatusCode.UNAUTHORIZED, "Unauthorized")
+    }
+    //Type needs to be solved here
+    const user = session.user
 
-    // GRAB ID FROM req.query (where next stores params)
-    const id: string = req.query.id as string
+    const bookingId: string = req.query.id as string
+
     // connect to database
     await connect()
-
-    // Potential Responses for /Bookings/:id
-    const handleCase: ResponseFuncs = {
-
-        GET: async (req: NextApiRequest, res: NextApiResponse) => {
-            res.json(await Booking.findById(id).catch(catcher))
-        },
-        // RESPONSE FOR DELETE REQUESTS WITH VALIDATION, CONFINED TO USER IN ACTIVE SESSION
-        DELETE: async (req: NextApiRequest, res: NextApiResponse) => {
-            const queryResult = await Booking.find({_id: id, userName: user})
+    switch (req.method) {
+        case 'GET':
+            return res.json(await Booking.findById(bookingId))
+        case 'DELETE':
+            const queryResult = await Booking.find({_id: bookingId, userName: user.userName})
             if (!queryResult) {
-                res.status(400).send({error: ERROR_MSG.NOBOOKING})
-            } else {
-                const {userName, date, timeSlot} = req.body
-                const json = await Booking.findByIdAndDelete(id)
-                await backendPusher.bookingUpdateTrigger(getBuilding(userName), {
-                    userName,
-                    date,
-                    timeSlot,
-                    method: backendPusher.bookingUpdateMethod.DELETE
-                })
-                res.status(200).json(json)
+                throw new HttpError(HttpError.StatusCode.NOT_FOUND, "Booking not found")
             }
-        },
-    }
 
-    // Check if there is a response for the particular method, if so invoke it, if not response with an error
-    const response = handleCase[method]
-    if (response) return response(req, res)
-    else return res.status(400).json({error: ERROR_MSG.NOAPIRESPONSE})
-});
+            const {userName, date, timeSlot} = req.body
+            const json = await Booking.findByIdAndDelete(bookingId)
+            await backendPusher.bookingUpdateTrigger(getBuilding(userName), {
+                userName,
+                date,
+                timeSlot,
+                method: backendPusher.bookingUpdateMethod.DELETE
+            })
+
+            return res.status(200).json(json)
+
+        default:
+            throw new HttpError(HttpError.StatusCode.NOT_FOUND, "Request method not found")
+    }
+}));
 
 export default handler

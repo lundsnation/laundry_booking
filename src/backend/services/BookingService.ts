@@ -1,5 +1,5 @@
 import IBookingService from "./IBookingService";
-import BookingDao, {IBooking} from '../mongooseModels/Booking'
+import BookingDao, {IBookingSchema} from '../mongooseModels/Booking'
 import HttpError from "../errors/HttpError";
 import {getBuilding} from "../../../utils/helperFunctions";
 import {isValidPhoneNumber} from "libphonenumber-js";
@@ -26,7 +26,7 @@ class BookingService implements IBookingService {
         });
     }
 
-    async createBooking(user: Claims, booking: IBooking): Promise<any> {
+    async createBooking(user: Claims, booking: IBookingSchema): Promise<any> {
         const nbr = user.user_metadata.telephone || ""
         //Can maybe be done in validation layer?
         if (!isValidPhoneNumber(nbr)) {
@@ -59,7 +59,9 @@ class BookingService implements IBookingService {
             throw new HttpError(HttpError.StatusCode.BAD_REQUEST, "Booking for building already exists");
         }
 
-        const json = await BookingDao.create(booking)
+        //Type should be changed to IBookingDocument
+        const json: IBookingSchema = await BookingDao.create(booking);
+
         await this.backendPusher.bookingUpdateTrigger(getBuilding(user.name), {
             userName: user.name,
             date: booking.date,

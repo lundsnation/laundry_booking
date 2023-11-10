@@ -1,6 +1,5 @@
 import {NextApiRequest, NextApiResponse} from "next"
 import {connect} from "../../../utils/connection"
-import {logRequest} from "../../../utils/backendLogger"
 import {getSession, withApiAuthRequired} from "@auth0/nextjs-auth0"
 import {getBuilding} from "../../../utils/helperFunctions"
 import BookingService from "../../../src/backend/services/BookingService";
@@ -10,11 +9,10 @@ import HttpError from "../../../src/backend/errors/HttpError";
 const bookingService = new BookingService();
 const handler = withApiAuthRequired(withErrorHandler(async (req: NextApiRequest, res: NextApiResponse) => {
     const session = await getSession(req, res)
-
     if (!session) {
         throw new HttpError(HttpError.StatusCode.UNAUTHORIZED, "Unauthorized")
     }
-
+    //Type needs to be solved here
     const user = session.user
 
     await connect()
@@ -30,7 +28,7 @@ const handler = withApiAuthRequired(withErrorHandler(async (req: NextApiRequest,
             return res.status(200).json(booking)
 
         default:
-            return res.status(405).json({error: "Http method not allowed"})
+            throw new HttpError(HttpError.StatusCode.NOT_FOUND, "Request method not found")
     }
 }));
 

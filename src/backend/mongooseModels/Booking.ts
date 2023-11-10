@@ -1,8 +1,6 @@
 import mongoose, {HydratedDocument, Model} from 'mongoose'
 
-console.log(mongoose.version)
-
-export interface IBooking {
+export interface IBookingSchema {
     userName: string,
     date: Date,
     timeSlot: string,
@@ -16,11 +14,11 @@ interface IBookingMethods {
     getBuilding(): string,
 }
 
-interface IBookingModel extends Model<IBooking, {}, IBookingMethods> {
-    findBookingsAfterDate(date: Date): HydratedDocument<IBooking, IBookingMethods>
+interface IBookingModel extends Model<IBookingSchema, {}, IBookingMethods> {
+    findBookingsAfterDate(date: Date): HydratedDocument<IBookingSchema, IBookingMethods>
 }
 
-const BookingSchema = new mongoose.Schema<IBooking, IBookingModel>(
+const BookingSchema = new mongoose.Schema<IBookingSchema, IBookingModel>(
     {
         userName: String,
         date: Date,
@@ -51,7 +49,7 @@ const BookingSchema = new mongoose.Schema<IBooking, IBookingModel>(
 
 BookingSchema.index({userName: 1, date: 1}, {unique: true});
 
-const Booking = mongoose.models.Booking as IBookingModel || mongoose.model<IBooking, IBookingModel>("Booking", BookingSchema)
+const Booking = mongoose.models.Booking as IBookingModel || mongoose.model<IBookingSchema, IBookingModel>("Booking", BookingSchema)
 
 //const Booking = mongoose.model<IBooking, IBookingModel>("Booking", BookingSchema)
 // Lyckas inte lägga till statiska metoder :/

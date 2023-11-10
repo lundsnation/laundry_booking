@@ -1,6 +1,6 @@
 import Booking from "../../classes/Booking";
 import {Claims} from "@auth0/nextjs-auth0";
-import {IBooking} from "../mongooseModels/Booking";
+import {IBookingSchema} from "../mongooseModels/Booking";
 
 interface IBookingService {
 
@@ -11,7 +11,7 @@ interface IBookingService {
 
     getBookingsByBuildingAndPostDate(building: string, date: Date): Promise<Booking[]>;
 
-    createBooking(user: Claims, booking: IBooking): Promise<Booking>;
+    createBooking(user: Claims, booking: IBookingSchema): Promise<Booking>; //Return type may need to be changed
 
     //updateBooking(id: number, booking: Booking): Promise<Booking>;
 
