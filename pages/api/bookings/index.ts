@@ -20,13 +20,11 @@ const handler = withApiAuthRequired(withErrorHandler(async (req: NextApiRequest,
     await connect()
     switch (req.method) {
         case 'GET':
-            logRequest('GET');
             const twoDaysAgo = new Date(new Date().setDate(new Date().getDate() - 2));
             const bookings = await bookingService.getBookingsByBuildingAndPostDate(getBuilding(user.name), twoDaysAgo);
             return res.status(200).json(bookings)
 
         case 'POST':
-            logRequest('POST');
             //Do we have to check if the user is trying to book for himself or someone else?
             const booking = await bookingService.createBooking(user, req.body);
             return res.status(200).json(booking)

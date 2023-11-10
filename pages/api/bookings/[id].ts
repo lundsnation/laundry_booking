@@ -24,12 +24,10 @@ const handler = withApiAuthRequired(async (req: NextApiRequest, res: NextApiResp
     const handleCase: ResponseFuncs = {
 
         GET: async (req: NextApiRequest, res: NextApiResponse) => {
-            logRequest('GET_ID')
             res.json(await Booking.findById(id).catch(catcher))
         },
         // RESPONSE FOR DELETE REQUESTS WITH VALIDATION, CONFINED TO USER IN ACTIVE SESSION
         DELETE: async (req: NextApiRequest, res: NextApiResponse) => {
-            logRequest('DELETE')
             const queryResult = await Booking.find({_id: id, userName: user})
             if (!queryResult) {
                 res.status(400).send({error: ERROR_MSG.NOBOOKING})
