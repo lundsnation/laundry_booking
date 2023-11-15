@@ -1,14 +1,5 @@
-// Interface to defining our object of response functions
-export interface ResponseFuncs {
-    GET?: Function
-    POST?: Function
-    PUT?: Function
-    DELETE?: Function
-    PATCH?: Function
-}
-
 // Type to define our Todo model on the frontend
-// export type Booking = {
+// export type MongooseBooking = {
 //   _id?: string,
 //   userName: string,
 //   date: Date,
@@ -64,40 +55,6 @@ export type UserEdit = {
     telephone?: string
 }
 
-// ENUM to keep track of button state
-export const enum BUTTON_STATES {
-    // Time is bookable == no occurence in DB
-    AVAILIBLE = 0,
-    // Time is non-bookable for user == Occurence in DB from another user
-    UNAVAILIBLE = 1,
-    // Time can be cancelled by user == Occurence in DB from this user
-    EDITABLE = 2
-}
-
-/**
- * Function used for setting the correct time in the booking in DB
- */
-//export function timeFromTimeSlot(date: Date, timeSlot: string) {
-//  // Aquire date, generates date at 00:00
-//  const tempDate = new Date(date.getFullYear(), date.getMonth(), date.getDate())
-//  const newTime = tempDate.getTime() + convTimes[timeSlots.indexOf(timeSlot)]
-//  return new Date(newTime)
-//}
-
-/**
- * Array containing the desired timeslots
- */
-export const timeSlots: Array<string> = ["07:00-08:30",
-    "08:30-10:00",
-    "10:00-11:30",
-    "11:30-13:00",
-    "13:00-14:30",
-    "14:30-16:00",
-    "16:00-17:30",
-    "17:30-19:00",
-    "19:00-20:30",
-    "20:30-22:00"]
-
 export type Building = Arkivet | "GH" | "NH" | "NYA" | "ARKIVET" | null
 type Arkivet = "A" | "B" | "C" | "D"
 
@@ -137,20 +94,12 @@ export const enum ERROR_MSG {
     // General error
     GENERAL = "Internt fel",
     // User tries to exceed allowedSlots
-    TOOMANYSLOTS = "Max antal tider bokade",
-    // User tries to book slot in the past
-    SLOTINPAST = "Du kan inte boka en tid som passerat",
     // No response for this request
     NOAPIRESPONSE = "Felaktigt anrop",
-    // User tried to delete booking that doesn't exist
-    NOBOOKING = "Bokningen existerar ej",
     // User is not authorized
     NOTAUTHORIZED = "Du är ej behörig",
     // Error recieved from Auth0
     AUTH0RESPONSEERROR = "Kunde inte updatera användaren",
     // User needs to add phone number
-    NONUMBER = "Lägg till telefonnummer i profil för att kunna göra bokningar.",
-    //THe time is already booked
-    ALREADY_BOOKED = "Tiden är redan bokad",
 }
 
