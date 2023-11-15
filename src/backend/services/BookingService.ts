@@ -1,32 +1,60 @@
 import IBookingService from "./IBookingService";
-import BookingDao, {IBookingSchema} from '../mongooseModels/Booking'
+import BookingDao, {IBooking} from '../mongooseModels/MongooseBooking'
 import HttpError from "../errors/HttpError";
 import {getBuilding} from "../../../utils/helperFunctions";
 import {isValidPhoneNumber} from "libphonenumber-js";
 import {Claims} from "@auth0/nextjs-auth0";
 import {BackendPusher} from "../../../utils/pusherApi";
+import {BookingDocument} from "../mongooseModels/MongooseBooking";
 
 class BookingService implements IBookingService {
-
     private backendPusher: BackendPusher
 
     constructor() {
         this.backendPusher = new BackendPusher()
     }
 
-    async getBookingsByBuildingAndPostDate(building: string, date: Date): Promise<any> {
-        const bookingsPostDate = await BookingDao.find({date: {$gte: date}});
+    async deleteBooking(id: string, username: string): Promise<void> {
+        const bookingDoc = await this.getBookingById(id);
+
+        if (bookingDoc.userName !== username) {
+            throw new HttpError(HttpError.StatusCode.FORBIDDEN, "User does not own booking")
+        }
+
+        await BookingDao.findByIdAndDelete(id)
+        await this.backendPusher.bookingUpdateTrigger(getBuilding(username), {
+            userName: username,
+            date: bookingDoc.date,
+            timeSlot: bookingDoc.timeSlot,
+            method: this.backendPusher.bookingUpdateMethod.DELETE
+        })
+    }
+
+    async getBookingById(id: string): Promise<BookingDocument> {
+        const bookingDoc = await BookingDao.findById(id);
+
+        if (!bookingDoc) {
+            throw new HttpError(HttpError.StatusCode.NOT_FOUND, "MongooseBooking not found");
+        }
+
+        return bookingDoc;
+    }
+
+    async getBookingsByBuildingAndPostDate(building: string, date: Date): Promise<BookingDocument[]> {
+        const bookingsPostDate = await BookingDao.findBookingsAfterDate(date);
 
         if (bookingsPostDate.length === 0) {
             throw new HttpError(HttpError.StatusCode.NOT_FOUND, "No bookings found");
         }
 
-        return bookingsPostDate.filter((booking) => {
-            return getBuilding(booking.userName) === building;
+        const bookingsByBuildingAndPostDate = bookingsPostDate.filter((booking) => {
+            return booking.getBuilding() === building
         });
+
+        return bookingsByBuildingAndPostDate;
     }
 
-    async createBooking(user: Claims, booking: IBookingSchema): Promise<any> {
+    async createBooking(user: Claims, booking: IBooking): Promise<BookingDocument> {
         const nbr = user.user_metadata.telephone || ""
         //Can maybe be done in validation layer?
         if (!isValidPhoneNumber(nbr)) {
@@ -36,7 +64,7 @@ class BookingService implements IBookingService {
         // Initial  check if booking-request is in the past => invalid
         // Should be handled in validation
         if (new Date(booking.date).getTime() < Date.now()) {
-            throw new HttpError(HttpError.StatusCode.BAD_REQUEST, "Booking date is in the past");
+            throw new HttpError(HttpError.StatusCode.BAD_REQUEST, "MongooseBooking date is in the past");
         }
 
         // Fetching allowed slots from active user session. If undefined, defaults to 1
@@ -53,14 +81,14 @@ class BookingService implements IBookingService {
             const userBuilding = getBuilding(user.name)
             const bookingBuilding = booking.getBuilding()
             return userBuilding === bookingBuilding
-        })
+        });
 
         if (buildingBookingExists) {
-            throw new HttpError(HttpError.StatusCode.BAD_REQUEST, "Booking for building already exists");
+            throw new HttpError(HttpError.StatusCode.BAD_REQUEST, "MongooseBooking for building already exists");
         }
 
         //Type should be changed to IBookingDocument
-        const json: IBookingSchema = await BookingDao.create(booking);
+        const bookingDoc: BookingDocument = await BookingDao.create(booking);
 
         await this.backendPusher.bookingUpdateTrigger(getBuilding(user.name), {
             userName: user.name,
@@ -69,7 +97,7 @@ class BookingService implements IBookingService {
             method: this.backendPusher.bookingUpdateMethod.POST
         })
 
-        return json
+        return bookingDoc
     }
 }
 

@@ -8,15 +8,14 @@ import Layout from '../src/components/layout/Layout';
 import {getSession, withPageAuthRequired} from '@auth0/nextjs-auth0';
 import {connect} from "../utils/connection";
 import Bookings from '../src/classes/Bookings';
-import Booking from '../src/backend/mongooseModels/Booking';
+import MongooseBooking from '../src/backend/mongooseModels/MongooseBooking';
 import {UserType} from '../utils/types';
-import Users from '../src/classes/Users';
 import User from '../src/classes/User';
 import {getBuilding} from '../utils/helperFunctions';
 
 interface Props {
     user: UserType;
-    fetchedBookings: string; // Update the type of 'bookings' array according to your Booking model
+    fetchedBookings: string; // Update the type of 'bookings' array according to your MongooseBooking model
 }
 
 const Index: NextPage<Props> = ({user, fetchedBookings}: Props) => {
@@ -43,7 +42,7 @@ export const getServerSideProps = withPageAuthRequired({
         const session = await getSession(ctx.req, ctx.res);
 
         await connect();
-        const bookingsFromLastTwoDays = await Booking.find({date: {$gte: new Date(new Date().setDate(new Date().getDate() - 2))}});
+        const bookingsFromLastTwoDays = await MongooseBooking.find({date: {$gte: new Date(new Date().setDate(new Date().getDate() - 2))}});
 
         const buildingBookings = bookingsFromLastTwoDays.filter((booking) => {
             const userBuilding = getBuilding(session?.user.name)

@@ -12,6 +12,8 @@ const handler = withApiAuthRequired(withErrorHandler(async (req: NextApiRequest,
     if (!session) {
         throw new HttpError(HttpError.StatusCode.UNAUTHORIZED, "Unauthorized")
     }
+
+
     //Type needs to be solved here
     const user = session.user
 

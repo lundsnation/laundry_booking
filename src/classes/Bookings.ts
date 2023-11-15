@@ -1,6 +1,6 @@
 import axios from "axios";
 import Booking from "./Booking";
-import {JsonBooking, Building} from "../../utils/types";
+import {JsonBooking} from "../../utils/types";
 
 class Bookings {
     private bookings: Booking[] = [];
@@ -63,7 +63,7 @@ class Bookings {
             // Create a new instance of Bookings
             const bookings = new Bookings();
 
-            // Map the retrieved data to Booking instances and update the bookings array
+            // Map the retrieved data to MongooseBooking instances and update the bookings array
             bookings.bookings = data.map((bookingData: JsonBooking) =>
                 Booking.fromJSON(bookingData)
             );

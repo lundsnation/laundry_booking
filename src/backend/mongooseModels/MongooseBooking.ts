@@ -1,29 +1,29 @@
 import mongoose, {HydratedDocument, Model} from 'mongoose'
 
-export interface IBookingSchema {
+export interface IBooking {
     userName: string,
     date: Date,
     timeSlot: string,
     createdAt: Date,
-
-    getBuild(): string []
-
 }
 
 interface IBookingMethods {
     getBuilding(): string,
 }
 
-interface IBookingModel extends Model<IBookingSchema, {}, IBookingMethods> {
-    findBookingsAfterDate(date: Date): HydratedDocument<IBookingSchema, IBookingMethods>
+export interface IBookingModel extends Model<IBooking, {}, IBookingMethods> {
+    findBookingsAfterDate(date: Date): Promise<BookingDocument[]>
 }
 
-const BookingSchema = new mongoose.Schema<IBookingSchema, IBookingModel>(
+export type BookingDocument = HydratedDocument<IBooking, IBookingMethods>
+
+
+export const BookingSchema = new mongoose.Schema<IBooking, IBookingModel>(
     {
-        userName: String,
-        date: Date,
-        timeSlot: String,
-        createdAt: Date,
+        userName: {type: String, required: true},
+        date: {type: Date, required: true},
+        timeSlot: {type: String, required: true},
+        createdAt: {type: Date, required: true},
     },
     {
         methods: {
@@ -49,9 +49,6 @@ const BookingSchema = new mongoose.Schema<IBookingSchema, IBookingModel>(
 
 BookingSchema.index({userName: 1, date: 1}, {unique: true});
 
-const Booking = mongoose.models.Booking as IBookingModel || mongoose.model<IBookingSchema, IBookingModel>("Booking", BookingSchema)
+const MongooseBooking = mongoose.models.Booking as IBookingModel || mongoose.model<IBooking, IBookingModel>("MongooseBooking", BookingSchema)
 
-//const Booking = mongoose.model<IBooking, IBookingModel>("Booking", BookingSchema)
-// Lyckas inte lägga till statiska metoder :/
-
-export default Booking;
+export default MongooseBooking;
