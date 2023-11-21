@@ -1,12 +1,12 @@
 import BookingButton from "./BookingButton";
-import { ButtonGroup, AlertColor, SnackbarOrigin } from "@mui/material";
-import { UserType } from "../../../../utils/types";
-import Bookings from "../../../classes/Bookings";
+import {ButtonGroup, AlertColor, SnackbarOrigin} from "@mui/material";
+import {UserType} from "../../../../utils/types";
+import BookingsUtil from "../../../classes/BookingsUtil";
 import Booking from "../../../classes/Booking";
 import TimeSlot from "../../../classes/TimeSlot";
 
 interface Props {
-    bookedBookings: Bookings;
+    bookedBookings: BookingsUtil;
     timeSlots: TimeSlot[];
     selectedDate: Date;
     user: UserType;
@@ -15,13 +15,12 @@ interface Props {
 }
 
 const BookingButtonGroup = (props: Props) => {
-    const { bookedBookings, timeSlots, selectedDate, user, updateBookings, snackTrigger } = props;
+    const {bookedBookings, timeSlots, selectedDate, user, updateBookings, snackTrigger} = props;
     const buttons = timeSlots.map((timeSlot) => {
 
         const booking = bookedBookings.find((bookedBooking) => {
-            return bookedBooking.hasTimeSlot(timeSlot.getTimeSlot())
-        }
-
+                return bookedBooking.hasTimeSlot(timeSlot.getTimeSlot())
+            }
         );
 
         const dryingBoothNbr = timeSlot.getDryingBooth();

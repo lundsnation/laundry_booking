@@ -1,26 +1,29 @@
 import {StaticDatePicker, LocalizationProvider, PickersDay, PickersDayProps} from '@mui/x-date-pickers';
 import React, {useState, useEffect} from "react";
 import AdapterDateFns from '@date-io/date-fns'
-import {Grid, TextField, AlertColor, Paper, Typography, SnackbarOrigin, Badge} from "@mui/material";
+import {Grid, TextField, AlertColor, Paper, SnackbarOrigin, Badge} from "@mui/material";
 import svLocale from 'date-fns/locale/sv';
 import BookingButtonGroup from "./BookingButtonGroup";
 import BookedTimes from '../bookedTimes/BookedTimes';
-import {UserType} from "../../../../utils/types";
 import {Snack, SnackInterface} from "../../Snack"
 import {FrontendPusher, BookingUpdate} from '../../../../utils/pusherApi'
-import Bookings from '../../../classes/Bookings';
+import BookingsUtil from '../../../classes/BookingsUtil';
 import TimeSlots from '../../../classes/TimeSlots';
 import {getBuilding} from "../../../../utils/helperFunctions";
+import User from "../../../classes/User";
+import Config from "../../../Configs/Config";
+import Booking from "../../../classes/Booking";
+import BackendAPI from "../../../../utils/BackendAPI";
 
 interface Props {
-    title: string;
-    user: UserType;
-    initalBookings: Bookings
+    user: User;
+    initialBookings: Booking[]
+    config: Config
 }
 
-const BookingCalendar = (props: Props) => {
+const BookingCalendar = ({user, initialBookings, config}: Props) => {
     const [selectedDate, setSelectedDate] = useState<Date>(new Date());
-    const [bookings, setBookings] = useState<Bookings>(props.initalBookings);
+    const [bookings, setBookings] = useState<Booking[]>(initialBookings);
     const [snack, setSnack] = useState<SnackInterface>({
         show: false,
         snackString: "",
@@ -34,19 +37,16 @@ const BookingCalendar = (props: Props) => {
         alignment: {vertical: "bottom", horizontal: "right"}
     })
     const timeSlots = TimeSlots.getTimeSlots(selectedDate);
-    const {user} = props;
 
-    const activeUserBookings = bookings.getActiveUserBookings(user.name)
-
+    const activeUserBookings = user.activeBookings;
     const updateBookings = async () => {
         try {
-            const bookings = await Bookings.fetch();
+            const bookings = await BackendAPI.fetchBookings();
             setBookings(bookings);
         } catch (error) {
             console.error("Error updating bookings:", error);
         }
     };
-
 
     useEffect(() => {
         //updateBookings();
@@ -88,11 +88,9 @@ const BookingCalendar = (props: Props) => {
         let hasBookingOnDay = false;
         let nbrBookedTimes: number = 0;
 
-        /*If it's not an old date we calculate the number of booknings for that day,
-        else we let nbrBookedTimes = 0, which means it wont get any color */
+        /*If it's not an old date we calculate the number of bookings for that day,
+        else we let nbrBookedTimes = 0, which means it won't get any color */
         !oldDate && bookings.forEach(booking => {
-
-
             if (booking.isSameDate(day)) {
                 nbrBookedTimes += 1;
 
@@ -177,7 +175,8 @@ const BookingCalendar = (props: Props) => {
     }
 
     const bookingButtonGroup = (
-        <BookingButtonGroup timeSlots={timeSlots} bookedBookings={bookings.getDateBookings(selectedDate)}
+        <BookingButtonGroup timeSlots={timeSlots}
+                            bookedBookings={BookingsUtil.getBookingsByDate(bookings, selectedDate)}
                             selectedDate={selectedDate} user={user} updateBookings={updateBookings}
                             snackTrigger={snackTrigger}/>
     )
@@ -221,8 +220,6 @@ const BookingCalendar = (props: Props) => {
                     <BookedTimes activeUserBookings={activeUserBookings} user={user} snackTrigger={snackTrigger}/>
                 </Grid>
             </Grid>
-
-
         </Grid>
     );
 }

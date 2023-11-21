@@ -1,23 +1,23 @@
-import { Button, Paper, AlertColor, Grid, IconButton, Typography, SnackbarOrigin, Tooltip } from "@mui/material"
+import {Button, Paper, AlertColor, Grid, IconButton, Typography, SnackbarOrigin, Tooltip} from "@mui/material"
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
-import React, { useEffect, useState } from "react";
+import React, {useState} from "react";
 import BookingInfo from "./BookingInfo"
-import { UserType } from "../../../../utils/types";
 import ConfirmBooking from "../ConfirmBooking";
 import Booking from "../../../classes/Booking";
 import TimeSlot from "../../../classes/TimeSlot";
+import User from "../../../classes/User";
 
 interface Props {
-    boothIndex: number,
-    user: UserType;
+    user: User;
     booking: Booking | null;
     selectedDate: Date;
     timeSlot: TimeSlot;
     updateBookings: () => void;
     snackTrigger: (severity: AlertColor, snackString: string, alignment: SnackbarOrigin) => void;
 }
+
 const BookingButton = (props: Props) => {
-    const { boothIndex, user, booking, selectedDate, timeSlot, snackTrigger } = props
+    const {user, booking, selectedDate, timeSlot, snackTrigger} = props
     const [openConfirmation, setOpenConfirmation] = useState<boolean>(false);
     const [showBookingInfo, setShowBookingInfo] = useState<boolean>(false)
 
@@ -65,18 +65,19 @@ const BookingButton = (props: Props) => {
                             <Button
                                 fullWidth
                                 size="small"
-                                sx={{ height: { xs: 45, sm: '33.45px' }, borderRadius: 0 }}
+                                sx={{height: {xs: 45, sm: '33.45px'}, borderRadius: 0}}
                                 variant="contained"
                                 onClick={() => handleOpenConfirmation(true)}
                                 color={!booking ? 'primary' : 'secondary'}
                                 disabled={(booking && !myTimeSlot) || timeSlot.hasPassed()}
                             >
-                                <Grid container >
-                                    <Grid item xs={7} >
+                                <Grid container>
+                                    <Grid item xs={7}>
                                         <Typography variant="button" align="left">{timeSlot.toString()}</Typography>
                                     </Grid>
                                     <Grid item xs={5}>
-                                        <Typography variant="button" align="left" sx={{ textTransform: "none" }}>Bås {" " + boothIndex}</Typography>
+                                        <Typography variant="button" align="left"
+                                                    sx={{textTransform: "none"}}>Bås {" " + timeSlot.getDryingBooth()}</Typography>
                                     </Grid>
                                 </Grid>
 
@@ -90,11 +91,13 @@ const BookingButton = (props: Props) => {
                 <Tooltip title={'Tryck för att visa info om bokning'} placement={'right'}>
                     <span>
                         <IconButton
-                            onClick={() => { setShowBookingInfo(true) }}
-                            style={{ height: 33.4, width: 20 }}
+                            onClick={() => {
+                                setShowBookingInfo(true)
+                            }}
+                            style={{height: 33.4, width: 20}}
                         >
                             {
-                                (booking && !myTimeSlot) ? <InfoOutlinedIcon color="action" /> : null
+                                (booking && !myTimeSlot) ? <InfoOutlinedIcon color="action"/> : null
                             }
                         </IconButton>
                     </span>
@@ -108,9 +111,9 @@ const BookingButton = (props: Props) => {
                         setShowBookingInfo={setShowBookingInfo}
                     />
                 }
-            </Grid >
+            </Grid>
 
-        </Grid >
+        </Grid>
     );
 };
 

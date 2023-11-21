@@ -1,61 +1,72 @@
-import * as React from 'react';
+import React, {useState, useEffect} from 'react';
 import type {NextPage} from 'next';
 import {Grid} from '@mui/material';
 import BookingCalendar from '../src/components/index/calendar/BookingCalendar';
 import Terms from '../src/components/Terms';
 import Rules from '../src/components/rules/Rules';
 import Layout from '../src/components/layout/Layout';
-import {getSession, withPageAuthRequired} from '@auth0/nextjs-auth0';
-import {connect} from "../utils/connection";
-import Bookings from '../src/classes/Bookings';
-import MongooseBooking from '../src/backend/mongooseModels/MongooseBooking';
-import {UserType} from '../utils/types';
-import User from '../src/classes/User';
-import {getBuilding} from '../utils/helperFunctions';
+import User, {JsonUser} from '../src/classes/User';
+import ArkivetConfig from "../src/Configs/ArkivetConfig";
+import NationshusetConfig from "../src/Configs/NationshusetConfig";
+import {useUser} from '@auth0/nextjs-auth0/client';
+import Loading from "../src/components/Loading";
+import router from 'next/router';
+import backendAPI from "../utils/BackendAPI";
+import Booking from "../src/classes/Booking";
+// ... other imports
 
-interface Props {
-    user: UserType;
-    fetchedBookings: string; // Update the type of 'bookings' array according to your MongooseBooking model
-}
 
-const Index: NextPage<Props> = ({user, fetchedBookings}: Props) => {
-    const bookings = Bookings.fromJSON(JSON.parse(fetchedBookings));
-    const userFromType = User.fromJSON(user)
-    const [currentUser, setCurrentUser] = React.useState<User>(userFromType);
+const Index: NextPage = () => {
+    const {user, error, isLoading: userIsLoading} = useUser();
+    const [initialBookings, setInitialBookings] = useState<Booking[]>([]);
+    const [userBookings, setUserBookings] = useState<Booking[]>([]);
+    const [fetchingBookings, setFetchingBookings] = useState<boolean>(false);
 
+    useEffect(() => {
+        if (user && !userIsLoading) {
+            // Fetch initial bookings here
+            fetchData().then(r => console.log("Initial bookings fetched"));
+        }
+    }, [user, userIsLoading]);
+
+    console.log(user)
+
+    if (userIsLoading || fetchingBookings) return <Loading/>;
+    if (error) return <div>{error.message}</div>;
+    if (!user) {
+        router.push('/api/auth/login');
+        return null; // Add this to prevent the component from rendering further
+    }
+
+    // Use optional chaining to handle cases where user might be undefined
+    const userClass = new User(user as JsonUser,);
+
+    const config = userClass.building === 'ARKIVET' ? new ArkivetConfig() : new NationshusetConfig();
+
+    const fetchData = async () => {
+        try {
+            setFetchingBookings(true);
+            // Make your API call to fetch initial bookings
+            // For example, if you have a method like fetchInitialBookings
+            const bookings = await backendAPI.fetchBookings();
+            const userBookings = await backendAPI.fetchBookingsByUser(userClass.name);
+            setInitialBookings(bookings);
+        } catch (error) {
+            console.error("Error fetching initial bookings:", error);
+        } finally {
+            setFetchingBookings(false);
+        }
+    };
 
     return (
-        <Layout user={currentUser}>
-            <Terms user={user}/>
+        <Layout user={userClass}>
+            <Terms user={userClass}/>
             <Rules/>
             <Grid container px={1} marginY={10}>
-                <BookingCalendar title="" user={user} initalBookings={bookings}/>
+                <BookingCalendar user={userClass} config={config} initialBookings={initialBookings}/>
             </Grid>
         </Layout>
     );
-};
-
-export const getServerSideProps = withPageAuthRequired({
-    // returnTo: '/unauthorized',
-    async getServerSideProps(ctx) {
-        //If session is need
-        const session = await getSession(ctx.req, ctx.res);
-
-        await connect();
-        const bookingsFromLastTwoDays = await MongooseBooking.find({date: {$gte: new Date(new Date().setDate(new Date().getDate() - 2))}});
-
-        const buildingBookings = bookingsFromLastTwoDays.filter((booking) => {
-            const userBuilding = getBuilding(session?.user.name)
-            const bookingBuilding = getBuilding(booking.userName)
-            return userBuilding === bookingBuilding
-        })
-
-        return {
-            props: {
-                fetchedBookings: JSON.stringify(buildingBookings),
-            },
-        };
-    },
-});
+}
 
 export default Index;

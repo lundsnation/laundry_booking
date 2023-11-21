@@ -1,25 +1,24 @@
-import { Typography } from "@mui/material";
-import { withPageAuthRequired, getSession } from '@auth0/nextjs-auth0';
+import {Typography} from "@mui/material";
+import {withPageAuthRequired, getSession} from '@auth0/nextjs-auth0';
 import UserGrid from "../src/components/admin/UserGrid";
-import { Grid } from "@mui/material";
+import {Grid} from "@mui/material";
 import Layout from "../src/components/layout/Layout";
-import { UserType } from "../utils/types";
-import User from "../src/classes/User";
+import User, {JsonUser} from "../src/classes/User";
 import Auth0 from "../src/classes/Auth0";
 import Users from "../src/classes/Users";
 
 interface Props {
-    user: UserType;
+    user: JsonUser;
     jsonUsers: string;
 }
 
 // ... (other imports and code remain unchanged)
 
-const Admin = ({ user, jsonUsers }: Props) => {
-    const currentUser = User.fromJSON(user as UserType);
+const Admin = ({user, jsonUsers}: Props) => {
+    const currentUser = new User(user);
 
     // Guard protecting the page    
-    if (!currentUser.getRoles.includes('admin')) {
+    if (!currentUser.app_metadata.roles.includes('admin')) {
         return (
             <Layout user={currentUser as User}>
                 <Typography variant={'h1'}>Ej auktoriserad</Typography>
@@ -29,12 +28,13 @@ const Admin = ({ user, jsonUsers }: Props) => {
 
 
     const initUsers = Users.fromJSON(JSON.parse(jsonUsers));
+    console.log(initUsers)
 
     return (
         <Layout user={currentUser}>
             <Grid container justifyContent="center">
-                <Grid item xs={12} sx={{ px: { xs: 1 } }}>
-                    <UserGrid user={currentUser} initUsers={initUsers} />
+                <Grid item xs={12} sx={{px: {xs: 1}}}>
+                    <UserGrid user={currentUser} initUsers={initUsers}/>
                 </Grid>
             </Grid>
         </Layout>

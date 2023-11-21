@@ -2,9 +2,9 @@ import * as React from 'react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import router from 'next/router';
-import { UserType } from '../../../../../utils/types';
+import {UserType} from '../../../../../utils/types';
 import AdminButton from './DeskAdminButton'
-import { Typography } from '@mui/material';
+import {Typography} from '@mui/material';
 import ProfileMenuButton from './ProfileMenuButton';
 import User from "../../../../classes/User"
 
@@ -19,8 +19,8 @@ type NavItem = {
 
 //Admin button is added separately as it is special, same with profileButton
 const navItems: Array<NavItem> = [
-    { navText: 'Boka', navLink: "/" },
-    { navText: 'Regler', navLink: "/regler" },
+    {navText: 'Boka', navLink: "/"},
+    {navText: 'Regler', navLink: "/regler"},
 ];
 
 const DesktopNav = (props: Props) => {
@@ -32,12 +32,12 @@ const DesktopNav = (props: Props) => {
 
     //Borde ha user.role == admin, så kan vilket konto som helst vara ett adminkonto?
     return (
-        <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
-            {navItems.map(({ navText, navLink }) => (
+        <Box sx={{display: {xs: 'none', sm: 'block'}}}>
+            {navItems.map(({navText, navLink}) => (
                 <Button
                     color={"inherit"}
                     key={navText}
-                    sx={{ mx: 2 }}
+                    sx={{mx: 2}}
                     onClick={() => onClick(navLink)}
                 >
                     <Typography
@@ -47,9 +47,9 @@ const DesktopNav = (props: Props) => {
                     </Typography>
                 </Button>
             ))}
-            {user.getRoles.includes("admin") && <AdminButton />}
-            <ProfileMenuButton user={user} />
-        </Box >
+            {user.app_metadata.roles.includes("admin") && <AdminButton/>}
+            <ProfileMenuButton user={user}/>
+        </Box>
     );
 }
 

@@ -1,6 +1,6 @@
 import {NextApiRequest, NextApiResponse} from "next"
 import {connect} from "../../../utils/connection"
-import {getSession, withApiAuthRequired} from "@auth0/nextjs-auth0"
+import {Claims, getSession, withApiAuthRequired} from "@auth0/nextjs-auth0"
 import {getBuilding} from "../../../utils/helperFunctions"
 import BookingService from "../../../src/backend/services/BookingService";
 import withErrorHandler from "../../../src/backend/errors/withErrorHandler";
@@ -12,10 +12,8 @@ const handler = withApiAuthRequired(withErrorHandler(async (req: NextApiRequest,
     if (!session) {
         throw new HttpError(HttpError.StatusCode.UNAUTHORIZED, "Unauthorized")
     }
+    const user: Claims = session.user
 
-
-    //Type needs to be solved here
-    const user = session.user
 
     await connect()
     switch (req.method) {

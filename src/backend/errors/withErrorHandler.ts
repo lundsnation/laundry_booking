@@ -8,7 +8,7 @@ interface IFunction {
 
 function withErrorHandler(fn: IFunction) {
     return async function async(req: NextApiRequest, res: NextApiResponse) {
-        
+
         try {
             return await fn(req, res);
         } catch (error) {

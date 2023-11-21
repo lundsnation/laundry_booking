@@ -34,8 +34,8 @@ class User {
     readonly app_metadata: AppMetadata
     readonly user_metadata: UserMetadata
     readonly updated_at: Date
-    private activeBookings: Booking[] = []
-    private pastBookings: Booking[] = []
+    readonly activeBookings: Booking[] = []
+    readonly pastBookings: Booking[] = []
 
     constructor(user: JsonUser, userBookings: Booking[] = []) {
         this.id = user.sub

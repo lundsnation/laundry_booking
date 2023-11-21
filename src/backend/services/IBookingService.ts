@@ -2,7 +2,7 @@ import {Claims} from "@auth0/nextjs-auth0";
 import {BookingDocument, IBooking} from "../mongooseModels/MongooseBooking";
 
 interface IBookingService {
-    getBookingsByUser(user: Claims): Promise<BookingDocument[]>;
+    getBookingsByUsername(username: string): Promise<BookingDocument[]>;
 
     getBookingById(id: string): Promise<BookingDocument>;
 
