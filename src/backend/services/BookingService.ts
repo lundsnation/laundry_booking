@@ -1,17 +1,26 @@
 import IBookingService from "./IBookingService";
-import BookingDao, {IBooking} from '../mongooseModels/MongooseBooking'
+import BookingDao, {BookingDocument, IBooking} from '../mongooseModels/MongooseBooking'
 import HttpError from "../errors/HttpError";
 import {getBuilding} from "../../../utils/helperFunctions";
 import {isValidPhoneNumber} from "libphonenumber-js";
 import {Claims} from "@auth0/nextjs-auth0";
 import {BackendPusher} from "../../../utils/pusherApi";
-import {BookingDocument} from "../mongooseModels/MongooseBooking";
 
 class BookingService implements IBookingService {
     private backendPusher: BackendPusher
 
     constructor() {
         this.backendPusher = new BackendPusher()
+    }
+
+    async getBookingsByUsername(username: string): Promise<BookingDocument[]> {
+        const bookings = await BookingDao.find({userName: username});
+
+        if (bookings.length === 0) {
+            throw new HttpError(HttpError.StatusCode.NOT_FOUND, "No bookings found");
+        }
+
+        return bookings;
     }
 
     async deleteBooking(id: string, username: string): Promise<void> {
@@ -47,11 +56,9 @@ class BookingService implements IBookingService {
             throw new HttpError(HttpError.StatusCode.NOT_FOUND, "No bookings found");
         }
 
-        const bookingsByBuildingAndPostDate = bookingsPostDate.filter((booking) => {
+        return bookingsPostDate.filter((booking) => {
             return booking.getBuilding() === building
         });
-
-        return bookingsByBuildingAndPostDate;
     }
 
     async createBooking(user: Claims, booking: IBooking): Promise<BookingDocument> {

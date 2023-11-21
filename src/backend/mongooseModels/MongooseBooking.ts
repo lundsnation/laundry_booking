@@ -49,6 +49,6 @@ export const BookingSchema = new mongoose.Schema<IBooking, IBookingModel>(
 
 BookingSchema.index({userName: 1, date: 1}, {unique: true});
 
-const MongooseBooking = mongoose.models.Booking as IBookingModel || mongoose.model<IBooking, IBookingModel>("MongooseBooking", BookingSchema)
+const MongooseBooking = mongoose.models.Booking as IBookingModel || mongoose.model<IBooking, IBookingModel>("Booking", BookingSchema)
 
 export default MongooseBooking;
