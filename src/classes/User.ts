@@ -12,6 +12,7 @@ type UserMetadata = {
 }
 
 export type JsonUser = {
+    sid: string,
     sub: string,
     name: string,
     nickname: string,
@@ -57,10 +58,9 @@ class User {
         return "UNKNOWN"
     }
 
-    toJSON(): JsonUser {
+    toJSON() {
         return {
-            sub: this.sub,
-            sid: this.sid,
+            id: this.id,
             name: this.name,
             nickname: this.nickname,
             email: this.email,
