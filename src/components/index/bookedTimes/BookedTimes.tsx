@@ -1,14 +1,13 @@
 import React from "react";
 import {Card, Box, Grid, Divider, AlertColor, Typography, List, ListItem, SnackbarOrigin} from "@mui/material";
-import {UserType} from "../../../../utils/types";
 import BookedTimesItem from "./BookedTimesItem";
-import BookingsUtil from "../../../classes/BookingsUtil";
 import Booking from "../../../classes/Booking";
+import User from "../../../classes/User";
 
 
 interface Props {
     activeUserBookings: Booking[],
-    user: UserType,
+    user: User,
     snackTrigger: (severity: AlertColor, snackString: string, alignment: SnackbarOrigin) => void
 }
 
@@ -19,7 +18,7 @@ const BookedTimes = ({activeUserBookings, user, snackTrigger}: Props) => {
         return (
             activeUserBookings.length ?
                 <BookedTimesItem
-                    key={booking.date.toString() + idx}
+                    key={booking.startTime.toString() + idx}
                     userBooking={booking}
                     user={user}
                     snackTrigger={snackTrigger}
@@ -31,7 +30,6 @@ const BookedTimes = ({activeUserBookings, user, snackTrigger}: Props) => {
                 </ListItem>
         )
     });
-
 
     return (
         <Card variant={"outlined"}>

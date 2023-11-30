@@ -12,13 +12,13 @@ const handler = withApiAuthRequired(withErrorHandler(async (req: NextApiRequest,
         throw new HttpError(HttpError.StatusCode.UNAUTHORIZED, "Unauthorized")
     }
     //Type needs to be solved here
-    const user: string = req.query.id as string
+    const bookingId: string = req.query.id as string
 
     // connect to database
     await connect()
     switch (req.method) {
         case 'GET':
-            const booking = await bookingService.getBookingById(user)
+            const booking = await bookingService.getBookingById(bookingId)
             return res.status(200).json(booking)
 
         default:

@@ -1,29 +1,28 @@
 import axios from "axios";
-import Booking, {JsonBooking, newBooking} from "../src/classes/Booking";
-
+import Booking, {JsonBooking} from "../src/classes/Booking";
 
 class BackendAPI {
     //Might need to add error handling here
     static async fetchBooking(id: string): Promise<Booking> {
-        const response = await axios.get(`/api/bookings/${id}`)
-        return new Booking(response.data as JsonBooking)
+        return new Booking((await axios.get(`/api/bookings/${id}`)).data)
     }
 
-    static async fetchBookingsByUser(user: string): Promise<Booking[]> {
-        return (await axios.get(`/api/bookings/user/${user}`)).data.map((booking: JsonBooking) => new Booking(booking))
+    static async fetchBookingsByUser(username: string): Promise<Booking[]> {
+        const bookings = (await axios.get(`/api/bookings?username=${username}`)).data
+        return bookings.map((booking: JsonBooking) => new Booking(booking))
     }
 
-    static async postBooking(booking: newBooking) {
-        return await axios.post("/api/bookings", booking)
+    static async postBooking(booking: JsonBooking): Promise<Booking> {
+        return new Booking((await axios.post("/api/bookings", booking)).data)
     }
 
     static async deleteBooking(id: string) {
-        return await axios.delete(`/api/bookings/${id}`)
+        return new Booking((await axios.delete(`/api/bookings/${id}`)).data)
     }
 
     static async fetchBookings(): Promise<Booking[]> {
-        const response = await axios.get("/api/bookings")
-        return response.data.map((booking: JsonBooking) => new Booking(booking))
+        const bookings = (await axios.get("/api/bookings")).data
+        return bookings.map((booking: JsonBooking) => new Booking(booking))
     }
 }
 

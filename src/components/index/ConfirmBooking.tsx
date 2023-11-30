@@ -42,14 +42,15 @@ const ConfirmBooking = (props: Props) => {
     const snackAlignment: SnackbarOrigin = {vertical: 'bottom', horizontal: 'left'}
     let snackString;
 
-
+    //console.log("Props date in ConfirmBooking:", timeSlot.getStartTime())
     const handleBook = async () => {
         //setDisabled(true)
+
 
         try {
             const response = await BackendApi.postBooking({
                 userName: props.user.name,
-                date: props.date,
+                date: timeSlot.getStartTime(),
                 timeSlot: props.timeSlot.toString(),
                 createdAt: new Date()
             });

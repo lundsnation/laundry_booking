@@ -1,20 +1,20 @@
-import React, { useState } from "react";
-import { AlertColor, Button, ButtonGroup, Fade, ListItem, SnackbarOrigin, Typography } from "@mui/material";
+import React, {useState} from "react";
+import {AlertColor, Button, ButtonGroup, Fade, ListItem, SnackbarOrigin, Typography} from "@mui/material";
 import ConfirmBooking from "../ConfirmBooking";
-import { LoadingButton } from "@mui/lab";
-import { UserType } from "../../../../utils/types";
+import {LoadingButton} from "@mui/lab";
 import Booking from "../../../classes/Booking";
+import User from "../../../classes/User";
 
 interface Props {
     userBooking: Booking,
-    user: UserType,
+    user: User,
     snackTrigger: (severity: AlertColor, snackString: string, alignment: SnackbarOrigin) => void
 }
 
 const BookedTimesItem = (props: Props) => {
-    const { userBooking, user, snackTrigger } = props;
+    const {userBooking, user, snackTrigger} = props;
     const [openConfirmation, setOpenConfirmation] = useState<boolean>(false);
-    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' } as const;
+    const options = {weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'} as const;
     const userBookingString = userBooking.date.toLocaleDateString('sv-SE', options).replaceAll(" ", ", ") + ", " + userBooking.timeSlot.toString() + ", Torkbås: " + userBooking.timeSlot.getDryingBooth();
 
     const handleOpenConfirmation = (open: boolean) => {
@@ -34,11 +34,11 @@ const BookedTimesItem = (props: Props) => {
                 snackTrigger={snackTrigger}
             />
 
-            <ListItem >
+            <ListItem>
                 <Fade in={true}>
                     <ButtonGroup variant="outlined" fullWidth>
-                        <Button disabled fullWidth sx={{ textTransform: 'none' }}>
-                            <Typography variant="body2" sx={{ color: "black" }}>
+                        <Button disabled fullWidth sx={{textTransform: 'none'}}>
+                            <Typography variant="body2" sx={{color: "black"}}>
                                 {userBookingString}
                             </Typography>
                         </Button>
@@ -46,7 +46,7 @@ const BookedTimesItem = (props: Props) => {
                             onClick={() => handleOpenConfirmation(true)}
                             variant="outlined"
                             color="error"
-                            sx={{ width: "35%" }} >
+                            sx={{width: "35%"}}>
                             <Typography variant="body2">
                                 Avboka
                             </Typography>

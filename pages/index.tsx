@@ -12,15 +12,36 @@ import {useUser} from '@auth0/nextjs-auth0/client';
 import Loading from "../src/components/Loading";
 import router from 'next/router';
 import backendAPI from "../utils/BackendAPI";
-import Booking from "../src/classes/Booking";
-// ... other imports
+import Booking, {JsonBooking} from "../src/classes/Booking";
 
 
 const Index: NextPage = () => {
     const {user, error, isLoading: userIsLoading} = useUser();
     const [initialBookings, setInitialBookings] = useState<Booking[]>([]);
     const [userBookings, setUserBookings] = useState<Booking[]>([]);
-    const [fetchingBookings, setFetchingBookings] = useState<boolean>(false);
+    const [fetchingData, setFetchingData] = useState<boolean>(false);
+
+    const fetchData = async () => {
+        try {
+            setFetchingData(true);
+
+            // Use Promise.all to make the API calls concurrently
+            const [bookings, userBookings] = await Promise.all([
+                backendAPI.fetchBookings(),
+                backendAPI.fetchBookingsByUser(userClass.name),
+            ]);
+
+            console.log("userBookings:", userBookings);
+            console.log("bookings:", bookings);
+
+            setUserBookings(userBookings);
+            setInitialBookings(bookings);
+        } catch (error) {
+            console.error("Error fetching initial bookings:", error);
+        } finally {
+            setFetchingData(false);
+        }
+    };
 
     useEffect(() => {
         if (user && !userIsLoading) {
@@ -29,34 +50,17 @@ const Index: NextPage = () => {
         }
     }, [user, userIsLoading]);
 
-    console.log(user)
+    console.log("user in index:", user)
 
-    if (userIsLoading || fetchingBookings) return <Loading/>;
+    if (userIsLoading || fetchingData) return <Loading/>;
     if (error) return <div>{error.message}</div>;
     if (!user) {
         router.push('/api/auth/login');
         return null; // Add this to prevent the component from rendering further
     }
 
-    // Use optional chaining to handle cases where user might be undefined
-    const userClass = new User(user as JsonUser,);
-
+    const userClass = new User(user as JsonUser, userBookings)
     const config = userClass.building === 'ARKIVET' ? new ArkivetConfig() : new NationshusetConfig();
-
-    const fetchData = async () => {
-        try {
-            setFetchingBookings(true);
-            // Make your API call to fetch initial bookings
-            // For example, if you have a method like fetchInitialBookings
-            const bookings = await backendAPI.fetchBookings();
-            const userBookings = await backendAPI.fetchBookingsByUser(userClass.name);
-            setInitialBookings(bookings);
-        } catch (error) {
-            console.error("Error fetching initial bookings:", error);
-        } finally {
-            setFetchingBookings(false);
-        }
-    };
 
     return (
         <Layout user={userClass}>

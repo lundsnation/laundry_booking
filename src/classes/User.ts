@@ -12,7 +12,6 @@ type UserMetadata = {
 }
 
 export type JsonUser = {
-    sid: string,
     sub: string,
     name: string,
     nickname: string,

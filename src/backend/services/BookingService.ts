@@ -51,6 +51,7 @@ class BookingService implements IBookingService {
 
     async getBookingsByBuildingAndPostDate(building: string, date: Date): Promise<BookingDocument[]> {
         const bookingsPostDate = await BookingDao.findBookingsAfterDate(date);
+        console.log("bookingsPostDate", bookingsPostDate)
 
         if (bookingsPostDate.length === 0) {
             throw new HttpError(HttpError.StatusCode.NOT_FOUND, "No bookings found");
@@ -71,6 +72,7 @@ class BookingService implements IBookingService {
         // Initial  check if booking-request is in the past => invalid
         // Should be handled in validation
         if (new Date(booking.date).getTime() < Date.now()) {
+            console.log("MongooseBooking date is in the past", booking.date, Date.now())
             throw new HttpError(HttpError.StatusCode.BAD_REQUEST, "MongooseBooking date is in the past");
         }
 
