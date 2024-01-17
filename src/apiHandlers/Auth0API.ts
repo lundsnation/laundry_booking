@@ -1,8 +1,8 @@
-import axios, { AxiosResponse } from 'axios';
-import User from './User';
-import { ModificationObject, UserType } from '../../utils/types';
+import axios, {AxiosResponse} from 'axios';
+import User from '../classes/User';
+import {ModificationObject, UserType} from '../../utils/types';
 
-class Auth0 {
+class Auth0API {
     private static client_id: string = process.env.AUTH0_CLIENT_ID as string;
     private static client_secret: string = process.env.AUTH0_CLIENT_SECRET as string;
     private static base_url: string = process.env.AUTH0_BASE_URL as string;
@@ -12,7 +12,7 @@ class Auth0 {
         var options = {
             method: 'POST',
             url: 'https://lundsnation.eu.auth0.com/oauth/token',
-            headers: { 'content-type': 'application/json' },
+            headers: {'content-type': 'application/json'},
             data: {
                 "grant_type": 'client_credentials',
                 "client_id": this.client_id,
@@ -61,7 +61,7 @@ class Auth0 {
     static async postUser(user: UserType) {
         const token = await this.fetchAccessToken();
 
-        user = { ...user, connection: "Username-Password-Authentication", email_verified: true }
+        user = {...user, connection: "Username-Password-Authentication", email_verified: true}
         const response = await axios.post(this.api_url + 'users', user, {
             headers: {
                 Authorization: 'Bearer ' + token
@@ -79,7 +79,6 @@ class Auth0 {
             }
         })
         return response
-
     }
 
     static async deleteUser(userID: string) {
@@ -152,4 +151,4 @@ class Auth0 {
     }
 }
 
-export default Auth0;
+export default Auth0API;

@@ -1,9 +1,8 @@
 class TimeSlot {
+    readonly timeSlot: string
     readonly startTime: Date
     readonly endTime: Date
-    readonly timeSlot: string
     readonly dryingBooth: number
-
 
     constructor(timeSlot: string, dryingBooth: number, date: Date) {
         this.timeSlot = timeSlot

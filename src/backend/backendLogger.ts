@@ -10,7 +10,7 @@ const DEBUGEVENTS = false;
 const LOGREQUESTS = true;
 //const writeToFile = false; //add writeToFile functionality
 
-//Logs events when added to mongooseModels/Bookings.ts
+//Logs events when added to mongoose/Bookings.ts
 export const addEventLogging = () => {
     //0 = disconnected, 1 = connected, 2 = connecting, 3 = disconnecting
 

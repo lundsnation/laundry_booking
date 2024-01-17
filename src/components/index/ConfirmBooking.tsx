@@ -11,7 +11,7 @@ import {AlertColor, Divider, SnackbarOrigin} from '@mui/material';
 import Booking from '../../classes/Booking';
 import TimeSlot from '../../classes/TimeSlot';
 import User from "../../classes/User";
-import BackendApi from "../../../utils/BackendAPI";
+import BackendApi from "../../apiHandlers/BackendAPI";
 
 
 function PaperComponent(props: PaperProps) {

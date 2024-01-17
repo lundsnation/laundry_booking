@@ -7,7 +7,7 @@ class BookingsUtil {
     }
 
     static getBookingsByDate(bookings: Booking[], date: Date): Booking[] {
-        return bookings.filter((booking: Booking) => booking.isSameDate(date));
+        return bookings.filter((booking: Booking) => booking.isSameDay(date));
     }
 }
 

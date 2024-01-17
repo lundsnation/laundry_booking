@@ -1,5 +1,5 @@
 import {NextApiRequest, NextApiResponse} from "next"
-import {connect} from "../../../utils/connection"
+import {connect} from "../../../src/backend/mongoose/connection"
 import {Claims, getSession, withApiAuthRequired} from "@auth0/nextjs-auth0"
 import {getBuilding} from "../../../utils/helperFunctions"
 import BookingService from "../../../src/backend/services/BookingService";

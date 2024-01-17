@@ -6,12 +6,12 @@ import Terms from '../src/components/Terms';
 import Rules from '../src/components/rules/Rules';
 import Layout from '../src/components/layout/Layout';
 import User, {JsonUser} from '../src/classes/User';
-import ArkivetConfig from "../src/Configs/ArkivetConfig";
-import NationshusetConfig from "../src/Configs/NationshusetConfig";
+import ArkivetConfig from "../src/configs/ArkivetConfig";
+import NationshusetConfig from "../src/configs/NationshusetConfig";
 import {useUser} from '@auth0/nextjs-auth0/client';
 import Loading from "../src/components/Loading";
 import router from 'next/router';
-import backendAPI from "../utils/BackendAPI";
+import backendAPI from "../src/apiHandlers/BackendAPI";
 import Booking, {JsonBooking} from "../src/classes/Booking";
 
 
@@ -50,7 +50,7 @@ const Index: NextPage = () => {
         }
     }, [user, userIsLoading]);
 
-    console.log("user in index:", user)
+    console.log("user in index 1:", user)
 
     if (userIsLoading || fetchingData) return <Loading/>;
     if (error) return <div>{error.message}</div>;

@@ -6,14 +6,14 @@ import svLocale from 'date-fns/locale/sv';
 import BookingButtonGroup from "./BookingButtonGroup";
 import BookedTimes from '../bookedTimes/BookedTimes';
 import {Snack, SnackInterface} from "../../Snack"
-import {FrontendPusher, BookingUpdate} from '../../../../utils/pusherApi'
+import {FrontendPusher, BookingUpdate} from '../../../apiHandlers/PusherAPI'
 import BookingsUtil from '../../../classes/BookingsUtil';
 import TimeSlots from '../../../classes/TimeSlots';
 import {getBuilding} from "../../../../utils/helperFunctions";
 import User from "../../../classes/User";
-import Config from "../../../Configs/Config";
+import Config from "../../../configs/Config";
 import Booking from "../../../classes/Booking";
-import BackendAPI from "../../../../utils/BackendAPI";
+import BackendAPI from "../../../apiHandlers/BackendAPI";
 
 interface Props {
     user: User;

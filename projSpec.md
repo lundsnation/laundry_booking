@@ -78,9 +78,10 @@ hard-code verification by returning appropriate HTTP status codes.
 Next comes packed with great full-stack capabilities which we will use extensively during th project. Routing,
 server-side rendering and state management is being used to build the web-service.
 
-#### Auth0
+#### Auth0API
 
-Auth0 will offload much work on authentication. Using their free tier, we get access to a user-database way bigger than
+Auth0API will offload much work on authentication. Using their free tier, we get access to a user-database way bigger
+than
 we actually need, with global login, managment tools etc. It is also notoriously easy to implement with next.js. This
 will guarantee security, aswell as protect sensitive user details.
 

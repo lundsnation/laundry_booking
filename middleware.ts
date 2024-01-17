@@ -1,6 +1,6 @@
 import {NextResponse} from 'next/server'
 import type {NextRequest} from 'next/server'
-import {logRequest} from "./utils/backendLogger";
+import {logRequest} from "./src/backend/backendLogger";
 
 
 // This function can be marked `async` if using `await` inside

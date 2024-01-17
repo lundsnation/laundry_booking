@@ -1,5 +1,5 @@
 import axios from "axios";
-import Booking, {JsonBooking} from "../src/classes/Booking";
+import Booking, {JsonBooking} from "../classes/Booking";
 
 class BackendAPI {
     //Might need to add error handling here

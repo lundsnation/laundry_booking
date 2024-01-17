@@ -1,10 +1,10 @@
 import IBookingService from "./IBookingService";
-import BookingDao, {BookingDocument, IBooking} from '../mongooseModels/MongooseBooking'
+import BookingDao, {BookingDocument, IBooking} from '../mongoose/MongooseBooking'
 import HttpError from "../errors/HttpError";
 import {getBuilding} from "../../../utils/helperFunctions";
 import {isValidPhoneNumber} from "libphonenumber-js";
 import {Claims} from "@auth0/nextjs-auth0";
-import {BackendPusher} from "../../../utils/pusherApi";
+import {BackendPusher} from "../../apiHandlers/PusherAPI";
 
 class BookingService implements IBookingService {
     private backendPusher: BackendPusher
