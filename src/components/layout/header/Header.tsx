@@ -1,11 +1,9 @@
 import * as React from 'react';
-import {Toolbar, AppBar, Fade, Collapse} from '@mui/material';
-import {useRouter} from 'next/router';
+import {Toolbar, AppBar} from '@mui/material';
 import {HeaderLogo} from './HeaderLogo';
 import DesktopNav from './desktopNav/DesktopNav';
 import MobileNav from './mobileNav/MobileNav';
 import User from '../../../classes/User';
-import {getBuilding} from '../../../../utils/helperFunctions';
 
 interface Props {
     user: User;
@@ -13,14 +11,13 @@ interface Props {
 
 
 const Header = ({user}: Props) => {
-    const home = process.env.AUTH0_BASE_URL
     const [menuOpen, setMenuOpen] = React.useState(false)
     const [auth, setAuth] = React.useState(true);
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setAuth(event.target.checked);
     };
-    const logoText = "TVÄTT " + user.building.toUpperCase();
+    const logoText = "TVÄTT " + user.app_metadata.laundryBuilding;
 
     const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorEl(event.currentTarget);

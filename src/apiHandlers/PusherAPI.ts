@@ -1,6 +1,7 @@
 import Pusher from 'pusher'
 import PusherClient from 'pusher-js'
 import {Channel} from 'pusher-js'
+import {LaundryBuilding} from "../configs/Config";
 
 const {PUSHER_APP_ID, PUSHER_KEY, PUSHER_SECRET, PUSHER_CLUSTER} = process.env
 
@@ -12,12 +13,12 @@ const backendOptions = {
     useTLS: true,
 };
 
-export const bookingUpdateChannel = 'bookingUpdates'
 export const bookingUpdateEvent = 'bookingUpdate'
+export const bookingUpdateChannel = 'bookingUpdates'
 
 export type BookingUpdate = {
-    userName: string,
-    date: Date,
+    username: string,
+    startTime: Date,
     timeSlot: string,
     method: BookingUpdateMethod
 }
@@ -28,13 +29,15 @@ enum BookingUpdateMethod {
     DELETE = "DELETE"
 }
 
+
+// --- Backend Pusher ---
 export class BackendPusher extends Pusher {
     constructor() {
         super(backendOptions);
     }
 
-    bookingUpdateTrigger(building: String, bookingUpdate: BookingUpdate): Promise<Pusher.Response> {
-        return super.trigger(building + bookingUpdateChannel, bookingUpdateEvent, bookingUpdate);
+    bookingUpdateTrigger(laundryBuilding: LaundryBuilding, bookingUpdate: BookingUpdate): Promise<Pusher.Response> {
+        return super.trigger(bookingUpdateChannel + "_" + laundryBuilding, bookingUpdateEvent, bookingUpdate);
     }
 
     get bookingUpdateMethod() {
@@ -42,6 +45,7 @@ export class BackendPusher extends Pusher {
     }
 }
 
+// --- Frontend Pusher ---
 const frontendOptions = {
     cluster: "eu",
     forceTLS: true
@@ -50,15 +54,17 @@ const frontendOptions = {
 export class FrontendPusher extends PusherClient {
     private _bookingUpdateChannel: string
     private _bookingUpdateEvent: string
+    private _laundryBuilding: LaundryBuilding
 
-    constructor() {
+    constructor(laundryBuilding: LaundryBuilding) {
         super(process.env.REACT_APP_PUSHER_KEY as string, frontendOptions)
         this._bookingUpdateChannel = bookingUpdateChannel;
         this._bookingUpdateEvent = bookingUpdateEvent;
+        this._laundryBuilding = laundryBuilding
     }
 
-    bookingUpdatesSubscribe(building: string): Channel {
-        return super.subscribe(building + bookingUpdateChannel)
+    bookingUpdatesSubscribe(): Channel {
+        return super.subscribe(bookingUpdateChannel + "_" + this._laundryBuilding)
     }
 
     get bookingUpdateMethod() {
@@ -74,8 +80,8 @@ export class FrontendPusher extends PusherClient {
     }
 
     cleanup(): void {
-        super.unbind("bookingUpdate");
-        super.unsubscribe("bookingUpdates");
+        super.unbind(bookingUpdateEvent);
+        super.unsubscribe(bookingUpdateChannel + "_" + this._laundryBuilding);
         super.disconnect();
     }
 }

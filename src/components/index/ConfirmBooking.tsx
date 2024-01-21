@@ -11,7 +11,8 @@ import {AlertColor, Divider, SnackbarOrigin} from '@mui/material';
 import Booking from '../../classes/Booking';
 import TimeSlot from '../../classes/TimeSlot';
 import User from "../../classes/User";
-import BackendApi from "../../apiHandlers/BackendAPI";
+import BackendAPI from "../../apiHandlers/BackendAPI";
+import axios, {AxiosError} from "axios";
 
 
 function PaperComponent(props: PaperProps) {
@@ -38,7 +39,7 @@ interface Props {
 
 const ConfirmBooking = (props: Props) => {
     //const [open, setOpen] = React.useState(false);
-    const {myTimeSlot, booking, date, timeSlot, open, handleOpenConfirmation, snackTrigger} = props;
+    const {myTimeSlot, booking, date, timeSlot, open, handleOpenConfirmation, snackTrigger, user} = props;
     const snackAlignment: SnackbarOrigin = {vertical: 'bottom', horizontal: 'left'}
     let snackString;
 
@@ -48,48 +49,77 @@ const ConfirmBooking = (props: Props) => {
 
 
         try {
-            const response = await BackendApi.postBooking({
-                userName: props.user.name,
-                date: timeSlot.getStartTime(),
-                timeSlot: props.timeSlot.toString(),
-                createdAt: new Date()
+            const response = await BackendAPI.postBooking({
+                username: user.name,
+                timeSlot: timeSlot.toString(),
+                dryingBooth: timeSlot.dryingBooth,
+                laundryBuilding: user.app_metadata.laundryBuilding,
+                startTime: timeSlot.startTime.toISOString(),
+                endTime: timeSlot.endTime.toISOString(),
+                createdAt: new Date().toISOString(),
             });
 
-            if (response.status === 200) {
-                snackString = "Du har bokat: " + String(timeSlot);
-                snackTrigger("success", snackString, snackAlignment);
+            // Handle successful response
+            snackString = "Du har bokat: " + String(timeSlot);
+            snackTrigger("success", snackString, snackAlignment);
+        } catch (error) {
+            // Handle any errors during the POST request
+
+            if (axios.isAxiosError(error)) {
+                // AxiosError type check
+                console.error("Axios error:", error);
+
+                // Extract error message from the response content if available
+                if (error.response && error.response.data && error.response.data.error) {
+                    snackString = error.response.data.error;
+                } else {
+                    // Fallback to a generic error message
+                    snackString = "An error occurred while creating booking";
+                }
+
+                snackTrigger("error", snackString, snackAlignment);
             } else {
-                const responseContent = await response.data;
-                snackString = responseContent.error;
-                console.log(snackString)
+                // Handle other types of errors
+                console.error("Error creating booking:", error);
+                snackString = "An unexpected error occurred while creating booking";
                 snackTrigger("error", snackString, snackAlignment);
             }
-        } catch (error) {
-            console.error("Error creating booking:", error);
-            // Handle any errors during the POST request
-            snackString = "An error occurred while creating booking";
-            snackTrigger("error", snackString, snackAlignment);
         }
+
+        snackTrigger("error", snackString, snackAlignment);
     }
+
 
     const handleCancel = async () => {
         if (!booking) return;
 
         try {
-            const response = await BackendApi.deleteBooking(booking._id);
+            const response = await BackendAPI.deleteBooking(booking._id);
 
-            if (response.status === 200) {
-                snackString = "Du har avbokat tiden";
-                snackTrigger("success", snackString, snackAlignment);
-            } else {
-                let responseContent = await response.data;
-                snackString = responseContent.error;
-                snackTrigger("error", snackString, snackAlignment);
-            }
+            // Handle successful response
+            snackString = "Du har avbokat tiden";
+            snackTrigger("success", snackString, snackAlignment);
         } catch (error) {
             console.error("Error canceling booking:", error);
-            snackString = "An error occurred while canceling booking";
-            snackTrigger("error", snackString, snackAlignment);
+
+            if (axios.isAxiosError(error)) {
+                // AxiosError type check
+
+                // Extract error message from the response content if available
+                if (error.response && error.response.data && error.response.data.error) {
+                    snackString = error.response.data.error;
+                } else {
+                    // Fallback to a generic error message
+                    snackString = "An error occurred while canceling booking";
+                }
+
+                snackTrigger("error", snackString, snackAlignment);
+            } else {
+                // Handle other types of errors
+                console.error("Non-Axios error occurred:", error);
+                snackString = "An unexpected error occurred while canceling booking";
+                snackTrigger("error", snackString, snackAlignment);
+            }
         }
 
         handleOpenConfirmation(false);

@@ -1,9 +1,11 @@
 import Booking from "./Booking";
+import {LaundryBuilding} from "../configs/Config";
 
 type AppMetadata = {
     acceptedTerms: boolean,
     allowedSlots: number,
     roles: string[]
+    laundryBuilding: LaundryBuilding
 }
 
 type UserMetadata = {
@@ -12,7 +14,7 @@ type UserMetadata = {
 }
 
 export type JsonUser = {
-    sub: string,
+    sub: string, // user id, called sub in auth0
     name: string,
     nickname: string,
     email: string,
@@ -46,15 +48,14 @@ class User {
         this.app_metadata = user.app_metadata
         this.user_metadata = user.user_metadata
         this.updated_at = new Date(user.updated_at)
-        this.activeBookings = userBookings.filter(booking => !booking.hasPassed())
-        this.pastBookings = userBookings.filter(booking => booking.hasPassed())
-    }
 
-    get building(): string {
-        const building = this.name.replace(/[^a-zA-Z]/g, "")
-        if (["A", "B", "C", "D"].includes(building)) return "ARKIVET"
-        if (["NH", "GH", "admin"].includes(building)) return "NATIONSHUSET"
-        return "UNKNOWN"
+        userBookings.forEach(booking => {
+            if (booking.startTime > new Date()) {
+                this.activeBookings.push(booking)
+            } else {
+                this.pastBookings.push(booking)
+            }
+        })
     }
 
     toJSON() {
@@ -69,6 +70,20 @@ class User {
             user_metadata: this.user_metadata,
             updated_at: this.updated_at.toISOString()
         }
+    }
+
+    setUserBookings(bookings: Booking[]) {
+        this.pastBookings.length = 0 // clears the array
+        this.activeBookings.length = 0 // clears the array
+
+        bookings.forEach(bookings => {
+            if (bookings.startTime > new Date() && bookings.username === this.name) {
+                this.activeBookings.push(bookings)
+            }
+            if (bookings.startTime < new Date() && bookings.username === this.name) {
+                this.pastBookings.push(bookings)
+            }
+        })
     }
 }
 

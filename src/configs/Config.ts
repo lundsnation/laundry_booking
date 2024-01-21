@@ -8,14 +8,13 @@ export enum Arkivet {
 export enum Nationshuset {
     GH = "GH",
     NH = "NH",
-    NYA = "NYA",
 }
 
 export type Building = Arkivet | Nationshuset
 
 export enum LaundryBuilding {
     ARKIVET = "ARKIVET",
-    GH = "GH",
+    NATIONSHUSET = "NATIONSHUSET",
     NYA = "NYA",
 }
 

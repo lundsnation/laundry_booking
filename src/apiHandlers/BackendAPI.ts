@@ -1,5 +1,5 @@
 import axios from "axios";
-import Booking, {JsonBooking} from "../classes/Booking";
+import Booking, {JsonBooking, NewBooking} from "../classes/Booking";
 
 class BackendAPI {
     //Might need to add error handling here
@@ -12,7 +12,7 @@ class BackendAPI {
         return bookings.map((booking: JsonBooking) => new Booking(booking))
     }
 
-    static async postBooking(booking: JsonBooking): Promise<Booking> {
+    static async postBooking(booking: NewBooking): Promise<Booking> {
         return new Booking((await axios.post("/api/bookings", booking)).data)
     }
 

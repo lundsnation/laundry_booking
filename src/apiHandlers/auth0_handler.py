@@ -77,7 +77,9 @@ class Auth0Handler:
 
 if __name__ == "__main__":
     auth0 = Auth0Handler()
+    print(auth0.get_user_by_id("auth0|63eaa12106b5b69e0bdaa3ad"))
 
+    """
     count, users_with_attribute = auth0.count_users_with_attribute('laundryBuilding')
     print(f"Users with attribute before: {count}")
     print(users_with_attribute)
@@ -86,7 +88,7 @@ if __name__ == "__main__":
 
     users = auth0.get_users()
     updated_users_count = 0
-
+    
     for user in users:
         user_name = user.get('name', '')
         print("User name: ", user_name)
@@ -100,7 +102,7 @@ if __name__ == "__main__":
                 app_metadata[new_attribute_name] = 'ARKIVET'
             elif user_name.startswith(('admin', 'NH', 'GH')):
                 print("User belongs to GH")
-                app_metadata[new_attribute_name] = 'GH'
+                app_metadata[new_attribute_name] = 'NATIONSHUSET'
 
             auth0.update_user(user_id, {'app_metadata': app_metadata})
 
@@ -114,3 +116,4 @@ if __name__ == "__main__":
     count, users_with_attribute = auth0.count_users_with_attribute('laundryBuilding')
     print(f"Users with attribute after: {count}")
     print(users_with_attribute)
+    """

@@ -6,13 +6,12 @@ import Terms from '../src/components/Terms';
 import Rules from '../src/components/rules/Rules';
 import Layout from '../src/components/layout/Layout';
 import User, {JsonUser} from '../src/classes/User';
-import ArkivetConfig from "../src/configs/ArkivetConfig";
-import NationshusetConfig from "../src/configs/NationshusetConfig";
+import ConfigUtil from "../src/configs/ConfigUtil";
 import {useUser} from '@auth0/nextjs-auth0/client';
 import Loading from "../src/components/Loading";
 import router from 'next/router';
 import backendAPI from "../src/apiHandlers/BackendAPI";
-import Booking, {JsonBooking} from "../src/classes/Booking";
+import Booking, from "../src/classes/Booking";
 
 
 const Index: NextPage = () => {
@@ -60,7 +59,7 @@ const Index: NextPage = () => {
     }
 
     const userClass = new User(user as JsonUser, userBookings)
-    const config = userClass.building === 'ARKIVET' ? new ArkivetConfig() : new NationshusetConfig();
+    const config = ConfigUtil.getLaundryConfigByLaundryBuilding(userClass.app_metadata.laundryBuilding)
 
     return (
         <Layout user={userClass}>

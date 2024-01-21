@@ -1,46 +1,51 @@
+import user from "./User";
+import TimeSlot from "./TimeSlot";
+
 export type JsonBooking = {
     _id: string,
-    userName: string,
+    username: string,
     timeSlot: string
     dryingBooth: number
+    laundryBuilding: string,
     startTime: string
     endTime: string
     createdAt: string
-    laundryBuilding: string,
 }
+
+export type NewBooking = Omit<JsonBooking, '_id'>;
 
 class Booking {
     readonly _id: string
-    readonly userName: string
+    readonly username: string
     readonly timeSlot: string
     readonly dryingBooth: number
+    readonly laundryBuilding: string
     readonly startTime: Date
     readonly endTime: Date
     readonly createdAt: Date
-    readonly laundryBuilding: string
 
 
     constructor(jsonBooking: JsonBooking) {
         this._id = jsonBooking._id
-        this.userName = jsonBooking.userName
+        this.username = jsonBooking.username
         this.timeSlot = jsonBooking.timeSlot
         this.dryingBooth = jsonBooking.dryingBooth
+        this.laundryBuilding = jsonBooking.laundryBuilding
         this.startTime = new Date(jsonBooking.startTime)
         this.endTime = new Date(jsonBooking.endTime)
         this.createdAt = new Date(jsonBooking.createdAt)
-        this.laundryBuilding = jsonBooking.laundryBuilding
     }
 
     hasPassed(): boolean {
         return new Date().getTime() > this.startTime.getTime();
     }
 
-    isUserBooking(userName: string): boolean {
-        return this.userName === userName;
+    isUserBooking(User: user): boolean {
+        return this.username === user.name;
     }
 
-    hasTimeSlot(timeSlot: string): boolean {
-        return this.timeSlot === timeSlot;
+    hasTimeSlot(timeSlot: TimeSlot): boolean {
+        return this.timeSlot === timeSlot.toString();
     }
 
     isSameDay(otherDate: Date): boolean {

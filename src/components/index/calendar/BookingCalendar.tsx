@@ -8,8 +8,6 @@ import BookedTimes from '../bookedTimes/BookedTimes';
 import {Snack, SnackInterface} from "../../Snack"
 import {FrontendPusher, BookingUpdate} from '../../../apiHandlers/PusherAPI'
 import BookingsUtil from '../../../classes/BookingsUtil';
-import TimeSlots from '../../../classes/TimeSlots';
-import {getBuilding} from "../../../../utils/helperFunctions";
 import User from "../../../classes/User";
 import Config from "../../../configs/Config";
 import Booking from "../../../classes/Booking";
@@ -20,6 +18,7 @@ interface Props {
     initialBookings: Booking[]
     config: Config
 }
+
 
 const BookingCalendar = ({user, initialBookings, config}: Props) => {
     const [selectedDate, setSelectedDate] = useState<Date>(new Date());
@@ -36,13 +35,15 @@ const BookingCalendar = ({user, initialBookings, config}: Props) => {
         severity: "success",
         alignment: {vertical: "bottom", horizontal: "right"}
     })
-    const timeSlots = TimeSlots.getTimeSlots(selectedDate);
 
     const activeUserBookings = user.activeBookings;
     const updateBookings = async () => {
         try {
             const bookings = await BackendAPI.fetchBookings();
+            console.log("bookings fetched in updateBookings:", bookings)
             setBookings(bookings);
+            user.setUserBookings(bookings)
+
         } catch (error) {
             console.error("Error updating bookings:", error);
         }
@@ -50,19 +51,18 @@ const BookingCalendar = ({user, initialBookings, config}: Props) => {
 
     useEffect(() => {
         //updateBookings();
-
-        const frontendPusher = new FrontendPusher();
-        // const pusherChannel = pusher.subscribe(getBuilding(user.name) + "bookingUpdates");
-        const channel = frontendPusher.bookingUpdatesSubscribe(getBuilding(user.name));
+        const frontendPusher = new FrontendPusher(user.app_metadata.laundryBuilding);
+        const channel = frontendPusher.bookingUpdatesSubscribe();
 
         channel.bind(frontendPusher.bookingUpdateEvent, (bookingUpdate: BookingUpdate) => {
             updateBookings();
-            const {userName, date, timeSlot, method} = bookingUpdate
+            console.log("bookingUpdate Event Received, bookingUpdate :", bookingUpdate)
+            const {username, startTime, timeSlot, method} = bookingUpdate
             const isPostRequest = method === frontendPusher.bookingUpdateMethod.POST
-            const tmpDate = new Date(date);
+            const tmpDate = new Date(startTime);
             const dateString = tmpDate.getFullYear() + "/" + (tmpDate.getMonth() + 1) + "/" + tmpDate.getDay() + ", " + timeSlot
-            const snackString = `${userName} ${isPostRequest ? ' bokade ' : ' avbokade '} ${dateString}`
-            const myBooking = userName == user.name
+            const snackString = `${username} ${isPostRequest ? ' bokade ' : ' avbokade '} ${dateString}`
+            const myBooking = username == user.name
             const alignment: SnackbarOrigin = window.innerWidth > 600 ? {
                 vertical: 'bottom',
                 horizontal: 'right'
@@ -91,17 +91,17 @@ const BookingCalendar = ({user, initialBookings, config}: Props) => {
         /*If it's not an old date we calculate the number of bookings for that day,
         else we let nbrBookedTimes = 0, which means it won't get any color */
         !oldDate && bookings.forEach(booking => {
-            if (booking.isSameDate(day)) {
+            if (booking.isSameDay(day)) {
                 nbrBookedTimes += 1;
 
-                if (booking.isUserBooking(user.name)) {
+                if (booking.isUserBooking(user)) {
                     hasBookingOnDay = true;
                 }
             }
 
         });
 
-        if (nbrBookedTimes == TimeSlots.length && hasBookingOnDay) {
+        if (nbrBookedTimes === config.timeSlots.length && hasBookingOnDay) {
             return (
                 <Badge
                     key={day.toString()}
@@ -124,7 +124,7 @@ const BookingCalendar = ({user, initialBookings, config}: Props) => {
                         {...DayComponentProps} />
                 </Badge>
             )
-        } else if (nbrBookedTimes != TimeSlots.getLength() && hasBookingOnDay) {
+        } else if (nbrBookedTimes !== config.timeSlots.length && hasBookingOnDay) {
             return (
                 <Badge
                     key={day.toString()}
@@ -136,7 +136,7 @@ const BookingCalendar = ({user, initialBookings, config}: Props) => {
                     <PickersDay {...DayComponentProps} />
                 </Badge>
             )
-        } else if (nbrBookedTimes == TimeSlots.getLength() && !hasBookingOnDay) {
+        } else if (nbrBookedTimes === config.timeSlots.length && !hasBookingOnDay) {
             return (
                 <PickersDay
                     sx={{
@@ -175,10 +175,12 @@ const BookingCalendar = ({user, initialBookings, config}: Props) => {
     }
 
     const bookingButtonGroup = (
-        <BookingButtonGroup timeSlots={timeSlots}
-                            bookedBookings={BookingsUtil.getBookingsByDate(bookings, selectedDate)}
-                            selectedDate={selectedDate} user={user} updateBookings={updateBookings}
-                            snackTrigger={snackTrigger}/>
+        <BookingButtonGroup
+            bookedBookings={BookingsUtil.getBookingsByDate(bookings, selectedDate)}
+            selectedDate={selectedDate} user={user} updateBookings={updateBookings}
+            snackTrigger={snackTrigger}
+            config={config}
+        />
     )
 
     return (

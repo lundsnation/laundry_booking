@@ -1,18 +1,24 @@
 import mongoose, {HydratedDocument, Model} from 'mongoose'
+import {LaundryBuilding} from "../../configs/Config";
 
 export interface IBooking {
-    userName: string,
-    date: Date,
-    timeSlot: string,
-    createdAt: Date,
+    username: string;
+    timeSlot: string;
+    dryingBooth: number;
+    startTime: Date;
+    endTime: Date;
+    createdAt: Date;
+    laundryBuilding: string;
 }
 
 interface IBookingMethods {
-    getBuilding(): string,
+    // Can be used to add methods to the document
 }
 
 export interface IBookingModel extends Model<IBooking, {}, IBookingMethods> {
-    findBookingsAfterDate(date: Date): Promise<BookingDocument[]>
+    findBookingsPostDate(date: Date): Promise<BookingDocument[]>
+
+    findBookingsByLaundryBuildingAndPostDate(laundryBuilding: LaundryBuilding, date: Date): Promise<BookingDocument[]>
 }
 
 export type BookingDocument = HydratedDocument<IBooking, IBookingMethods>
@@ -20,34 +26,30 @@ export type BookingDocument = HydratedDocument<IBooking, IBookingMethods>
 
 export const BookingSchema = new mongoose.Schema<IBooking, IBookingModel>(
     {
-        userName: {type: String, required: true},
-        date: {type: Date, required: true},
+        username: {type: String, required: true},
         timeSlot: {type: String, required: true},
+        dryingBooth: {type: Number, required: true},
+        startTime: {type: Date, required: true},
+        endTime: {type: Date, required: true},
         createdAt: {type: Date, required: true},
+        laundryBuilding: {type: String, required: true},
     },
     {
         methods: {
-            getBuilding() {
-                const building = this.userName.replace(/[^a-zA-Z]/g, "");
-                if (["A", "B", "C", "D"].includes(building)) return "ARKIVET";
-                if (["NH", "GH", "admin"].includes(building)) return "NATIONSHUSET";
-                return "UNKNOWN";
-            },
+            //Can be used to add methods to the model
         },
         statics: {
-            findBookingsAfterDate(date: Date) {
-                return this.find({date: {$gte: date}});
+            findBookingsPostDate(date: Date) {
+                return this.find({startTime: {$gte: date}});
             },
-
-            findBookingsByBuildingAndAfterDate(date: Date, building: string) {
-                //Går det att skriva en sådan metod?
+            findBookingsByLaundryBuildingAndPostDate(laundryBuilding: LaundryBuilding, date: Date) {
+                return this.find({laundryBuilding: laundryBuilding, startTime: {$gte: date}});
             },
         },
     }
 );
 
-
-BookingSchema.index({userName: 1, date: 1}, {unique: true});
+BookingSchema.index({username: 1, startTime: 1, laundryBuilding: 1}, {unique: true});
 
 const MongooseBooking = mongoose.models.Booking as IBookingModel || mongoose.model<IBooking, IBookingModel>("Booking", BookingSchema)
 
