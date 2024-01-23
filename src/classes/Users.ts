@@ -1,5 +1,5 @@
 import axios from "axios";
-import User from "./User";
+import User, { JsonUser } from "./User";
 import { UserType } from "../../utils/types";
 import { ca } from "date-fns/locale";
 
@@ -21,7 +21,7 @@ export default class Users {
     indexOf(user_id: string): number {
         let index = 0;
         for (const user of this.allUsers) {
-            if (user.getId === user_id) {
+            if (user.id === user_id) {
                 return index;
             }
             index++;
@@ -77,15 +77,15 @@ export default class Users {
     }
 
     contains(user: User): boolean {
-        const uid = user.getId;
-        return this.allUsers.some(user => user.getId === uid);
+        const uid = user.id;
+        return this.allUsers.some(user => user.id === uid);
     }
 
     //method that removes user from allUsers and returns a new Users object
     remove(user: User): Users {
-        const uid = user.getId;
+        const uid = user.id;
         const newUsers = Users.fromArray(this.allUsers);
-        newUsers.allUsers = this.allUsers.filter(user => user.getId !== uid);
+        newUsers.allUsers = this.allUsers.filter(user => user.id !== uid);
         return newUsers;
     }
 
@@ -177,29 +177,8 @@ export default class Users {
     static fromJSON(json: UserType[]): Users {
         const users = new Users();
         users.allUsers = json.map((userData: UserType) =>
-            User.fromJSON(userData)
+            new User(userData as JsonUser)
         );
         return users;
-    }
-
-    static async fetch(): Promise<Users> {
-        //TODO: NEEED TO CHANGE URL
-        const url = "/api/users"
-        try {
-            const response = await axios.get(url)
-            const data = await response.data
-            const users = new Users();
-
-
-            users.allUsers = data.map((userData: UserType) => {
-                return User.fromJSON(userData as UserType);
-            })
-
-            return users;
-
-        } catch (error) {
-            console.error("Error fetching users from Auth0:", error);
-            throw error;
-        }
     }
 }

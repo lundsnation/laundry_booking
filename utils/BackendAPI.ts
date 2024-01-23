@@ -1,5 +1,6 @@
-import axios from "axios";
-import Booking, {JsonBooking, newBooking} from "../src/classes/Booking";
+import axios, { Axios } from "axios";
+import Booking, { JsonBooking, newBooking } from "../src/classes/Booking";
+import User, { JsonUser } from "../src/classes/User";
 
 
 class BackendAPI {
@@ -25,6 +26,34 @@ class BackendAPI {
         const response = await axios.get("/api/bookings")
         return response.data.map((booking: JsonBooking) => new Booking(booking))
     }
+
+    static async getAllUsers(): Promise<User[]> {
+        const response = await axios.get("/api/users")
+        return response.data.map((user: JsonUser) => new User(user))
+    }
+
+    static async getUserById(id: string): Promise<User> {
+        const response = await axios.get(`/api/users/${id}`)
+        return new User(response.data as JsonUser)
+    }
+
+    static async getUserByName(name: string): Promise<User> {
+        const response = await axios.get(`/api/users/name/${name}`)
+        return new User(response.data as JsonUser)
+    }
+    //TODO: Evaluate if parameter type should be changed to JsonUser
+    static async postUser(user: User) {
+        return await axios.post("/api/users", user)
+    }
+
+    static async deleteUser(id: User) {
+        return await axios.delete(`/api/users/${id}`)
+    }
+
+    static async patchUser(id: string, modification: object) {
+        return await axios.patch(`/api/users/${id}`, modification)
+    }
+
 }
 
 export default BackendAPI;

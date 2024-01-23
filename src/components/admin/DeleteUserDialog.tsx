@@ -7,6 +7,7 @@ import PersonIcon from '@mui/icons-material/Person';
 import { SnackInterface } from "../Snack";
 import Users from "../../classes/Users";
 import User from "../../classes/User";
+import BackendAPI from "../../../utils/BackendAPI";
 
 interface Props {
     showDeleteUserDialog: boolean,
@@ -31,7 +32,7 @@ const DeleteUserDialog = (props: Props) => {
         const deletedUsers: string[] = []
 
         const allDeletes: Promise<Response>[] = selected.map(async (user: User) => {
-            const res = await user.DELETE()
+            const res = await BackendAPI.deleteUser(user)
             return res
         })
         const results: Response[] = await Promise.all(allDeletes)

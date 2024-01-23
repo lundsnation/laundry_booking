@@ -4,7 +4,7 @@ import { Building, ERROR_MSG, UserType } from "../../../utils/types";
 import AddIcon from '@mui/icons-material/Add';
 import { SnackInterface } from "../Snack";
 import { LoadingButton } from "@mui/lab";
-import User from "../../classes/User";
+import User, { JsonUser } from "../../classes/User";
 import Users from "../../classes/Users";
 
 interface Props {
@@ -17,21 +17,21 @@ interface Props {
 
 const NewUserDialog = (props: Props) => {
     const { showAddDialog, setShowAddDialog, snack, setSnack, setUsers } = props
-    const [newUser, setNewUser] = useState<UserType>({ name: "", email: "", app_metadata: { building: "NH" } });
+    const [newUser, setNewUser] = useState<JsonUser>({ name: "", email: "", connection: "Username-Password-Authenticated", password: "", email_verified: "true" }: NewUser);
     const [wait, setWait] = useState(false);
     const alignment: SnackbarOrigin = { vertical: 'bottom', horizontal: 'left' }
 
     const handleAddUser = async (event: FormEvent) => {
         event.preventDefault();
         setWait(true)
-        const user = User.fromUserType(newUser)
+        const user = new User(newUser)
         const response = await user.POST()
         setWait(false);
 
         if (response.status === 200 || response.status === 201) {
-            const createdUser = User.fromJSON(response.data)
+            const createdUser = User.response.data
             setSnack({ show: true, snackString: "Skapade " + user.name, severity: 'success', alignment: alignment })
-            setNewUser({ name: "", email: "", app_metadata: { building: "NH" } })
+            setNewUser({ name: "", email: "", app_metadata: { building: "NH" }, connection: "Username-Password-Authentication", email_verified: true })
             setShowAddDialog(false)
             setUsers((prevUsers: Users) => prevUsers.add(createdUser));
         } else {

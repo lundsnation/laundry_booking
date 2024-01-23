@@ -1,0 +1,9 @@
+
+type NewUser = {
+    name: string,
+    email: string,
+    connection: string,
+    password: string,
+    email_verified: boolean,
+
+}
