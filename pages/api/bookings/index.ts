@@ -1,7 +1,6 @@
 import {NextApiRequest, NextApiResponse} from "next"
-import {connect} from "../../../utils/connection"
+import {connect} from "../../../src/backend/mongoose/connection"
 import {Claims, getSession, withApiAuthRequired} from "@auth0/nextjs-auth0"
-import {getBuilding} from "../../../utils/helperFunctions"
 import BookingService from "../../../src/backend/services/BookingService";
 import withErrorHandler from "../../../src/backend/errors/withErrorHandler";
 import HttpError from "../../../src/backend/errors/HttpError";
@@ -13,17 +12,17 @@ const handler = withApiAuthRequired(withErrorHandler(async (req: NextApiRequest,
         throw new HttpError(HttpError.StatusCode.UNAUTHORIZED, "Unauthorized")
     }
     const user: Claims = session.user
+    console.log("user", user)
 
 
     await connect()
     switch (req.method) {
         case 'GET':
             const twoDaysAgo = new Date(new Date().setDate(new Date().getDate() - 2));
-            const bookings = await bookingService.getBookingsByBuildingAndPostDate(getBuilding(user.name), twoDaysAgo);
+            const bookings = await bookingService.getBookingsByLaundryBuildingAndPostDate(user.app_metadata.laundryBuilding, twoDaysAgo);
             return res.status(200).json(bookings)
 
         case 'POST':
-            //Do we have to check if the user is trying to book for himself or someone else?
             const booking = await bookingService.createBooking(user, req.body);
             return res.status(200).json(booking)
 

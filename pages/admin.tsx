@@ -4,7 +4,7 @@ import UserGrid from "../src/components/admin/UserGrid";
 import {Grid} from "@mui/material";
 import Layout from "../src/components/layout/Layout";
 import User, {JsonUser} from "../src/classes/User";
-import Auth0 from "../src/classes/Auth0";
+import Auth0API from "../src/apiHandlers/Auth0API";
 import Users from "../src/classes/Users";
 
 interface Props {
@@ -54,7 +54,7 @@ export const getServerSideProps = withPageAuthRequired({
             };
         }
 
-        const users = await Auth0.getUsersAsUserType();
+        const users = await Auth0API.getUsersAsUserType();
 
         return {
             props: {

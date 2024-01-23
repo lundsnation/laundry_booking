@@ -1,10 +1,9 @@
-import { Modal, Typography, Box, Button, Grid, Divider } from "@mui/material"
-import { useState } from "react"
-import { LoadingButton } from "@mui/lab";
-import { UserType } from "../../utils/types";
-import { EmailOutlined, Place } from "@mui/icons-material";
+import {Modal, Typography, Box, Button, Grid, Divider} from "@mui/material"
+import {useState} from "react"
+import {LoadingButton} from "@mui/lab";
+import {EmailOutlined, Place} from "@mui/icons-material";
 import User from "../classes/User";
-import { getSession } from "@auth0/nextjs-auth0";
+import {getSession} from "@auth0/nextjs-auth0";
 
 const USER_AGREEMENT_MAIN_TITLE = "Användarvillkor"
 const USER_AGREEMENT_TITLE_1 = "GDPR"
@@ -19,10 +18,10 @@ const CONTACT_INFO_EMAIL = " husforman@lundsnation.se"
 
 
 const style = {
-    position: { xs: "relative", sm: "fixed" },
-    top: { xs: 'none', sm: '50%' },
-    left: { xs: 'none', sm: '50%' },
-    transform: { xs: 'none', sm: 'translate(-50%, -50%)' },
+    position: {xs: "relative", sm: "fixed"},
+    top: {xs: 'none', sm: '50%'},
+    left: {xs: 'none', sm: '50%'},
+    transform: {xs: 'none', sm: 'translate(-50%, -50%)'},
     bgcolor: 'background.paper',
     // border: '2px solid #000',
     // boxShadow: 24,
@@ -32,11 +31,11 @@ const style = {
 };
 
 interface props {
-    user: UserType
+    user: User
 }
 
 export const Terms = (props: props) => {
-    const { user } = props
+    const {user} = props
     const [open, setOpen] = useState(true);
     const [loading, setLoading] = useState(false);
     const handleOpen = () => setOpen(true);
@@ -51,7 +50,6 @@ export const Terms = (props: props) => {
         const response = await fetch("/api/auth/accepted")
         const session = await response.json()
         console.log(session.user)
-
 
         if (response.ok) {
 
@@ -73,67 +71,66 @@ export const Terms = (props: props) => {
                     aria-labelledby="modal-modal-title"
                     aria-describedby="modal-modal-description"
                     disableEscapeKeyDown
-                    sx={{ overflow: "scroll" }}
+                    sx={{overflow: "scroll"}}
                 >
                     <Box sx={style}>
-                        <Typography id="modal-modal-Title" align="center" variant="h5">{USER_AGREEMENT_MAIN_TITLE}</Typography>
-                        <Box margin={1} />
-                        <Typography id="modal-modal-subtitle1" fontSize="large" variant="h6" >
+                        <Typography id="modal-modal-Title" align="center"
+                                    variant="h5">{USER_AGREEMENT_MAIN_TITLE}</Typography>
+                        <Box margin={1}/>
+                        <Typography id="modal-modal-subtitle1" fontSize="large" variant="h6">
                             {USER_AGREEMENT_TITLE_1}
                         </Typography>
-                        <Typography id="modal-modal-description1" variant="body1" >
+                        <Typography id="modal-modal-description1" variant="body1">
                             {USER_AGREEMENT_TEXT_1}
                         </Typography>
-                        <Typography align='right' sx={{ fontStyle: 'italic' }}>
+                        <Typography align='right' sx={{fontStyle: 'italic'}}>
                             {USER_AGREEMENT_TEXT_1_FINE_PRINT}
                         </Typography>
-                        <Box margin={1} />
-                        <Typography id="modal-modal-subtitle2" fontSize="large" variant="h6" >
+                        <Box margin={1}/>
+                        <Typography id="modal-modal-subtitle2" fontSize="large" variant="h6">
                             {USER_AGREEMENT_TITLE_2}
                         </Typography>
 
-                        <Typography id="modal-modal-description2" variant="body1" >
+                        <Typography id="modal-modal-description2" variant="body1">
                             {USER_AGREEMENT_TEXT_2}
                         </Typography>
-                        <Box margin={1} />
-                        <Typography id="modal-modal-subtitle-contactinfo" fontSize="large" variant="h6" >
+                        <Box margin={1}/>
+                        <Typography id="modal-modal-subtitle-contactinfo" fontSize="large" variant="h6">
                             {CONTACT_INFO_TITLE}
                         </Typography>
                         <Typography id="modal-modal-text-contactinfo">
                             {CONTACT_INFO_TEXT_1}
                         </Typography>
-                        <Box margin={1} />
+                        <Box margin={1}/>
                         <Grid container spacing={1}>
-                            <Grid item >
-                                <EmailOutlined />
+                            <Grid item>
+                                <EmailOutlined/>
                             </Grid>
                             <Grid item>
-                                <Typography id="modal-modal-email" fontStyle="italic" >
+                                <Typography id="modal-modal-email" fontStyle="italic">
                                     {CONTACT_INFO_EMAIL}
                                 </Typography>
                             </Grid>
                         </Grid>
-                        <Box margin={1} />
+                        <Box margin={1}/>
                         <Grid container spacing={1}>
-                            <Grid item >
-                                <Place />
+                            <Grid item>
+                                <Place/>
                             </Grid>
                             <Grid item>
-                                <Typography id="modal-modal-email" fontStyle="italic" >
+                                <Typography id="modal-modal-email" fontStyle="italic">
                                     {CONTACT_INFO_ADRESS}
                                 </Typography>
                             </Grid>
                         </Grid>
 
-
-
-
-                        <Grid container spacing={2} justifyContent="center" sx={{ mt: 1 }}>
-                            <Grid item xs="auto" >
-                                <Button href="api/auth/logout" color="warning" variant="contained" >Avböj</Button>
+                        <Grid container spacing={2} justifyContent="center" sx={{mt: 1}}>
+                            <Grid item xs="auto">
+                                <Button href="api/auth/logout" color="warning" variant="contained">Avböj</Button>
                             </Grid>
                             <Grid item xs="auto">
-                                <LoadingButton loading={loading} variant="contained" onClick={handleAccept}>Acceptera</LoadingButton>
+                                <LoadingButton loading={loading} variant="contained"
+                                               onClick={handleAccept}>Acceptera</LoadingButton>
                             </Grid>
 
                         </Grid>

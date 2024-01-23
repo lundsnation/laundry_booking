@@ -6,64 +6,51 @@ import Terms from '../src/components/Terms';
 import Rules from '../src/components/rules/Rules';
 import Layout from '../src/components/layout/Layout';
 import User, {JsonUser} from '../src/classes/User';
-import ArkivetConfig from "../src/Configs/ArkivetConfig";
-import NationshusetConfig from "../src/Configs/NationshusetConfig";
+import ConfigUtil from "../src/configs/ConfigUtil";
 import {useUser} from '@auth0/nextjs-auth0/client';
 import Loading from "../src/components/Loading";
 import router from 'next/router';
-import backendAPI from "../utils/BackendAPI";
+import backendAPI from "../src/apiHandlers/BackendAPI";
 import Booking from "../src/classes/Booking";
-// ... other imports
 
 
 const Index: NextPage = () => {
     const {user, error, isLoading: userIsLoading} = useUser();
     const [initialBookings, setInitialBookings] = useState<Booking[]>([]);
-    const [userBookings, setUserBookings] = useState<Booking[]>([]);
-    const [fetchingBookings, setFetchingBookings] = useState<boolean>(false);
+    const [fetchingData, setFetchingData] = useState<boolean>(false);
+
+    const fetchData = async () => {
+        setFetchingData(true);
+
+        const bookings = await backendAPI.fetchBookings();
+        setInitialBookings(bookings);
+
+        setFetchingData(false);
+    }
 
     useEffect(() => {
         if (user && !userIsLoading) {
+            console.log("Useeffect is running in index 1")
             // Fetch initial bookings here
-            fetchData().then(r => console.log("Initial bookings fetched"));
+            fetchData()
         }
     }, [user, userIsLoading]);
 
-    console.log(user)
-
-    if (userIsLoading || fetchingBookings) return <Loading/>;
+    if (userIsLoading || fetchingData) return <Loading/>;
     if (error) return <div>{error.message}</div>;
     if (!user) {
         router.push('/api/auth/login');
         return null; // Add this to prevent the component from rendering further
     }
 
-    // Use optional chaining to handle cases where user might be undefined
-    const userClass = new User(user as JsonUser,);
-
-    const config = userClass.building === 'ARKIVET' ? new ArkivetConfig() : new NationshusetConfig();
-
-    const fetchData = async () => {
-        try {
-            setFetchingBookings(true);
-            // Make your API call to fetch initial bookings
-            // For example, if you have a method like fetchInitialBookings
-            const bookings = await backendAPI.fetchBookings();
-            const userBookings = await backendAPI.fetchBookingsByUser(userClass.name);
-            setInitialBookings(bookings);
-        } catch (error) {
-            console.error("Error fetching initial bookings:", error);
-        } finally {
-            setFetchingBookings(false);
-        }
-    };
-
+    const userClass = new User(user as JsonUser, initialBookings.filter(booking => booking.username === user.name));
+    const config = ConfigUtil.getLaundryConfigByLaundryBuilding(userClass.app_metadata.laundryBuilding)
     return (
         <Layout user={userClass}>
             <Terms user={userClass}/>
             <Rules/>
             <Grid container px={1} marginY={10}>
-                <BookingCalendar user={userClass} config={config} initialBookings={initialBookings}/>
+                <BookingCalendar config={config} user={userClass} initialBookings={initialBookings}/>
             </Grid>
         </Layout>
     );

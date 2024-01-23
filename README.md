@@ -37,7 +37,7 @@ The main categories are:
 
 *Frontend
 *Backend
-*Auth0
+*Auth0API
 *Database
 *Testing
 *Other

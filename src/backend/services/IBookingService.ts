@@ -1,5 +1,5 @@
 import {Claims} from "@auth0/nextjs-auth0";
-import {BookingDocument, IBooking} from "../mongooseModels/MongooseBooking";
+import {BookingDocument, IBooking} from "../mongoose/MongooseBooking";
 
 interface IBookingService {
     getBookingsByUsername(username: string): Promise<BookingDocument[]>;

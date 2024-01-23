@@ -1,10 +1,8 @@
 import axios, { AxiosResponse } from 'axios';
-import User, { JsonUser } from './User';
+import User from '../classes/User';
 import { ModificationObject, UserType } from '../../utils/types';
-import { deprecate } from 'util';
-import HttpError from '../backend/errors/HttpError';
 
-class Auth0 {
+class Auth0API {
     private static client_id: string = process.env.AUTH0_CLIENT_ID as string;
     private static client_secret: string = process.env.AUTH0_CLIENT_SECRET as string;
     private static base_url: string = process.env.AUTH0_BASE_URL as string;
@@ -48,98 +46,50 @@ class Auth0 {
     //    }
     //}
 
-    static async doUserExist(name: string): Promise<boolean> {
-        const token = await Auth0.fetchAccessToken();
-        const searchParams = new URLSearchParams({
-            q: 'name : ' + name,
-            search_engine: 'v3',
-        })
-        const user = await axios.get(Auth0.api_url + 'users?' + searchParams.toString(), {
-            headers: {
-                Authorization: 'Bearer ' + token
-            },
-        })
-        if (user.status === 404) {
-            return false;
-        }
-        return true;
-    }
-
-    static async getUserById(userID: string): Promise<JsonUser> {
+    static async getUser(userID: string) {
         const token = await this.fetchAccessToken();
-        const user = await axios.get(this.api_url + 'users/' + userID, {
+        const response = await axios.get(this.api_url + 'users/' + userID, {
             headers: {
                 Authorization: 'Bearer ' + token
             }
         })
-        if (user.status === 404) {
-            throw new HttpError(HttpError.StatusCode.NOT_FOUND, "User not found")
-        }
 
-        return user.data as JsonUser;
-    }
-
-    static async getUserByName(name: string) {
-        const token = await this.fetchAccessToken();
-        const searchParams = new URLSearchParams({
-            q: 'name : ' + name,
-            search_engine: 'v3',
-        })
-        const user = await axios.get(this.api_url + 'users?' + searchParams.toString(), {
-            headers: {
-                Authorization: 'Bearer ' + token
-            },
-        })
-        if (user.status === 404) {
-            throw new HttpError(HttpError.StatusCode.NOT_FOUND, "User not found")
-        }
-
-        return user.data as JsonUser;
+        return response;
     }
 
     //Ändra typ eventuellt
-    static async postUser(user: UserType): Promise<JsonUser> {
+    static async postUser(user: UserType) {
         const token = await this.fetchAccessToken();
-        const doUserExist = await this.doUserExist(user.name)
-        if (doUserExist) {
-            throw new HttpError(HttpError.StatusCode.BAD_REQUEST, "User already exists")
-        }
+
+        user = { ...user, connection: "Username-Password-Authentication", email_verified: true }
         const response = await axios.post(this.api_url + 'users', user, {
             headers: {
                 Authorization: 'Bearer ' + token
             }
         })
-        if (response.status === 409) {
-            throw new HttpError(HttpError.StatusCode.BAD_REQUEST, "User already exists")
-        }
-        return response.data as JsonUser;
+        return response
     }
 
     //Ändra typ eventuellt
-    static async patchUser(id: string, modification: ModificationObject): Promise<JsonUser> {
+    static async patchUser(id: string, modification: ModificationObject): Promise<AxiosResponse> {
         const token = await this.fetchAccessToken();
         const response = await axios.patch(this.api_url + 'users/' + id, modification, {
             headers: {
                 Authorization: 'Bearer ' + token
             }
         })
-        if (response.status === 404) {
-            throw new HttpError(HttpError.StatusCode.NOT_FOUND, "User not found")
-        }
-        return response.data as JsonUser
-
+        return response
     }
 
-    static async deleteUser(userID: string): Promise<void> {
+    static async deleteUser(userID: string) {
         const token = await this.fetchAccessToken();
         const response = await axios.delete(this.api_url + 'users/' + userID, {
             headers: {
                 Authorization: 'Bearer ' + token
             }
         })
-        if (response.status === 404) {
-            throw new HttpError(HttpError.StatusCode.NOT_FOUND, "User not found")
-        }
+
+        return response
     }
 
 
@@ -166,34 +116,6 @@ class Auth0 {
         }
 
         return users;
-    }
-
-    static async getUsersAsJsonUser(): Promise<JsonUser[]> {
-        const users = await this.getUsers();
-        if (users.length === 0) {
-            throw new HttpError(HttpError.StatusCode.NOT_FOUND, "No users found")
-        }
-        return users.map(user => {
-            return {
-                sid: user.user_id,
-                sub: user.user_id,
-                name: user.name,
-                nickname: user.nickname,
-                email: user.email,
-                email_verified: user.email_verified,
-                picture: user.picture,
-                user_metadata: {
-                    picture: user.user_metadata.picture,
-                    telephone: user.user_metadata.telephone,
-                },
-                app_metadata: {
-                    acceptedTerms: user.app_metadata?.acceptedTerms,
-                    allowedSlots: user.app_metadata?.allowedSlots,
-                    roles: user.app_metadata?.roles,
-                },
-                updated_at: user.updated_at
-            }
-        })
     }
 
     static async getUsersAsUserType(): Promise<UserType[]> {
@@ -229,4 +151,4 @@ class Auth0 {
     }
 }
 
-export default Auth0;
+export default Auth0API;

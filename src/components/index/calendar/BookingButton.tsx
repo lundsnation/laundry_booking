@@ -26,7 +26,7 @@ const BookingButton = (props: Props) => {
     }
 
 
-    const myTimeSlot = booking && booking.isUserBooking(user.name)
+    const myTimeSlot = booking && booking.isUserBooking(user)
     let title = ""
     if (myTimeSlot && !timeSlot.hasPassed()) {
         title = "Tryck för att avboka tiden"
@@ -77,7 +77,7 @@ const BookingButton = (props: Props) => {
                                     </Grid>
                                     <Grid item xs={5}>
                                         <Typography variant="button" align="left"
-                                                    sx={{textTransform: "none"}}>Bås {" " + timeSlot.getDryingBooth()}</Typography>
+                                                    sx={{textTransform: "none"}}>Bås {" " + timeSlot.dryingBooth}</Typography>
                                     </Grid>
                                 </Grid>
 

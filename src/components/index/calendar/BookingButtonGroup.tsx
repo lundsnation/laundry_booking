@@ -1,34 +1,32 @@
 import BookingButton from "./BookingButton";
 import {ButtonGroup, AlertColor, SnackbarOrigin} from "@mui/material";
-import {UserType} from "../../../../utils/types";
-import BookingsUtil from "../../../classes/BookingsUtil";
 import Booking from "../../../classes/Booking";
+import Config from "../../../configs/Config";
+import User from "../../../classes/User";
 import TimeSlot from "../../../classes/TimeSlot";
 
 interface Props {
-    bookedBookings: BookingsUtil;
-    timeSlots: TimeSlot[];
+    bookedBookings: Booking[];
     selectedDate: Date;
-    user: UserType;
+    user: User;
     updateBookings: () => void;
     snackTrigger: (severity: AlertColor, snackString: string, alignment: SnackbarOrigin) => void;
+    config: Config;
 }
 
 const BookingButtonGroup = (props: Props) => {
-    const {bookedBookings, timeSlots, selectedDate, user, updateBookings, snackTrigger} = props;
-    const buttons = timeSlots.map((timeSlot) => {
+    const {bookedBookings, selectedDate, user, updateBookings, snackTrigger, config} = props;
 
+    const buttons = config.timeSlots.map((timeSlot) => {
         const booking = bookedBookings.find((bookedBooking) => {
-                return bookedBooking.hasTimeSlot(timeSlot.getTimeSlot())
+                return bookedBooking.hasTimeSlot(timeSlot)
             }
         );
 
-        const dryingBoothNbr = timeSlot.getDryingBooth();
         return (
             <BookingButton
                 key={timeSlot.toString()}
-                timeSlot={timeSlot}
-                boothIndex={dryingBoothNbr as number}
+                timeSlot={new TimeSlot(timeSlot, config.getDryingBooth(timeSlot), selectedDate)}
                 booking={booking || null}
                 selectedDate={selectedDate}
                 user={user}

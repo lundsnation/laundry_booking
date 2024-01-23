@@ -63,7 +63,7 @@ const handler = withApiAuthRequired(withErrorHandler(async (req: NextApiRequest,
             logRequest('PATCH_USERS')
             // Allows partial modification of data if admin or users own account
             const modification = req.body
-            const response = await Auth0.patchUser(id, modification).catch(catcher)
+            const response = await Auth0API.patchUser(id, modification).catch(catcher)
             if (response?.statusText === "OK") {
                 // if (response.status === 200) {
                 //Kan skicka den patchade avändaren här men bör ej behövas
@@ -73,7 +73,7 @@ const handler = withApiAuthRequired(withErrorHandler(async (req: NextApiRequest,
         },
 
         DELETE: async (req: NextApiRequest, res: NextApiResponse) => {
-            const response = await Auth0.deleteUser(id).catch(catcher)
+            const response = await Auth0API.deleteUser(id).catch(catcher)
             if (response?.status === 204) {
                 res.status(200).json({ message: "User deleted" }) //får konstigt meddelande if res.status(204) så skickar 200 istället
                 return

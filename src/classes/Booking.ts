@@ -1,64 +1,63 @@
+import user from "./User";
 import TimeSlot from "./TimeSlot";
 
 export type JsonBooking = {
     _id: string,
-    userName: string,
-    date: string,
-    timeSlot: string,
+    username: string,
+    timeSlot: string
+    dryingBooth: number
+    laundryBuilding: string,
+    startTime: string
+    endTime: string
     createdAt: string
 }
 
-export type newBooking = {
-    userName: string,
-    date: Date,
-    timeSlot: string
-    createdAt: Date
-}
+export type NewBooking = Omit<JsonBooking, '_id'>;
 
 class Booking {
-    readonly _id: string;
-    readonly userName: string;
-    readonly date: Date;
-    readonly timeSlot: string; //ändra till TimeSlot
-    readonly createdAt: Date;
+    readonly _id: string
+    readonly username: string
+    readonly timeSlot: string
+    readonly dryingBooth: number
+    readonly laundryBuilding: string
+    readonly startTime: Date
+    readonly endTime: Date
+    readonly createdAt: Date
 
-    constructor(booking: JsonBooking) {
-        this._id = booking._id;
-        this.userName = booking.userName;
-        this.date = new Date(booking.date);
-        this.timeSlot = booking.timeSlot;
-        this.createdAt = new Date(booking.createdAt);
+
+    constructor(jsonBooking: JsonBooking) {
+        this._id = jsonBooking._id
+        this.username = jsonBooking.username
+        this.timeSlot = jsonBooking.timeSlot
+        this.dryingBooth = jsonBooking.dryingBooth
+        this.laundryBuilding = jsonBooking.laundryBuilding
+        this.startTime = new Date(jsonBooking.startTime)
+        this.endTime = new Date(jsonBooking.endTime)
+        this.createdAt = new Date(jsonBooking.createdAt)
     }
 
     hasPassed(): boolean {
-        return new Date().getTime() > this.date.getTime();
+        return new Date().getTime() > this.startTime.getTime();
     }
 
-    get building(): string {
-        const building = this.userName.replace(/[^a-zA-Z]/g, "")
-        if (["A", "B", "C", "D"].includes(building)) return "ARKIVET"
-        if (["NH", "GH", "admin"].includes(building)) return "NATIONSHUSET"
-        return "UNKNOWN";
-    }
-
-    isUserBooking(userName: string): boolean {
-        return this.userName === userName;
+    isUserBooking(User: user): boolean {
+        return this.username === user.name;
     }
 
     hasTimeSlot(timeSlot: TimeSlot): boolean {
-        return this.timeSlot.toString() === timeSlot.getTimeSlot().toString();
+        return this.timeSlot === timeSlot.toString();
     }
 
-    isSameDate(date: Date): boolean {
-        const bookingYear = this.date.getFullYear();
-        const bookingMonth = this.date.getMonth();
-        const bookingDay = this.date.getDate();
+    isSameDay(otherDate: Date): boolean {
+        const bookingYear = this.startTime.getFullYear();
+        const bookingMonth = this.startTime.getMonth();
+        const bookingDay = this.startTime.getDate();
 
-        const selectedYear = date.getFullYear();
-        const selectedMonth = date.getMonth();
-        const selectedDay = date.getDate();
+        const otherYear = otherDate.getFullYear();
+        const otherMonth = otherDate.getMonth();
+        const otherDay = otherDate.getDate();
 
-        return bookingYear == selectedYear && bookingMonth == selectedMonth && bookingDay == selectedDay;
+        return bookingYear === otherYear && bookingMonth === otherMonth && bookingDay === otherDay;
     }
 }
 

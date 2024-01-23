@@ -1,5 +1,5 @@
 import {NextApiRequest, NextApiResponse} from "next"
-import {connect} from "../../../../utils/connection"
+import {connect} from "../../../../src/backend/mongoose/connection"
 import {withApiAuthRequired, getSession} from '@auth0/nextjs-auth0';
 import withErrorHandler from "../../../../src/backend/errors/withErrorHandler";
 import HttpError from "../../../../src/backend/errors/HttpError";

@@ -1,5 +1,5 @@
 import axios from "axios";
-import User, { JsonUser } from "./User";
+import User from "./User";
 import { UserType } from "../../utils/types";
 import { ca } from "date-fns/locale";
 
@@ -11,7 +11,6 @@ export default class Users {
     constructor() {
         this.allUsers = [];
     }
-
 
 
     get(i: number): User {
@@ -30,8 +29,8 @@ export default class Users {
     }
 
     /**
-    * Find a user by satisfying a predicate
-    */
+     * Find a user by satisfying a predicate
+     */
     find(predicate: (user: User) => boolean): User | undefined {
         return this.allUsers.find(predicate);
     }
@@ -48,23 +47,23 @@ export default class Users {
 
     /**
      * Returns a copy of a section of an array
-    */
+     */
     slice(start?: number, end?: number): Users {
         const slicedUsers = new Users();
         slicedUsers.allUsers = this.allUsers.slice(start, end);
         return slicedUsers;
     }
 
-    /** 
-    * Returns the length of allUsers
-    */
+    /**
+     * Returns the length of allUsers
+     */
     length(): number {
         return this.allUsers.length;
     }
 
     /**
-    * Adds a user to allUsers
-    */
+     * Adds a user to allUsers
+     */
     push(users: User): void {
         this.allUsers.push(users as User);
         return
@@ -180,5 +179,26 @@ export default class Users {
             new User(userData as JsonUser)
         );
         return users;
+    }
+
+    static async fetch(): Promise<Users> {
+        //TODO: NEEED TO CHANGE URL
+        const url = "/api/users"
+        try {
+            const response = await axios.get(url)
+            const data = await response.data
+            const users = new Users();
+
+
+            users.allUsers = data.map((userData: UserType) => {
+                return User.fromJSON(userData as UserType);
+            })
+
+            return users;
+
+        } catch (error) {
+            console.error("Error fetching users from Auth0API:", error);
+            throw error;
+        }
     }
 }

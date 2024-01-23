@@ -1,12 +1,12 @@
-import IBookingService from "./IBookingService";
-import BookingDao, {BookingDocument, IBooking} from '../mongooseModels/MongooseBooking'
+import BookingDao, {BookingDocument, IBooking} from '../mongoose/MongooseBooking'
 import HttpError from "../errors/HttpError";
-import {getBuilding} from "../../../utils/helperFunctions";
 import {isValidPhoneNumber} from "libphonenumber-js";
 import {Claims} from "@auth0/nextjs-auth0";
-import {BackendPusher} from "../../../utils/pusherApi";
+import {BackendPusher} from "../../apiHandlers/PusherAPI";
+import {LaundryBuilding} from "../../configs/Config";
+import User from "../../classes/User";
 
-class BookingService implements IBookingService {
+class BookingService {
     private backendPusher: BackendPusher
 
     constructor() {
@@ -14,26 +14,20 @@ class BookingService implements IBookingService {
     }
 
     async getBookingsByUsername(username: string): Promise<BookingDocument[]> {
-        const bookings = await BookingDao.find({userName: username});
-
-        if (bookings.length === 0) {
-            throw new HttpError(HttpError.StatusCode.NOT_FOUND, "No bookings found");
-        }
-
-        return bookings;
+        return BookingDao.find({username: username});
     }
 
-    async deleteBooking(id: string, username: string): Promise<void> {
+    async deleteBooking(id: string, user: User): Promise<void> {
         const bookingDoc = await this.getBookingById(id);
 
-        if (bookingDoc.userName !== username) {
-            throw new HttpError(HttpError.StatusCode.FORBIDDEN, "User does not own booking")
+        if (bookingDoc.username !== user.name && !user.app_metadata.roles.includes("admin")) {
+            throw new HttpError(HttpError.StatusCode.FORBIDDEN, "User does not own booking or is not admin");
         }
 
         await BookingDao.findByIdAndDelete(id)
-        await this.backendPusher.bookingUpdateTrigger(getBuilding(username), {
-            userName: username,
-            date: bookingDoc.date,
+        await this.backendPusher.bookingUpdateTrigger(user.app_metadata.laundryBuilding, {
+            username: user.name,
+            startTime: bookingDoc.startTime,
             timeSlot: bookingDoc.timeSlot,
             method: this.backendPusher.bookingUpdateMethod.DELETE
         })
@@ -43,64 +37,60 @@ class BookingService implements IBookingService {
         const bookingDoc = await BookingDao.findById(id);
 
         if (!bookingDoc) {
-            throw new HttpError(HttpError.StatusCode.NOT_FOUND, "MongooseBooking not found");
+            throw new HttpError(HttpError.StatusCode.NOT_FOUND, "Booking not found");
         }
 
         return bookingDoc;
     }
 
-    async getBookingsByBuildingAndPostDate(building: string, date: Date): Promise<BookingDocument[]> {
-        const bookingsPostDate = await BookingDao.findBookingsAfterDate(date);
+    async getBookingsByLaundryBuildingAndPostDate(laundryBuilding: LaundryBuilding, date: Date): Promise<BookingDocument[]> {
+        return await BookingDao.findBookingsByLaundryBuildingAndPostDate(laundryBuilding, date);
 
-        if (bookingsPostDate.length === 0) {
-            throw new HttpError(HttpError.StatusCode.NOT_FOUND, "No bookings found");
-        }
-
-        return bookingsPostDate.filter((booking) => {
-            return booking.getBuilding() === building
-        });
     }
 
     async createBooking(user: Claims, booking: IBooking): Promise<BookingDocument> {
         const nbr = user.user_metadata.telephone || ""
+
         //Can maybe be done in validation layer?
         if (!isValidPhoneNumber(nbr)) {
             throw new HttpError(HttpError.StatusCode.BAD_REQUEST, "Invalid phone number");
         }
 
-        // Initial  check if booking-request is in the past => invalid
         // Should be handled in validation
-        if (new Date(booking.date).getTime() < Date.now()) {
-            throw new HttpError(HttpError.StatusCode.BAD_REQUEST, "MongooseBooking date is in the past");
+        if (new Date(booking.startTime).getTime() < Date.now()) {
+            console.log("MongooseBooking date is in the past", booking.startTime, Date.now())
+            throw new HttpError(HttpError.StatusCode.BAD_REQUEST, "Booking date is in the past");
         }
 
-        // Fetching allowed slots from active user session. If undefined, defaults to 1
-        const allowedNumSlots = user.app_metadata.allowedSlots || 1
-        // Fetching slots already booked by the user
-        const activeUserSlots = await BookingDao.find({userName: user.name, date: {$gte: new Date()}})
+        const allowedNumBookings = user.app_metadata.allowedSlots || 1
+        const activeBookings = await BookingDao.find({userName: user.name, date: {$gte: new Date()}})
 
-        if (activeUserSlots.length > allowedNumSlots) {
+        if (activeBookings.length > allowedNumBookings) {
             throw new HttpError(HttpError.StatusCode.BAD_REQUEST, "Too many slots booked");
         }
 
-        const dateBookings = await BookingDao.find({date: booking.date});
+        const dateBookings = await BookingDao.find({date: booking.startTime});
         const buildingBookingExists = dateBookings.some((booking) => {
-            const userBuilding = getBuilding(user.name)
-            const bookingBuilding = booking.getBuilding()
+            const userBuilding = user.laundryBuilding
+            const bookingBuilding = booking.laundryBuilding
             return userBuilding === bookingBuilding
         });
 
         if (buildingBookingExists) {
-            throw new HttpError(HttpError.StatusCode.BAD_REQUEST, "MongooseBooking for building already exists");
+            throw new HttpError(HttpError.StatusCode.BAD_REQUEST, "Booking for building already exists");
+        }
+
+        if (user.name != booking.username && !user.app_metadata.roles.includes("admin")) {
+            throw new HttpError(HttpError.StatusCode.UNAUTHORIZED, "Unauthorized to create booking for other user")
         }
 
         //Type should be changed to IBookingDocument
         const bookingDoc: BookingDocument = await BookingDao.create(booking);
 
-        await this.backendPusher.bookingUpdateTrigger(getBuilding(user.name), {
-            userName: user.name,
-            date: booking.date,
+        await this.backendPusher.bookingUpdateTrigger(user.app_metadata.laundryBuilding, {
+            username: user.name,
             timeSlot: booking.timeSlot,
+            startTime: booking.startTime,
             method: this.backendPusher.bookingUpdateMethod.POST
         })
 
