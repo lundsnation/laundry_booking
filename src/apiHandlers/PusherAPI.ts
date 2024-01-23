@@ -18,8 +18,8 @@ export const bookingUpdateChannel = 'bookingUpdates'
 
 export type BookingUpdate = {
     username: string,
-    startTime: Date,
     timeSlot: string,
+    startTime: Date,
     method: BookingUpdateMethod
 }
 

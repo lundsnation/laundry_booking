@@ -31,7 +31,6 @@ const Header = ({user}: Props) => {
     return (
         <React.Fragment>
             <AppBar position="fixed" color="primary">
-
                 <Toolbar>
                     <HeaderLogo logoText={logoText}/>
                     <DesktopNav user={user}/>

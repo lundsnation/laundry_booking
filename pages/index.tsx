@@ -11,45 +11,30 @@ import {useUser} from '@auth0/nextjs-auth0/client';
 import Loading from "../src/components/Loading";
 import router from 'next/router';
 import backendAPI from "../src/apiHandlers/BackendAPI";
-import Booking, from "../src/classes/Booking";
+import Booking from "../src/classes/Booking";
 
 
 const Index: NextPage = () => {
     const {user, error, isLoading: userIsLoading} = useUser();
     const [initialBookings, setInitialBookings] = useState<Booking[]>([]);
-    const [userBookings, setUserBookings] = useState<Booking[]>([]);
     const [fetchingData, setFetchingData] = useState<boolean>(false);
 
     const fetchData = async () => {
-        try {
-            setFetchingData(true);
+        setFetchingData(true);
 
-            // Use Promise.all to make the API calls concurrently
-            const [bookings, userBookings] = await Promise.all([
-                backendAPI.fetchBookings(),
-                backendAPI.fetchBookingsByUser(userClass.name),
-            ]);
+        const bookings = await backendAPI.fetchBookings();
+        setInitialBookings(bookings);
 
-            console.log("userBookings:", userBookings);
-            console.log("bookings:", bookings);
-
-            setUserBookings(userBookings);
-            setInitialBookings(bookings);
-        } catch (error) {
-            console.error("Error fetching initial bookings:", error);
-        } finally {
-            setFetchingData(false);
-        }
-    };
+        setFetchingData(false);
+    }
 
     useEffect(() => {
         if (user && !userIsLoading) {
+            console.log("Useeffect is running in index 1")
             // Fetch initial bookings here
-            fetchData().then(r => console.log("Initial bookings fetched"));
+            fetchData()
         }
     }, [user, userIsLoading]);
-
-    console.log("user in index 1:", user)
 
     if (userIsLoading || fetchingData) return <Loading/>;
     if (error) return <div>{error.message}</div>;
@@ -58,15 +43,14 @@ const Index: NextPage = () => {
         return null; // Add this to prevent the component from rendering further
     }
 
-    const userClass = new User(user as JsonUser, userBookings)
+    const userClass = new User(user as JsonUser, initialBookings.filter(booking => booking.username === user.name));
     const config = ConfigUtil.getLaundryConfigByLaundryBuilding(userClass.app_metadata.laundryBuilding)
-
     return (
         <Layout user={userClass}>
             <Terms user={userClass}/>
             <Rules/>
             <Grid container px={1} marginY={10}>
-                <BookingCalendar user={userClass} config={config} initialBookings={initialBookings}/>
+                <BookingCalendar config={config} user={userClass} initialBookings={initialBookings}/>
             </Grid>
         </Layout>
     );

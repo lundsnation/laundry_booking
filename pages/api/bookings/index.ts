@@ -23,7 +23,6 @@ const handler = withApiAuthRequired(withErrorHandler(async (req: NextApiRequest,
             return res.status(200).json(bookings)
 
         case 'POST':
-            //Do we have to check if the user is trying to book for himself or someone else?
             const booking = await bookingService.createBooking(user, req.body);
             return res.status(200).json(booking)
 
