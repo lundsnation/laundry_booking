@@ -12,8 +12,7 @@ const handler = withApiAuthRequired(withErrorHandler(async (req: NextApiRequest,
         throw new HttpError(HttpError.StatusCode.UNAUTHORIZED, "Unauthorized")
     }
     const user: Claims = session.user
-    console.log("user", user)
-
+    //console.log("user", user)
 
     await connect()
     switch (req.method) {

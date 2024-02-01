@@ -6,7 +6,7 @@ import Terms from '../src/components/Terms';
 import Rules from '../src/components/rules/Rules';
 import Layout from '../src/components/layout/Layout';
 import User, {JsonUser} from '../src/classes/User';
-import ConfigUtil from "../src/configs/ConfigUtil";
+import ConfigUtil from "../utils/ConfigUtil";
 import {useUser} from '@auth0/nextjs-auth0/client';
 import Loading from "../src/components/Loading";
 import router from 'next/router';
@@ -36,6 +36,7 @@ const Index: NextPage = () => {
         }
     }, [user, userIsLoading]);
 
+
     if (userIsLoading || fetchingData) return <Loading/>;
     if (error) return <div>{error.message}</div>;
     if (!user) {
@@ -43,7 +44,7 @@ const Index: NextPage = () => {
         return null; // Add this to prevent the component from rendering further
     }
 
-    const userClass = new User(user as JsonUser, initialBookings.filter(booking => booking.username === user.name));
+    const userClass = new User(user as JsonUser, initialBookings)
     const config = ConfigUtil.getLaundryConfigByLaundryBuilding(userClass.app_metadata.laundryBuilding)
     return (
         <Layout user={userClass}>

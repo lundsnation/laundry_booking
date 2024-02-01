@@ -1,16 +1,12 @@
 import * as React from 'react';
-import Box from '@mui/material/Box';
 import Menu from '@mui/material/Menu';
-import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import Tooltip from '@mui/material/Tooltip';
-
-import { AccountCircle, Logout } from '@mui/icons-material/';
-import { Button, ListItemIcon, MenuItem, SvgIconTypeMap } from '@mui/material';
-import SvgIcon from '@mui/material';
+import {AccountCircle, Logout} from '@mui/icons-material/';
+import {Button, ListItemIcon, MenuItem, SvgIconTypeMap} from '@mui/material';
 import router from 'next/router';
-import { OverridableComponent } from '@mui/material/OverridableComponent';
-import { User } from '../../../../classes/User';
+import {OverridableComponent} from '@mui/material/OverridableComponent';
+import User from '../../../../classes/User';
 
 interface Props {
     user: User
@@ -23,7 +19,7 @@ type MenuItemType = {
 }
 
 const menuItems: Array<MenuItemType> = [
-    { text: "Profil", link: "/profil", Icon: AccountCircle },
+    {text: "Profil", link: "/profil", Icon: AccountCircle},
     //{ text: "Logga ut", link: "api/auth/logout", Icon: Logout } //Button added manually instead so it can be made red.
 ]
 
@@ -51,9 +47,9 @@ const ProfileMenuButton = (props: Props) => {
                 <Button
                     size="large"
                     color={"inherit"}
-                    startIcon={<AccountCircle />}
+                    startIcon={<AccountCircle/>}
                     onClick={handleClick}
-                    sx={{ ml: 2, color: "#FFFFFF" }}
+                    sx={{ml: 2, color: "#FFFFFF"}}
                     aria-controls={open ? 'account-menu' : undefined}
                     aria-haspopup="true"
                     aria-expanded={open ? 'true' : undefined}
@@ -101,16 +97,16 @@ const ProfileMenuButton = (props: Props) => {
                         },
                     },
                 }}
-                transformOrigin={{ horizontal: 'right', vertical: 'top' }}
-                anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+                transformOrigin={{horizontal: 'right', vertical: 'top'}}
+                anchorOrigin={{horizontal: 'right', vertical: 'bottom'}}
             >
-                {menuItems.map(({ text, link, Icon }) => (
+                {menuItems.map(({text, link, Icon}) => (
                     <MenuItem
                         key={text}
                         onClick={() => onClick(link)}
                     >
                         <ListItemIcon>
-                            <Icon fontSize='medium' />
+                            <Icon fontSize='medium'/>
                         </ListItemIcon>
                         <Typography
                         >
@@ -125,7 +121,7 @@ const ProfileMenuButton = (props: Props) => {
                     onClick={() => onClick("api/auth/logout")}
                 >
                     <ListItemIcon>
-                        <Logout color={"error"} fontSize='medium' />
+                        <Logout color={"error"} fontSize='medium'/>
                     </ListItemIcon>
                     <Typography
                         color={"error"}
@@ -137,7 +133,7 @@ const ProfileMenuButton = (props: Props) => {
 
             </Menu>
 
-        </React.Fragment >
+        </React.Fragment>
     );
 }
 

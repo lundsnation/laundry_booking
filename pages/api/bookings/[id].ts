@@ -12,6 +12,9 @@ const handler = withApiAuthRequired(withErrorHandler(async (req: NextApiRequest,
     if (!session) {
         throw new HttpError(HttpError.StatusCode.UNAUTHORIZED, "Unauthorized")
     }
+
+    //console.log("User in backend api: ", session.user)
+
     //Type needs to be solved here
     const bookingId: string = req.query.id as string
 
@@ -25,7 +28,6 @@ const handler = withApiAuthRequired(withErrorHandler(async (req: NextApiRequest,
         case 'DELETE':
             await bookingService.deleteBooking(bookingId, session.user as User)
             return res.status(200).json({})
-
 
         default:
             throw new HttpError(HttpError.StatusCode.NOT_FOUND, "Request method not found")

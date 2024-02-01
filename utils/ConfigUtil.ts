@@ -1,6 +1,6 @@
-import Config, {Arkivet, Building, LaundryBuilding, Nationshuset} from "./Config";
-import ArkivetConfig from "./ArkivetConfig";
-import NationshusetConfig from "./NationshusetConfig";
+import Config, {Arkivet, Building, LaundryBuilding, Nationshuset} from "../src/configs/Config";
+import ArkivetConfig from "../src/configs/ArkivetConfig";
+import NationshusetConfig from "../src/configs/NationshusetConfig";
 
 class ConfigUtil {
 

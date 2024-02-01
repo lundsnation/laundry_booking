@@ -5,6 +5,7 @@ import {Claims} from "@auth0/nextjs-auth0";
 import {BackendPusher} from "../../apiHandlers/PusherAPI";
 import {LaundryBuilding} from "../../configs/Config";
 import User from "../../classes/User";
+import {JsonBooking} from "../../classes/Booking";
 
 class BookingService {
     private backendPusher: BackendPusher
@@ -25,9 +26,9 @@ class BookingService {
         }
 
         await BookingDao.findByIdAndDelete(id)
-        await this.backendPusher.bookingUpdateTrigger(user.app_metadata.laundryBuilding, {
+        await this.backendPusher.bookingUpdateTrigger(bookingDoc.laundryBuilding as LaundryBuilding, {
             username: user.name,
-            startTime: bookingDoc.startTime,
+            startTime: bookingDoc.startTime.toISOString(),
             timeSlot: bookingDoc.timeSlot,
             method: this.backendPusher.bookingUpdateMethod.DELETE
         })
@@ -48,7 +49,7 @@ class BookingService {
 
     }
 
-    async createBooking(user: Claims, booking: IBooking): Promise<BookingDocument> {
+    async createBooking(user: Claims, booking: JsonBooking): Promise<BookingDocument> {
         const nbr = user.user_metadata.telephone || ""
 
         //Can maybe be done in validation layer?
@@ -87,7 +88,7 @@ class BookingService {
         //Type should be changed to IBookingDocument
         const bookingDoc: BookingDocument = await BookingDao.create(booking);
 
-        await this.backendPusher.bookingUpdateTrigger(user.app_metadata.laundryBuilding, {
+        await this.backendPusher.bookingUpdateTrigger(booking.laundryBuilding as LaundryBuilding, {
             username: user.name,
             timeSlot: booking.timeSlot,
             startTime: booking.startTime,

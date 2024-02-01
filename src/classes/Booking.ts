@@ -1,5 +1,7 @@
 import user from "./User";
 import TimeSlot from "./TimeSlot";
+import User from "./User";
+import {LaundryBuilding} from "../configs/Config";
 
 export type JsonBooking = {
     _id: string,
@@ -40,7 +42,7 @@ class Booking {
         return new Date().getTime() > this.startTime.getTime();
     }
 
-    isUserBooking(User: user): boolean {
+    isUserBooking(user: User): boolean {
         return this.username === user.name;
     }
 

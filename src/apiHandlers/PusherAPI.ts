@@ -19,7 +19,7 @@ export const bookingUpdateChannel = 'bookingUpdates'
 export type BookingUpdate = {
     username: string,
     timeSlot: string,
-    startTime: Date,
+    startTime: string, //ISO 8601 (It gets sent as a string, and should be parsed to a Date object on the frontend)
     method: BookingUpdateMethod
 }
 
@@ -66,6 +66,7 @@ export class FrontendPusher extends PusherClient {
     bookingUpdatesSubscribe(): Channel {
         return super.subscribe(bookingUpdateChannel + "_" + this._laundryBuilding)
     }
+
 
     get bookingUpdateMethod() {
         return BookingUpdateMethod

@@ -8,7 +8,6 @@ import BookingService from "../../../../src/backend/services/BookingService";
 const bookingService = new BookingService();
 const handler = withApiAuthRequired(withErrorHandler(async (req: NextApiRequest, res: NextApiResponse) => {
     const session = await getSession(req, res)
-    console.log("hello")
     if (!session) {
         throw new HttpError(HttpError.StatusCode.UNAUTHORIZED, "Unauthorized")
     }

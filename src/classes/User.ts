@@ -32,13 +32,13 @@ class User {
     readonly email: string
     readonly email_verified: boolean
     readonly picture: string
-    readonly app_metadata: AppMetadata
+    app_metadata: AppMetadata
     readonly user_metadata: UserMetadata
     readonly updated_at: Date
     readonly activeBookings: Booking[] = []
     readonly pastBookings: Booking[] = []
 
-    constructor(user: JsonUser, userBookings: Booking[] = []) {
+    constructor(user: JsonUser, bookings: Booking[] = []) {
         this.id = user.sub
         this.name = user.name
         this.nickname = user.nickname
@@ -49,11 +49,12 @@ class User {
         this.user_metadata = user.user_metadata
         this.updated_at = new Date(user.updated_at)
 
-        userBookings.forEach(booking => {
-            if (booking.startTime > new Date()) {
-                this.activeBookings.push(booking)
-            } else {
-                this.pastBookings.push(booking)
+        bookings.forEach(bookings => {
+            if (bookings.startTime > new Date() && bookings.username === this.name) {
+                this.activeBookings.push(bookings)
+            }
+            if (bookings.startTime < new Date() && bookings.username === this.name) {
+                this.pastBookings.push(bookings)
             }
         })
     }
@@ -84,6 +85,12 @@ class User {
                 this.pastBookings.push(bookings)
             }
         })
+    }
+
+
+    // Can perhaps be placed in User class
+    hasBookingOnDay(day: Date): boolean {
+        return this.activeBookings.some(booking => booking.isSameDay(day));
     }
 }
 
