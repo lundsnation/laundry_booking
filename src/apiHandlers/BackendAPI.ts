@@ -2,8 +2,8 @@ import axios from "axios";
 import Booking, {JsonBooking, NewBooking} from "../classes/Booking";
 import {LaundryBuilding} from "../configs/Config";
 
+// This class is used to communicate with the backend API from the frontend
 class BackendAPI {
-    //Might need to add error handling here
     static async fetchBooking(id: string): Promise<Booking> {
         return new Booking((await axios.get(`/api/bookings/${id}`)).data)
     }

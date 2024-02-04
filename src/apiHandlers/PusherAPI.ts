@@ -54,17 +54,20 @@ const frontendOptions = {
 export class FrontendPusher extends PusherClient {
     private _bookingUpdateChannel: string
     private _bookingUpdateEvent: string
-    private _laundryBuilding: LaundryBuilding
 
-    constructor(laundryBuilding: LaundryBuilding) {
+    constructor() {
+        console.log("New FrontendPusher")
         super(process.env.REACT_APP_PUSHER_KEY as string, frontendOptions)
         this._bookingUpdateChannel = bookingUpdateChannel;
         this._bookingUpdateEvent = bookingUpdateEvent;
-        this._laundryBuilding = laundryBuilding
     }
 
-    bookingUpdatesSubscribe(): Channel {
-        return super.subscribe(bookingUpdateChannel + "_" + this._laundryBuilding)
+    bookingUpdatesSubscribe(laundryBuilding: LaundryBuilding): Channel {
+        return super.subscribe(bookingUpdateChannel + "_" + laundryBuilding)
+    }
+
+    bookingUpdateUnsubscribe(laundryBuilding: LaundryBuilding): void {
+        super.unsubscribe(bookingUpdateChannel + "_" + laundryBuilding)
     }
 
 
@@ -80,9 +83,9 @@ export class FrontendPusher extends PusherClient {
         return this._bookingUpdateEvent
     }
 
-    cleanup(): void {
+    cleanup(laundryBuilding: LaundryBuilding): void {
         super.unbind(bookingUpdateEvent);
-        super.unsubscribe(bookingUpdateChannel + "_" + this._laundryBuilding);
+        super.unsubscribe(bookingUpdateChannel + "_" + laundryBuilding);
         super.disconnect();
     }
 }

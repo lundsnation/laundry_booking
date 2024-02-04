@@ -32,7 +32,6 @@ interface Props {
 const ConfirmBooking = ({
                             myTimeSlot,
                             booking,
-                            date,
                             timeSlot,
                             open,
                             handleOpenConfirmation,
@@ -52,14 +51,14 @@ const ConfirmBooking = ({
             endTime: timeSlot.endTime.toISOString(),
             createdAt: new Date().toISOString(),
         });
-        //snackTrigger("success", `Du har bokat: ${timeSlot}`, snackAlignment);
+        snackTrigger("success", `Du har bokat: ${timeSlot}`, snackAlignment);
     };
 
     const cancelBooking = async () => {
         if (!booking) return;
 
         await BackendAPI.deleteBooking(booking._id);
-        //snackTrigger("success", "Du har avbokat tiden", snackAlignment);
+        snackTrigger("success", "Du har avbokat tiden", snackAlignment);
     };
 
     const handleAction = () => {

@@ -30,9 +30,8 @@ const Index: NextPage = () => {
 
     useEffect(() => {
         if (user && !userIsLoading) {
-            console.log("Useeffect is running in index 1")
             // Fetch initial bookings here
-            fetchData()
+            fetchData().then(() => console.log("fetchData is done"));
         }
     }, [user, userIsLoading]);
 
@@ -40,7 +39,7 @@ const Index: NextPage = () => {
     if (userIsLoading || fetchingData) return <Loading/>;
     if (error) return <div>{error.message}</div>;
     if (!user) {
-        router.push('/api/auth/login');
+        router.push('/api/auth/login').then();
         return null; // Add this to prevent the component from rendering further
     }
 

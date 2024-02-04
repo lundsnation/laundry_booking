@@ -26,7 +26,7 @@ export type JsonUser = {
 }
 
 class User {
-    readonly id: string
+    readonly sub: string // user id, called sub in auth0
     readonly name: string
     readonly nickname: string
     readonly email: string
@@ -39,7 +39,7 @@ class User {
     readonly pastBookings: Booking[] = []
 
     constructor(user: JsonUser, bookings: Booking[] = []) {
-        this.id = user.sub
+        this.sub = user.sub
         this.name = user.name
         this.nickname = user.nickname
         this.email = user.email
@@ -61,7 +61,7 @@ class User {
 
     toJSON() {
         return {
-            id: this.id,
+            sub: this.sub,
             name: this.name,
             nickname: this.nickname,
             email: this.email,
@@ -86,7 +86,6 @@ class User {
             }
         })
     }
-
 
     // Can perhaps be placed in User class
     hasBookingOnDay(day: Date): boolean {

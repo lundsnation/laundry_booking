@@ -1,5 +1,5 @@
 import {LocalizationProvider, PickersDay, PickersDayProps, StaticDatePicker} from '@mui/x-date-pickers';
-import React, {useEffect, useState} from "react";
+import React, {useCallback, useEffect, useRef, useState} from "react";
 import AdapterDateFns from '@date-io/date-fns'
 import {AlertColor, Badge, Button, Grid, Paper, SnackbarOrigin, TextField} from "@mui/material";
 import svLocale from 'date-fns/locale/sv';
@@ -35,35 +35,63 @@ const snackRTState: SnackInterface = {
 }
 
 
-const BookingCalendar = ({config, user, initialBookings}: Props) => {
+const BookingCalendar = ({config, user: initUser, initialBookings}: Props) => {
     const [selectedDate, setSelectedDate] = useState<Date>(new Date());
     const [bookings, setBookings] = useState<Booking[]>(initialBookings);
     const [snack, setSnack] = useState<SnackInterface>(snackInitState)
     const [realtimeSnack, setRealtimeSnack] = useState<SnackInterface>(snackRTState)
-    const [laundryBuilding, setLaundryBuilding] = useState<LaundryBuilding>(user.app_metadata.laundryBuilding); // Default buildin
+    const [user, setUser] = useState<User>(initUser);
+    const frontendPusher = useRef<FrontendPusher | null>(null);
+    const isAdmin = user.app_metadata.roles.includes("admin");
 
-    console.log("user laundrybuilding : ", user.app_metadata.laundryBuilding)
-    console.log("Laundrybuilding", laundryBuilding)
-    const updateBookings = async () => {
-        console.log("Fetching bookings for: ", laundryBuilding)
-        const bookings = await BackendAPI.fetchBookingsForBuilding(laundryBuilding);
-        //user.app_metadata.laundryBuilding = laundryBuilding;
+
+    //This should not have a dependency array as the cleanup function should only be called once on component unmount,
+    // and not evertime user.app_metadata.laundryBuilding changes
+    useEffect(() => {
+        if (!frontendPusher.current) {
+            frontendPusher.current = new FrontendPusher();
+        }
+        return () => {
+            frontendPusher.current!.cleanup(user.app_metadata.laundryBuilding);
+        };
+    }, []);
+
+
+    const updateBookings = useCallback(async () => {
+        const bookings = await BackendAPI.fetchBookingsForBuilding(user.app_metadata.laundryBuilding);
         setBookings(bookings);
-        user.setUserBookings(bookings)
-    }
+        // Assuming setUserBookings updates the user object with the new bookings
+        // This might need adjustment depending on how user state is managed
+        user.setUserBookings(bookings);
+    }, [user]);
+
 
     const handleBuildingChange = (building: LaundryBuilding) => {
-        setLaundryBuilding(building);
+        frontendPusher.current!.bookingUpdateUnsubscribe(user.app_metadata.laundryBuilding);
+
+        const updatedUser = {
+            ...user.toJSON(),
+            app_metadata: {
+                ...user.app_metadata,
+                laundryBuilding: building
+            }
+        };
+
+        setUser(new User(updatedUser));
     };
 
     useEffect(() => {
-        updateBookings();
-        const frontendPusher = new FrontendPusher(laundryBuilding);
-        const channel = frontendPusher.bookingUpdatesSubscribe();
-        console.log("Subscribed to channel: ", channel)
-        channel.bind(frontendPusher.bookingUpdateEvent, ({username, startTime, timeSlot, method}: BookingUpdate) => {
-            updateBookings();
-            const isPostRequest = method === frontendPusher.bookingUpdateMethod.POST
+        const currentFrontendPusher = frontendPusher.current!;
+        updateBookings().then();
+        const channel = currentFrontendPusher.bookingUpdatesSubscribe(user.app_metadata.laundryBuilding);
+        channel.bind(currentFrontendPusher.bookingUpdateEvent, ({
+                                                                    username,
+                                                                    startTime,
+                                                                    timeSlot,
+                                                                    method
+                                                                }: BookingUpdate) => {
+            updateBookings().then();
+            const isPostRequest = method === currentFrontendPusher.bookingUpdateMethod.POST
             const snackString = `${username} ${isPostRequest ? ' bokade ' : ' avbokade '} ${DateUtils.toLaundryBookingString(new Date(startTime), timeSlot)}`
             const myBooking = username == user.name
             const alignment: SnackbarOrigin = window.innerWidth > 600 ? {
@@ -78,13 +106,7 @@ const BookingCalendar = ({config, user, initialBookings}: Props) => {
                 alignment: alignment
             })
         })
-
-        //Cleanup function
-        return () => {
-            console.log("Unsubscribing from channel: ", channel)
-            frontendPusher.cleanup();
-        }
-    }, [laundryBuilding])
+    }, [user.app_metadata.laundryBuilding, user.name, updateBookings])
 
 
     const handleRenderDay = (day: Date, _value: Date[], DayComponentProps: PickersDayProps<Date>): JSX.Element => {
@@ -152,7 +174,6 @@ const BookingCalendar = ({config, user, initialBookings}: Props) => {
         }
     };
 
-
     const snackTrigger = (severity: AlertColor, snackString: string, alignment: SnackbarOrigin) => {
         setSnack({show: true, snackString: snackString, severity: severity, alignment: alignment})
     }
@@ -185,22 +206,26 @@ const BookingCalendar = ({config, user, initialBookings}: Props) => {
             container
             maxWidth={600}
         >
-            <Grid item xs={12} sx={{mb: "2px"}}>
-                <Grid container justifyContent="flex-end">
+            {isAdmin &&
+                (
+                    <Grid item xs={12} sx={{mb: "2px"}}>
+                        <Grid container justifyContent="flex-end">
 
-                    <Button disableElevation={true}
-                            variant={laundryBuilding === LaundryBuilding.NATIONSHUSET ? "contained" : "outlined"}
-                            onClick={() => handleBuildingChange(LaundryBuilding.NATIONSHUSET)}>
-                        Nationshuset
-                    </Button>
-                    <Button disableElevation={true}
-                            variant={laundryBuilding === LaundryBuilding.ARKIVET ? "contained" : "outlined"}
-                            onClick={() => handleBuildingChange(LaundryBuilding.ARKIVET)}
-                            sx={{ml: "4px"}}>
-                        Arkivet
-                    </Button>
-                </Grid>
-            </Grid>
+                            <Button disableElevation={true}
+                                    variant={user.app_metadata.laundryBuilding === LaundryBuilding.NATIONSHUSET ? "contained" : "outlined"}
+                                    onClick={() => handleBuildingChange(LaundryBuilding.NATIONSHUSET)}>
+                                Nationshuset
+                            </Button>
+                            <Button disableElevation={true}
+                                    variant={user.app_metadata.laundryBuilding === LaundryBuilding.ARKIVET ? "contained" : "outlined"}
+                                    onClick={() => handleBuildingChange(LaundryBuilding.ARKIVET)}
+                                    sx={{ml: "4px"}}>
+                                Arkivet
+                            </Button>
+                        </Grid>
+                    </Grid>
+                )
+            }
             <Snack state={realtimeSnack} handleClose={resetRealtimeSnack}/>
             <Snack state={snack} handleClose={resetSnack}/>
             <Grid container>
