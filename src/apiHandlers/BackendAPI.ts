@@ -1,11 +1,7 @@
 import axios from "axios";
-<<<<<<< HEAD
 import Booking, { JsonBooking, NewBooking } from "../classes/Booking";
 import User from "../classes/User";
-=======
-import Booking, {JsonBooking, NewBooking} from "../classes/Booking";
-import {LaundryBuilding} from "../configs/Config";
->>>>>>> b8a688c075b064f792f8790a0a97e971138d455f
+import { LaundryBuilding } from "../configs/Config";
 
 // This class is used to communicate with the backend API from the frontend
 class BackendAPI {
