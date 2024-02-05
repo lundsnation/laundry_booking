@@ -17,7 +17,8 @@ interface Props {
 const BookingButtonGroup = (props: Props) => {
     const {bookedBookings, selectedDate, user, updateBookings, snackTrigger, config} = props;
 
-    const buttons = config.timeSlots.map((timeSlot) => {
+    const buttons = config.timeSlots.map((ts) => {
+        const timeSlot = new TimeSlot(ts, config.getDryingBooth(ts), selectedDate);
         const booking = bookedBookings.find((bookedBooking) => {
                 return bookedBooking.hasTimeSlot(timeSlot)
             }
@@ -26,7 +27,7 @@ const BookingButtonGroup = (props: Props) => {
         return (
             <BookingButton
                 key={timeSlot.toString()}
-                timeSlot={new TimeSlot(timeSlot, config.getDryingBooth(timeSlot), selectedDate)}
+                timeSlot={timeSlot}
                 booking={booking || null}
                 selectedDate={selectedDate}
                 user={user}

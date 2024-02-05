@@ -49,7 +49,8 @@ export const BookingSchema = new mongoose.Schema<IBooking, IBookingModel>(
     }
 );
 
-BookingSchema.index({username: 1, startTime: 1, laundryBuilding: 1}, {unique: true});
+// Ensures that there can only be one booking per time slot and laundry building
+BookingSchema.index({startTime: 1, laundryBuilding: 1}, {unique: true});
 
 const MongooseBooking = mongoose.models.Booking as IBookingModel || mongoose.model<IBooking, IBookingModel>("Booking", BookingSchema)
 

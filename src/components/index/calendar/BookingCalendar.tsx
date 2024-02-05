@@ -1,67 +1,98 @@
-import {StaticDatePicker, LocalizationProvider, PickersDay, PickersDayProps} from '@mui/x-date-pickers';
-import React, {useState, useEffect} from "react";
+import {LocalizationProvider, PickersDay, PickersDayProps, StaticDatePicker} from '@mui/x-date-pickers';
+import React, {useCallback, useEffect, useRef, useState} from "react";
 import AdapterDateFns from '@date-io/date-fns'
-import {Grid, TextField, AlertColor, Paper, SnackbarOrigin, Badge} from "@mui/material";
+import {AlertColor, Badge, Button, Grid, Paper, SnackbarOrigin, TextField} from "@mui/material";
 import svLocale from 'date-fns/locale/sv';
 import BookingButtonGroup from "./BookingButtonGroup";
 import BookedTimes from '../bookedTimes/BookedTimes';
 import {Snack, SnackInterface} from "../../Snack"
-import {FrontendPusher, BookingUpdate} from '../../../apiHandlers/PusherAPI'
-import BookingsUtil from '../../../classes/BookingsUtil';
+import {BookingUpdate, FrontendPusher} from '../../../apiHandlers/PusherAPI'
+import BookingsUtil from '../../../../utils/BookingsUtil';
 import User from "../../../classes/User";
-import Config from "../../../configs/Config";
+import Config, {LaundryBuilding} from "../../../configs/Config";
 import Booking from "../../../classes/Booking";
 import BackendAPI from "../../../apiHandlers/BackendAPI";
+import DateUtils from "../../../../utils/DateUtils";
 
 interface Props {
+    config: Config
     user: User;
     initialBookings: Booking[]
-    config: Config
+}
+
+const snackInitState: SnackInterface = {
+    show: false,
+    snackString: "",
+    severity: "success",
+    alignment: {vertical: "bottom", horizontal: "left"}
+}
+
+const snackRTState: SnackInterface = {
+    show: false,
+    snackString: "",
+    severity: "info",
+    alignment: {vertical: "bottom", horizontal: "right"}
 }
 
 
-const BookingCalendar = ({user, initialBookings, config}: Props) => {
+const BookingCalendar = ({config, user: initUser, initialBookings}: Props) => {
     const [selectedDate, setSelectedDate] = useState<Date>(new Date());
     const [bookings, setBookings] = useState<Booking[]>(initialBookings);
-    const [snack, setSnack] = useState<SnackInterface>({
-        show: false,
-        snackString: "",
-        severity: "success",
-        alignment: {vertical: "bottom", horizontal: "left"}
-    })
-    const [realtimeSnack, setRealtimeSnack] = useState<SnackInterface>({
-        show: false,
-        snackString: "",
-        severity: "success",
-        alignment: {vertical: "bottom", horizontal: "right"}
-    })
+    const [snack, setSnack] = useState<SnackInterface>(snackInitState)
+    const [realtimeSnack, setRealtimeSnack] = useState<SnackInterface>(snackRTState)
+    const [user, setUser] = useState<User>(initUser);
+    const frontendPusher = useRef<FrontendPusher | null>(null);
+    const isAdmin = user.app_metadata.roles.includes("admin");
 
-    const activeUserBookings = user.activeBookings;
-    const updateBookings = async () => {
-        try {
-            const bookings = await BackendAPI.fetchBookings();
-            console.log("bookings fetched in updateBookings:", bookings)
-            setBookings(bookings);
-            user.setUserBookings(bookings)
 
-        } catch (error) {
-            console.error("Error updating bookings:", error);
+    //This should not have a dependency array as the cleanup function should only be called once on component unmount,
+    // and not evertime user.app_metadata.laundryBuilding changes
+    useEffect(() => {
+        if (!frontendPusher.current) {
+            frontendPusher.current = new FrontendPusher();
         }
+        return () => {
+            frontendPusher.current!.cleanup(user.app_metadata.laundryBuilding);
+        };
+    }, []);
+
+
+    const updateBookings = useCallback(async () => {
+        const bookings = await BackendAPI.fetchBookingsForBuilding(user.app_metadata.laundryBuilding);
+        setBookings(bookings);
+        // Assuming setUserBookings updates the user object with the new bookings
+        // This might need adjustment depending on how user state is managed
+        user.setUserBookings(bookings);
+    }, [user]);
+
+
+    const handleBuildingChange = (building: LaundryBuilding) => {
+        frontendPusher.current!.bookingUpdateUnsubscribe(user.app_metadata.laundryBuilding);
+
+        const updatedUser = {
+            ...user.toJSON(),
+            app_metadata: {
+                ...user.app_metadata,
+                laundryBuilding: building
+            }
+        };
+
+        setUser(new User(updatedUser));
     };
 
     useEffect(() => {
-        //updateBookings();
-        const frontendPusher = new FrontendPusher(user.app_metadata.laundryBuilding);
-        const channel = frontendPusher.bookingUpdatesSubscribe();
-
-        channel.bind(frontendPusher.bookingUpdateEvent, (bookingUpdate: BookingUpdate) => {
-            updateBookings();
-            console.log("bookingUpdate Event Received, bookingUpdate :", bookingUpdate)
-            const {username, startTime, timeSlot, method} = bookingUpdate
-            const isPostRequest = method === frontendPusher.bookingUpdateMethod.POST
-            const tmpDate = new Date(startTime);
-            const dateString = tmpDate.getFullYear() + "/" + (tmpDate.getMonth() + 1) + "/" + tmpDate.getDay() + ", " + timeSlot
-            const snackString = `${username} ${isPostRequest ? ' bokade ' : ' avbokade '} ${dateString}`
+        const currentFrontendPusher = frontendPusher.current!;
+        updateBookings().then();
+        const channel = currentFrontendPusher.bookingUpdatesSubscribe(user.app_metadata.laundryBuilding);
+        channel.bind(currentFrontendPusher.bookingUpdateEvent, ({
+                                                                    username,
+                                                                    startTime,
+                                                                    timeSlot,
+                                                                    method
+                                                                }: BookingUpdate) => {
+            updateBookings().then();
+            const isPostRequest = method === currentFrontendPusher.bookingUpdateMethod.POST
+            const snackString = `${username} ${isPostRequest ? ' bokade ' : ' avbokade '} ${DateUtils.toLaundryBookingString(new Date(startTime), timeSlot)}`
             const myBooking = username == user.name
             const alignment: SnackbarOrigin = window.innerWidth > 600 ? {
                 vertical: 'bottom',
@@ -75,90 +106,76 @@ const BookingCalendar = ({user, initialBookings, config}: Props) => {
                 alignment: alignment
             })
         })
+    }, [user.app_metadata.laundryBuilding, user.name, updateBookings])
 
-        //Cleanup function
-        return () => {
-            frontendPusher.cleanup();
-        }
-    }, [])
 
-    const todaysDateMinus2Days = new Date(new Date().setDate(new Date().getDate() - 2));
     const handleRenderDay = (day: Date, _value: Date[], DayComponentProps: PickersDayProps<Date>): JSX.Element => {
-        const oldDate = todaysDateMinus2Days.getTime() > day.getTime();
-        let hasBookingOnDay = false;
-        let nbrBookedTimes: number = 0;
-
-        /*If it's not an old date we calculate the number of bookings for that day,
-        else we let nbrBookedTimes = 0, which means it won't get any color */
-        !oldDate && bookings.forEach(booking => {
-            if (booking.isSameDay(day)) {
-                nbrBookedTimes += 1;
-
-                if (booking.isUserBooking(user)) {
-                    hasBookingOnDay = true;
-                }
-            }
-
-        });
-
-        if (nbrBookedTimes === config.timeSlots.length && hasBookingOnDay) {
-            return (
-                <Badge
-                    key={day.toString()}
-                    color={"secondary"}
-                    badgeContent={""}
-                    overlap="circular"
-                    variant="dot"
-                >
-                    <PickersDay
-                        sx={{
-                            "&.MuiPickersDay-root": {
-                                color: "#FFFFFF",
-                                backgroundColor: "#e65b62",
-                                '&:hover': {
-                                    backgroundColor: "#e3454d"
-                                }
-
-                            }
-                        }}
-                        {...DayComponentProps} />
-                </Badge>
-            )
-        } else if (nbrBookedTimes !== config.timeSlots.length && hasBookingOnDay) {
-            return (
-                <Badge
-                    key={day.toString()}
-                    color={"secondary"}
-                    badgeContent={""}
-                    overlap="circular"
-                    variant="dot"
-                >
-                    <PickersDay {...DayComponentProps} />
-                </Badge>
-            )
-        } else if (nbrBookedTimes === config.timeSlots.length && !hasBookingOnDay) {
-            return (
-                <PickersDay
-                    sx={{
-                        "&.MuiPickersDay-root": {
-                            color: "#FFFFFF",
-                            backgroundColor: "#e65b62",
-                            '&:hover': {
-                                backgroundColor: "#e13740"
-                            }
-
-                        }
-                    }}
-                    {...DayComponentProps} />
-            )
-        } else {
-            return <PickersDay {...DayComponentProps} />
+        if (DateUtils.isOldDate(day)) {
+            return <PickersDay {...DayComponentProps} />;
         }
-    }
+
+        const nbrBookedTimes = BookingsUtil.countBookingsForDay(bookings, day);
+        const hasUserBooking = user.hasBookingOnDay(day)
+
+        if (isFullyBooked(nbrBookedTimes) && hasUserBooking) {
+            return renderFullyBookedDayWithUserBooking(DayComponentProps);
+        } else if (!isFullyBooked(nbrBookedTimes) && hasUserBooking) {
+            return renderDayWithUserBooking(DayComponentProps);
+        } else if (isFullyBooked(nbrBookedTimes)) {
+            return renderFullyBookedDay(DayComponentProps);
+        } else {
+            return <PickersDay {...DayComponentProps} />;
+        }
+    };
+
+    const isFullyBooked = (nbrBookedTimes: number) => nbrBookedTimes === config.timeSlots.length;
+
+    const renderFullyBookedDayWithUserBooking = (DayComponentProps: PickersDayProps<Date>) => (
+        <Badge
+            key={DayComponentProps.day.toString()}
+            color={"secondary"}
+            badgeContent={""}
+            overlap="circular"
+            variant="dot"
+        >
+            <PickersDay
+                sx={fullyBookedDayStyle}
+                {...DayComponentProps}
+            />
+        </Badge>
+    );
+
+    const renderDayWithUserBooking = (DayComponentProps: PickersDayProps<Date>) => (
+        <Badge
+            key={DayComponentProps.day.toString()}
+            color={"secondary"}
+            badgeContent={""}
+            overlap="circular"
+            variant="dot"
+        >
+            <PickersDay {...DayComponentProps} />
+        </Badge>
+    );
+
+    const renderFullyBookedDay = (DayComponentProps: PickersDayProps<Date>) => (
+        <PickersDay
+            sx={fullyBookedDayStyle}
+            {...DayComponentProps}
+        />
+    );
+
+    const fullyBookedDayStyle = {
+        "&.MuiPickersDay-root": {
+            color: "#FFFFFF",
+            backgroundColor: "#e65b62",
+            '&:hover': {
+                backgroundColor: "#e13740"
+            }
+        }
+    };
 
     const snackTrigger = (severity: AlertColor, snackString: string, alignment: SnackbarOrigin) => {
         setSnack({show: true, snackString: snackString, severity: severity, alignment: alignment})
-
     }
 
     const resetSnack = () => {
@@ -183,11 +200,32 @@ const BookingCalendar = ({user, initialBookings, config}: Props) => {
         />
     )
 
+    const todaysDateMinus2Days = new Date(new Date().setDate(new Date().getDate() - 2));
     return (
         <Grid
             container
             maxWidth={600}
         >
+            {isAdmin &&
+                (
+                    <Grid item xs={12} sx={{mb: "2px"}}>
+                        <Grid container justifyContent="flex-end">
+
+                            <Button disableElevation={true}
+                                    variant={user.app_metadata.laundryBuilding === LaundryBuilding.NATIONSHUSET ? "contained" : "outlined"}
+                                    onClick={() => handleBuildingChange(LaundryBuilding.NATIONSHUSET)}>
+                                Nationshuset
+                            </Button>
+                            <Button disableElevation={true}
+                                    variant={user.app_metadata.laundryBuilding === LaundryBuilding.ARKIVET ? "contained" : "outlined"}
+                                    onClick={() => handleBuildingChange(LaundryBuilding.ARKIVET)}
+                                    sx={{ml: "4px"}}>
+                                Arkivet
+                            </Button>
+                        </Grid>
+                    </Grid>
+                )
+            }
             <Snack state={realtimeSnack} handleClose={resetRealtimeSnack}/>
             <Snack state={snack} handleClose={resetSnack}/>
             <Grid container>
@@ -206,7 +244,6 @@ const BookingCalendar = ({user, initialBookings, config}: Props) => {
                                 toolbarTitle={"Valt Datum: "}
                                 onChange={async (date) => {
                                     date && setSelectedDate(date);
-                                    //updateBookings();
                                 }
                                 }
                                 renderInput={(params) => <TextField {...params} />}
@@ -219,7 +256,7 @@ const BookingCalendar = ({user, initialBookings, config}: Props) => {
                     {bookingButtonGroup}
                 </Grid>
                 <Grid item xs={12} pt={2}>
-                    <BookedTimes activeUserBookings={activeUserBookings} user={user} snackTrigger={snackTrigger}/>
+                    <BookedTimes user={user} activeUserBookings={user.activeBookings} snackTrigger={snackTrigger}/>
                 </Grid>
             </Grid>
         </Grid>

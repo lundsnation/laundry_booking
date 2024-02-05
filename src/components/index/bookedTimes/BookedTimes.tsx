@@ -12,7 +12,6 @@ interface Props {
 }
 
 const BookedTimes = ({activeUserBookings, user, snackTrigger}: Props) => {
-    console.log("Active user bookings:", activeUserBookings)
 
     const bookedTimesItems = activeUserBookings.map((booking, idx) => {
         return (

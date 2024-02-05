@@ -5,6 +5,7 @@ import {LoadingButton} from "@mui/lab";
 import Booking from "../../../classes/Booking";
 import User from "../../../classes/User";
 import TimeSlot from "../../../classes/TimeSlot";
+import DateUtils from "../../../../utils/DateUtils";
 
 interface Props {
     userBooking: Booking,
@@ -15,15 +16,12 @@ interface Props {
 const BookedTimesItem = (props: Props) => {
     const {userBooking, user, snackTrigger} = props;
     const [openConfirmation, setOpenConfirmation] = useState<boolean>(false);
-    const options = {weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'} as const;
-    const userBookingString = userBooking.startTime.toLocaleDateString('sv-SE', options).replaceAll(" ", ", ") + ", " + userBooking.timeSlot.toString() + ", Torkbås: " + userBooking.dryingBooth;
+    const userBookingString = DateUtils.toLaundryBookingString(userBooking.startTime, userBooking.timeSlot.toString(), userBooking.dryingBooth)
 
     const handleOpenConfirmation = (open: boolean) => {
         setOpenConfirmation(open);
     }
-
-    console.log("userBooking in BookedTimesItem:", userBooking)
-
+    
     return (
         <React.Fragment>
             <ConfirmBooking

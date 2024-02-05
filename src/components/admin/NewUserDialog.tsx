@@ -1,10 +1,22 @@
-import { Button, Grid, Dialog, DialogActions, DialogTitle, List, ListItem, Divider, TextField, MenuItem, SnackbarOrigin } from "@mui/material";
-import { ChangeEvent, FormEvent, useState } from "react";
-import { Building, ERROR_MSG, UserType } from "../../../utils/types";
+import {
+    Button,
+    Grid,
+    Dialog,
+    DialogActions,
+    DialogTitle,
+    List,
+    ListItem,
+    Divider,
+    TextField,
+    MenuItem,
+    SnackbarOrigin
+} from "@mui/material";
+import {ChangeEvent, FormEvent, useState} from "react";
+import {Building, ERROR_MSG, UserType} from "../../../utils/types";
 import AddIcon from '@mui/icons-material/Add';
-import { SnackInterface } from "../Snack";
-import { LoadingButton } from "@mui/lab";
-import User, { JsonUser } from "../../classes/User";
+import {SnackInterface} from "../Snack";
+import {LoadingButton} from "@mui/lab";
+import User, {JsonUser} from "../../classes/User";
 import Users from "../../classes/Users";
 
 interface Props {
@@ -16,10 +28,16 @@ interface Props {
 }
 
 const NewUserDialog = (props: Props) => {
-    const { showAddDialog, setShowAddDialog, snack, setSnack, setUsers } = props
-    const [newUser, setNewUser] = useState<JsonUser>({ name: "", email: "", connection: "Username-Password-Authenticated", password: "", email_verified: "true" }: NewUser);
+    const {showAddDialog, setShowAddDialog, snack, setSnack, setUsers} = props
+    const [newUser, setNewUser] = useState<JsonUser>({
+        name: "",
+        email: "",
+        connection: "Username-Password-Authenticated",
+        password: "",
+        email_verified: "true"
+    })
     const [wait, setWait] = useState(false);
-    const alignment: SnackbarOrigin = { vertical: 'bottom', horizontal: 'left' }
+    const alignment: SnackbarOrigin = {vertical: 'bottom', horizontal: 'left'}
 
     const handleAddUser = async (event: FormEvent) => {
         event.preventDefault();
@@ -30,23 +48,33 @@ const NewUserDialog = (props: Props) => {
 
         if (response.status === 200 || response.status === 201) {
             const createdUser = User.response.data
-            setSnack({ show: true, snackString: "Skapade " + user.name, severity: 'success', alignment: alignment })
-            setNewUser({ name: "", email: "", app_metadata: { building: "NH" }, connection: "Username-Password-Authentication", email_verified: true })
+            setSnack({show: true, snackString: "Skapade " + user.name, severity: 'success', alignment: alignment})
+            setNewUser({
+                name: "",
+                email: "",
+                app_metadata: {building: "NH"},
+                connection: "Username-Password-Authentication",
+                email_verified: true
+            })
             setShowAddDialog(false)
             setUsers((prevUsers: Users) => prevUsers.add(createdUser));
         } else {
             console.log("Error creating user")
-            setSnack({ show: true, snackString: ERROR_MSG.AUTH0RESPONSEERROR, severity: "error", alignment: alignment })
+            setSnack({show: true, snackString: ERROR_MSG.AUTH0RESPONSEERROR, severity: "error", alignment: alignment})
         }
     }
 
     return (
-        <Dialog open={showAddDialog} onClose={() => { setShowAddDialog(false) }}>
+        <Dialog open={showAddDialog} onClose={() => {
+            setShowAddDialog(false)
+        }}>
             <DialogTitle> Lägg till ny användare</DialogTitle>
-            <Divider variant="middle" />
-            <form onSubmit={(e) => { handleAddUser(e) }}>
-                <List >
-                    <ListItem >
+            <Divider variant="middle"/>
+            <form onSubmit={(e) => {
+                handleAddUser(e)
+            }}>
+                <List>
+                    <ListItem>
                         <TextField
                             id="select-building"
                             margin="dense"
@@ -58,7 +86,7 @@ const NewUserDialog = (props: Props) => {
                                 setNewUser({
                                     ...newUser,
                                     name: e.target.value + apartment as string,
-                                    app_metadata: { ...newUser.app_metadata, building: e.target.value as Building }
+                                    app_metadata: {...newUser.app_metadata, building: e.target.value as Building}
                                 })
                             }}
                             label="Välj Byggnad"
@@ -91,7 +119,7 @@ const NewUserDialog = (props: Props) => {
                                 setNewUser({
                                     ...newUser,
                                     name: newUser.app_metadata?.building + e.target.value as string,
-                                    app_metadata: { ...newUser.app_metadata, apartment: e.target.value }
+                                    app_metadata: {...newUser.app_metadata, apartment: e.target.value}
                                 })
                             }}
                             margin="dense"
@@ -106,7 +134,10 @@ const NewUserDialog = (props: Props) => {
                             margin="dense"
                             fullWidth
                             onChange={(e) => {
-                                setNewUser({ ...newUser, user_metadata: { ...newUser.user_metadata, telephone: e.target.value } })
+                                setNewUser({
+                                    ...newUser,
+                                    user_metadata: {...newUser.user_metadata, telephone: e.target.value}
+                                })
                             }}
                             id="input-phone-number"
                             label="Telefon"
@@ -119,7 +150,7 @@ const NewUserDialog = (props: Props) => {
                             margin="dense"
                             fullWidth
                             onChange={(e) => {
-                                setNewUser({ ...newUser, email: e.target.value })
+                                setNewUser({...newUser, email: e.target.value})
                             }}
                             id="input-email"
                             label="E-post"
@@ -132,7 +163,10 @@ const NewUserDialog = (props: Props) => {
                             fullWidth
                             type="number"
                             onChange={(e) => {
-                                setNewUser({ ...newUser, app_metadata: { ...newUser.app_metadata, allowedSlots: +e.target.value } })
+                                setNewUser({
+                                    ...newUser,
+                                    app_metadata: {...newUser.app_metadata, allowedSlots: +e.target.value}
+                                })
                             }}
                             id="select-allowedSlots"
                             label="Tillåtna Bokningar"
@@ -146,7 +180,7 @@ const NewUserDialog = (props: Props) => {
                             fullWidth
                             type="string"
                             onChange={(e) => {
-                                setNewUser({ ...newUser, password: e.target.value })
+                                setNewUser({...newUser, password: e.target.value})
                             }}
                             id="input-user-password"
                             label="Lösenord"
@@ -156,10 +190,14 @@ const NewUserDialog = (props: Props) => {
                 <DialogActions>
                     <Grid container alignItems='center' justifyContent='center'>
                         <Grid item>
-                            <Button sx={{ margin: "12px", marginTop: 0 }} color='warning' variant="outlined" onClick={() => { setShowAddDialog(false) }}>Stäng</Button>
+                            <Button sx={{margin: "12px", marginTop: 0}} color='warning' variant="outlined"
+                                    onClick={() => {
+                                        setShowAddDialog(false)
+                                    }}>Stäng</Button>
                         </Grid>
                         <Grid item>
-                            <LoadingButton type="submit" loading={wait} variant="outlined" endIcon={<AddIcon />} sx={{ margin: "12px", marginTop: 0 }}>Skapa</LoadingButton>
+                            <LoadingButton type="submit" loading={wait} variant="outlined" endIcon={<AddIcon/>}
+                                           sx={{margin: "12px", marginTop: 0}}>Skapa</LoadingButton>
                         </Grid>
                     </Grid>
 

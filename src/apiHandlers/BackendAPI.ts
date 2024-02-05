@@ -1,11 +1,21 @@
 import axios from "axios";
+<<<<<<< HEAD
 import Booking, { JsonBooking, NewBooking } from "../classes/Booking";
 import User from "../classes/User";
+=======
+import Booking, {JsonBooking, NewBooking} from "../classes/Booking";
+import {LaundryBuilding} from "../configs/Config";
+>>>>>>> b8a688c075b064f792f8790a0a97e971138d455f
 
+// This class is used to communicate with the backend API from the frontend
 class BackendAPI {
-    //Might need to add error handling here
     static async fetchBooking(id: string): Promise<Booking> {
         return new Booking((await axios.get(`/api/bookings/${id}`)).data)
+    }
+
+    static async fetchBookingsForBuilding(building: LaundryBuilding): Promise<Booking[]> {
+        const bookings = (await axios.get(`/api/bookings/laundrybuilding/${building}`)).data;
+        return bookings.map((booking: JsonBooking) => new Booking(booking));
     }
 
     static async fetchBookingsByUser(username: string): Promise<Booking[]> {

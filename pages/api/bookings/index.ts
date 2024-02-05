@@ -12,12 +12,12 @@ const handler = withApiAuthRequired(withErrorHandler(async (req: NextApiRequest,
         throw new HttpError(HttpError.StatusCode.UNAUTHORIZED, "Unauthorized")
     }
     const user: Claims = session.user
-    console.log("user", user)
-
+    //console.log("user", user)
 
     await connect()
     switch (req.method) {
         case 'GET':
+            console.log()
             const twoDaysAgo = new Date(new Date().setDate(new Date().getDate() - 2));
             const bookings = await bookingService.getBookingsByLaundryBuildingAndPostDate(user.app_metadata.laundryBuilding, twoDaysAgo);
             return res.status(200).json(bookings)
