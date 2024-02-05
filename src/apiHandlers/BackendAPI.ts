@@ -1,5 +1,6 @@
 import axios from "axios";
-import Booking, {JsonBooking, NewBooking} from "../classes/Booking";
+import Booking, { JsonBooking, NewBooking } from "../classes/Booking";
+import User from "../classes/User";
 
 class BackendAPI {
     //Might need to add error handling here
@@ -23,6 +24,11 @@ class BackendAPI {
     static async fetchBookings(): Promise<Booking[]> {
         const bookings = (await axios.get("/api/bookings")).data
         return bookings.map((booking: JsonBooking) => new Booking(booking))
+    }
+
+    // ------------------ USER RELATED ------------------
+    static async fetchUser(id: string): Promise<User> {
+        return await axios.get("api/users/" + id)
     }
 }
 

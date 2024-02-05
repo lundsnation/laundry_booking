@@ -1,108 +1,77 @@
-import axios, { AxiosResponse } from 'axios';
-import User from '../classes/User';
-import { ModificationObject, UserType } from '../../utils/types';
+import { AuthenticationClient, ManagementClient } from 'auth0';
+import { JsonUser } from '../classes/User';
+
+export interface ModificationObject {
+    name: string,
+    email?: string,
+    user_metadata?: {
+        telephone?: string,
+    },
+    app_metadata?: {
+        acceptedTerms?: boolean,
+        allowedSlots?: number,
+        building?: string,
+    },
+}
+
+type NewUser = {
+    name: string,
+    email: string,
+    connection: string,
+    password: string,
+    email_verified: boolean,
+
+}
 
 class Auth0API {
-    private static client_id: string = process.env.AUTH0_CLIENT_ID as string;
-    private static client_secret: string = process.env.AUTH0_CLIENT_SECRET as string;
-    private static base_url: string = process.env.AUTH0_BASE_URL as string;
-    private static api_url = 'https://lundsnation.eu.auth0.com/api/v2/';
 
-    static async fetchAccessToken() {
-        var options = {
-            method: 'POST',
-            url: 'https://lundsnation.eu.auth0.com/oauth/token',
-            headers: { 'content-type': 'application/json' },
-            data: {
-                "grant_type": 'client_credentials',
-                "client_id": this.client_id,
-                "client_secret": this.client_secret,
-                "audience": this.api_url,
-            }
-        };
+    private static management = new ManagementClient({
+        domain: process.env.AUTH0_ISSUER_BASE_URL as string,
+        clientId: process.env.AUTH0_CLIENT_ID as string,
+        clientSecret: process.env.AUTH0_CLIENT_SECRET as string
+    });
 
-        try {
-            const response = await axios.request(options);
-            return response.data.access_token;
-        } catch (error) {
-            console.error(error);
-        }
+    private static authentication = new AuthenticationClient({
+        domain: process.env.AUTH0_ISSUER_BASE_URL as string,
+        clientId: process.env.AUTH0_CLIENT_ID as string,
+        clientSecret: process.env.AUTH0_CLIENT_SECRET as string
+    });
+
+    private static user_management = this.management.users;
+    private static auth_management = this.authentication;
+
+    static async getUser(UserID: string) {
+        return await this.user_management.get({ id: UserID })
     }
 
-    //Denna borde också funka, men är icke testad.
-    //static async fetchAccessToken() {
-    //    const data = {
-    //        "grant_type": 'client_credentials',
-    //        "client_id": this.client_id,
-    //        "client_secret": this.client_secret,
-    //        "audience": this.api_url,
-    //    }
-    //
-    //    const response = await axios.post('https://lundsnation.eu.auth0.com/oauth/token', data)
-    //    if (response.statusText === "OK") {
-    //        return response.data.access_token;
-    //    } else {
-    //        throw new Error("Could not fetch access token");
-    //    }
-    //}
-
-    static async getUser(userID: string) {
-        const token = await this.fetchAccessToken();
-        const response = await axios.get(this.api_url + 'users/' + userID, {
-            headers: {
-                Authorization: 'Bearer ' + token
-            }
-        })
-
-        return response;
+    static async createUser(user: NewUser) {
+        this.user_management.create(user)
     }
 
-    //Ändra typ eventuellt
-    static async postUser(user: UserType) {
-        const token = await this.fetchAccessToken();
-
-        user = { ...user, connection: "Username-Password-Authentication", email_verified: true }
-        const response = await axios.post(this.api_url + 'users', user, {
-            headers: {
-                Authorization: 'Bearer ' + token
-            }
-        })
-        return response
+    static async postUser(user: NewUser) {
+        return await this.user_management.create(user)
     }
 
-    //Ändra typ eventuellt
-    static async patchUser(id: string, modification: ModificationObject): Promise<AxiosResponse> {
-        const token = await this.fetchAccessToken();
-        const response = await axios.patch(this.api_url + 'users/' + id, modification, {
-            headers: {
-                Authorization: 'Bearer ' + token
-            }
-        })
-        return response
+    static async patchUser(id: string, modification: ModificationObject) {
+        return await this.user_management.update({ id: id }, modification)
     }
 
-    static async deleteUser(userID: string) {
-        const token = await this.fetchAccessToken();
-        const response = await axios.delete(this.api_url + 'users/' + userID, {
-            headers: {
-                Authorization: 'Bearer ' + token
-            }
-        })
-
-        return response
+    static async deleteUser(id: string) {
+        return await this.user_management.delete({ id: id })
     }
 
+    static async getAllUsers() {
+        return await this.user_management.getAll({})
+    }
 
     static async getUsers() {
-        const token = await this.fetchAccessToken();
         const users = []
         let page = 0;
         let moreUsers = true;
         while (moreUsers) {
-            const response = await axios.get(`https://lundsnation.eu.auth0.com/api/v2/users?page=${page}`, {
-                headers: {
-                    Authorization: 'Bearer ' + token
-                }
+            const response = await this.user_management.getAll({
+                page: page,
+                per_page: 50,
             })
 
             const userBatch = response.data;
@@ -118,36 +87,38 @@ class Auth0API {
         return users;
     }
 
-    static async getUsersAsUserType(): Promise<UserType[]> {
+
+    static async getUsersAsUserType(): Promise<JsonUser[]> {
         const users = await this.getUsers();
         return users.map(user => {
             return {
                 sub: user.user_id,
                 name: user.name,
+                nickname: user.nickname,
                 email: user.email,
+                email_verified: user.email_verified,
+                picture: user.picture,
                 user_metadata: {
-                    telephone: user.user_metadata?.telephone,
+                    picture: user.picture,
+                    telephone: user.user_metadata.telephone,
                 },
                 app_metadata: {
-                    acceptedTerms: user.app_metadata?.acceptedTerms,
-                    allowedSlots: user.app_metadata?.allowedSlots,
-                    roles: user.app_metadata?.roles,
-                    building: user.app_metadata?.building,
+                    acceptedTerms: user.app_metadata.acceptedTerms,
+                    allowedSlots: user.app_metadata.allowedSlots,
+                    roles: user.app_metadata.roles,
+                    laundryBuilding: user.app_metadata.building,
                 },
+                updated_at: user.updated_at.toString()
             }
         })
     }
 
-    //Innebär inte detta att alla kan begära ändring av lösenord för alla användare?
-    static async userChangePassword(email: string) {
-        const token = await this.fetchAccessToken();
-        const data = {
-            "client_id": this.client_id,
-            "email": email,
-            "connection": "Username-Password-Authentication"
-        }
-        const response = await axios.post(this.api_url + 'users/' + data)
-        return response
+
+    static async userChangePasswordEmail(email: string) {
+        return await this.auth_management.database.changePassword({
+            email: email,
+            connection: 'Username-Password-Authentication'
+        })
     }
 }
 

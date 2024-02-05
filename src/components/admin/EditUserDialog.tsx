@@ -1,12 +1,11 @@
 import { Button, Container, Typography, Paper, Grid, Dialog, DialogActions, DialogTitle, List, ListItem, Divider, TextField, MenuItem, AlertColor, SnackbarOrigin } from "@mui/material";
 import { FormEvent, useEffect, useState } from "react";
-import { Building, ModificationObject, UserType, assertBuilding, extractAppartment, extractBuilding } from "../../../utils/types";
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
+import { ModificationObject } from "../../apiHandlers/Auth0API";
 import { SnackInterface } from "../Snack";
 import { LoadingButton } from "@mui/lab";
 import Users from "../../classes/Users";
 import User from "../../classes/User";
-import { set } from "mongoose";
 
 interface Props {
     showEditDialog: boolean,
@@ -26,6 +25,18 @@ const EditUserDialog = (props: Props) => {
     const [newUserBuldingName, setNewUserBuildingName] = useState("")
     const [wait, setWait] = useState(false);
     const alignment: SnackbarOrigin = { vertical: 'bottom', horizontal: 'left' }
+
+    /* Method to extract the appartment building from the name example "NH1234" -> "NH"
+    // or "A1234" -> "A"
+    */
+    const extractBuilding = (name: string): string => {
+        const regex = /^[A-Za-z]+/;
+        const found = name.match(regex);
+        if (!found) {
+            return "";
+        }
+        return found.join("");
+    }
 
     const handleEditUser = async (e: FormEvent) => {
         e.preventDefault()
@@ -77,6 +88,7 @@ const EditUserDialog = (props: Props) => {
                 <List >
                     <ListItem >
                         <TextField
+                            required
                             id="select-building"
                             margin="dense"
                             select
@@ -120,6 +132,7 @@ const EditUserDialog = (props: Props) => {
                     </ListItem>
                     <ListItem>
                         <TextField
+                            required
                             onChange={(e) => {
                                 if (e.target.value.length > 3) {
                                     console.log("nummer")
@@ -152,6 +165,7 @@ const EditUserDialog = (props: Props) => {
                     </ListItem>
                     <ListItem>
                         <TextField
+                            required
                             margin="dense"
                             fullWidth
                             defaultValue={selected.length() === 1 ? selected.get(0).email : null}
@@ -165,6 +179,7 @@ const EditUserDialog = (props: Props) => {
                     </ListItem>
                     <ListItem>
                         <TextField
+                            required
                             margin="dense"
                             fullWidth
                             defaultValue={selected.length() === 1 ? selected.get(0).allowedSlots : null}

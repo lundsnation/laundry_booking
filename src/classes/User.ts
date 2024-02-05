@@ -1,5 +1,5 @@
 import Booking from "./Booking";
-import {LaundryBuilding} from "../configs/Config";
+import { LaundryBuilding } from "../configs/Config";
 
 type AppMetadata = {
     acceptedTerms: boolean,
