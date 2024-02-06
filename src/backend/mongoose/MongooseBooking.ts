@@ -35,9 +35,8 @@ export const BookingSchema = new mongoose.Schema<IBooking, IBookingModel>(
         laundryBuilding: {type: String, required: true},
     },
     {
-        methods: {
-            //Can be used to add methods to the model
-        },
+        autoIndex: true, // Explicitly enable autoIndex
+        methods: {},
         statics: {
             findBookingsPostDate(date: Date) {
                 return this.find({startTime: {$gte: date}});
