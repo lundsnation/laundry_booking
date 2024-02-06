@@ -1,5 +1,5 @@
 import Booking from "./Booking";
-import { LaundryBuilding } from "../configs/Config";
+import {LaundryBuilding} from "../configs/Config";
 
 type AppMetadata = {
     acceptedTerms: boolean,
@@ -23,6 +23,27 @@ export type JsonUser = {
     app_metadata: AppMetadata,
     user_metadata: UserMetadata,
     updated_at: string
+}
+
+export type NewUser = {
+    name: string,
+    email: string,
+    connection: string,
+    password: string,
+    email_verified: boolean,
+}
+
+export interface UserUpdate {
+    name: string,
+    email?: string,
+    user_metadata?: {
+        telephone?: string,
+    },
+    app_metadata?: {
+        acceptedTerms?: boolean,
+        allowedSlots?: number,
+        building?: string,
+    },
 }
 
 class User {

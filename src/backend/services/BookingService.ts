@@ -87,7 +87,7 @@ class BookingService {
 
         //Type should be changed to IBookingDocument
         const bookingDoc: BookingDocument = await BookingDao.create(booking);
-
+        
         await this.backendPusher.bookingUpdateTrigger(booking.laundryBuilding as LaundryBuilding, {
             username: user.name,
             timeSlot: booking.timeSlot,

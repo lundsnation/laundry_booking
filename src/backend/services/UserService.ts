@@ -1,36 +1,30 @@
-import { AxiosResponse } from "axios";
-import { ModificationObject, UserType } from "../../../utils/types";
-import Auth0 from "../../classes/Auth0";
+import {AxiosResponse} from "axios";
 import HttpError from "../errors/HttpError";
 import IUserService from "./IUserService";
-import User, { JsonUser } from "../../classes/User";
+import User, {JsonUser, NewUser, UserUpdate} from "../../classes/User";
+import Auth0API from "../../apiHandlers/Auth0API";
 
-class UserService implements IUserService {
+class UserService {
 
     async getAllUsers(): Promise<JsonUser[]> {
-        return await Auth0.getUsersAsJsonUser()
+        return await Auth0API.getUsers()
     }
 
     async getUserById(user_id: string): Promise<JsonUser> {
-        return await Auth0.getUserById(user_id)
+        return await Auth0API.getUser(user_id)
 
     }
 
-    async getUserByName(user_name: string): Promise<JsonUser> {
-        return await Auth0.getUserByName(user_name)
-    }
-
-    //user parameter type needs to be changed
-    async createUser(user: User): Promise<JsonUser> {
-        return await Auth0.postUser(user)
+    async createUser(user: NewUser): Promise<JsonUser> {
+        return await Auth0API.createUser(user)
     }
 
     async deleteUser(userID: string): Promise<void> {
-        await Auth0.deleteUser(userID)
+        await Auth0API.deleteUser(userID)
     }
 
-    async patchUser(id: string, modification: ModificationObject): Promise<JsonUser> {
-        return await Auth0.patchUser(id, modification)
+    async patchUser(id: string, modification: UserUpdate): Promise<JsonUser> {
+        return await Auth0API.patchUser(id, modification)
     }
 }
 
