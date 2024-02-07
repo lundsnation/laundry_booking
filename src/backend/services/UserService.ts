@@ -26,6 +26,10 @@ class UserService {
     async patchUser(id: string, modification: UserUpdate): Promise<JsonUser> {
         return await Auth0API.patchUser(id, modification)
     }
+
+    async changePasswordByEmail(email: string) {
+        return await Auth0API.userChangePasswordEmail(email)
+    }
 }
 
 export default UserService

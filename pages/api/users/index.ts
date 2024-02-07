@@ -1,10 +1,6 @@
-import { NextApiRequest, NextApiResponse } from "next"
-import { logRequest } from "../../../utils/backendLogger"
-import { withApiAuthRequired, getSession } from '@auth0/nextjs-auth0';
-import { getUsers } from '../../../utils/getAuth0Users'
-import Auth0 from "../../../src/classes/Auth0";
+import {NextApiRequest, NextApiResponse} from "next"
+import {withApiAuthRequired, getSession} from '@auth0/nextjs-auth0';
 import UserService from "../../../src/backend/services/UserService";
-import { AxiosResponse } from "axios";
 import HttpError from "../../../src/backend/errors/HttpError";
 import withErrorHandler from "../../../src/backend/errors/withErrorHandler";
 
@@ -18,7 +14,7 @@ const handler = withApiAuthRequired(withErrorHandler(async (req: NextApiRequest,
     }
 
     if (!userSession.user.app_metadata.roles.includes("admin")) {
-        throw new HttpError(HttpError.StatusCode.FORBIDDEN, "Forbidden action")
+        throw new HttpError(HttpError.StatusCode.UNAUTHORIZED, "Not authorized")
     }
 
     switch (req.method) {
@@ -27,8 +23,8 @@ const handler = withApiAuthRequired(withErrorHandler(async (req: NextApiRequest,
             return res.status(200).json(users)
 
         case 'POST':
-            const response = await userService.createUser(req.body)
-            return res.status(200).json(response)
+            const user = await userService.createUser(req.body)
+            return res.status(200).json(user)
     }
 }));
 

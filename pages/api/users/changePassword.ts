@@ -1,38 +1,29 @@
-import {NextApiRequest, NextApiResponse} from "next"
-import {logRequest} from "../../../src/backend/backendLogger"
-import {ERROR_MSG, ResponseFuncs} from "../../../utils/types"
+import {NextApiRequest, NextApiResponse} from "next";
 import {withApiAuthRequired, getSession} from '@auth0/nextjs-auth0';
-import {getUsers} from '../../../utils/getAuth0Users'
-import {AxiosResponse} from "axios";
-import Auth0API from "../../../src/apiHandlers/Auth0API";
+import HttpError from "../../../src/backend/errors/HttpError";
+import withErrorHandler from "../../../src/backend/errors/withErrorHandler";
+import UserService from "../../../src/backend/services/UserService";
 
-const handler = withApiAuthRequired(async (req: NextApiRequest, res: NextApiResponse) => {
-    const method: keyof ResponseFuncs = req.method as keyof ResponseFuncs
-    const catcher = (error: Error) => res.status(400).json({error: ERROR_MSG.GENERAL})
-    const userFetcher = new getUsers()
-    const userSession = await getSession(req, res)
+const userService = new UserService();
+const handler = withApiAuthRequired(withErrorHandler(async (req: NextApiRequest, res: NextApiResponse) => {
+    const userSession = await getSession(req, res);
 
-    const handleCase: ResponseFuncs = {
-        POST: async (req: NextApiRequest, res: NextApiResponse) => {
-            logRequest('USER_CHANGEPASSWORD')
-            const {email} = req.body
-            if (userSession?.user.email === email) {
-                res.status(403).json({error: ERROR_MSG.NOTAUTHORIZED})
-                return
-            }
-
-            const response = await Auth0API.userChangePassword(email).catch(catcher) as AxiosResponse
-            if (response.statusText === "OK") {
-                res.status(200).json({message: "Password changed"})
-                return
-            }
-            res.status(500).json({error: "Kunde inte byta lösenord"})
-        }
+    if (!userSession) {
+        throw new HttpError(HttpError.StatusCode.UNAUTHORIZED, "Not authorized");
     }
 
-    const response = handleCase[method]
-    if (response) return response(req, res)
-    else return res.status(400).json({error: ERROR_MSG.NOAPIRESPONSE})
-});
+    switch (req.method) {
+        case 'POST':
+            const {email} = req.body;
+            if (userSession.user.email === email && !userSession.user.app_metadata.roles.includes("admin")) {
+                throw new HttpError(HttpError.StatusCode.FORBIDDEN, "Forbidden action");
+            }
+            const response = await userService.changePasswordByEmail(email);
+            return res.status(200).json(response);
 
-export default handler
+        default:
+            throw new HttpError(HttpError.StatusCode.BAD_REQUEST, "Request method not found");
+    }
+}));
+
+export default handler;

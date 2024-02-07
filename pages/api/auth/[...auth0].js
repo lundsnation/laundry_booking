@@ -1,70 +1,58 @@
 import {handleAuth, handleProfile, handleCallback, updateSession} from "@auth0/nextjs-auth0";
-import Auth0API from '../../../src/apiHandlers/Auth0API'
+import UserService from "../../../src/backend/services/UserService";
+import WithErrorHandler from "../../../src/backend/errors/withErrorHandler";
 
-// Function triggered on user accepting user-agreement and GDPR-terms, if modification was sucessfull, updates the user-session
+const userService = new UserService()
+// Patches the user profile with the acceptance flag and removes the refresh token from the session.
 const userAccept = async (req, res, session) => {
-    const modification = {
+    const updatedUser = {
+        ...session.user,
         app_metadata: {...session.user.app_metadata, acceptedTerms: true}
-    }
-    try {
-        const response = await Auth0API.patchUser(session.user.sub, modification)
-        if (response.statusText === "OK") {
-            session.user.app_metadata.acceptedTerms = true
-            delete session.refreshToken
-            return session
-        }
-        return session
-    } catch (error) {
-        console.log(error)
-    }
+    };
+
+    const patchedUser = await userService.patchUser(session.user.sub, updatedUser)
+    session.user.app_metadata.acceptedTerms = true
+    delete session.refreshToken
+    return session
 }
 
-//// Function triggered on user-modification done by the user, if modification was sucessfull, updates the user-session
+// Patches the user profile with the updated email and telephone, and removes the refresh token from the session.
 const userEdit = async (req, res, session) => {
-
     const {email, telephone} = JSON.parse(req.body)
 
-    const modification = {
+    const updatedUser = {
+        ...session.user,
         email: email, user_metadata: {...session.user_metadata, telephone: telephone}
-    }
+    };
 
-    try {
-        const response = await Auth0API.patchUser(session.user.sub, modification)
-        if (response.statusText === "OK") {
-            delete session.refreshToken
-            session.user.user_metadata.telephone = telephone
-            session.user.email = email
-            return session
-            // return { ...session, user: { ...session.user, modification } }
-        }
-
-        return session
-    } catch (error) {
-        console.log(error)
-    }
+    const patchedUser = await userService.patchUser(session.user.sub, updatedUser)
+    delete session.refreshToken
+    session.user.user_metadata.telephone = telephone
+    session.user.email = email
+    return session
 }
 
-/* Overriding default auth-handler, api/auth/accepted will intially update userInfo
-*  using atuh0 Authentication API, thn refetch the userSession from Auth0API
-*  authentication API at route: /userinfo. Since the custom app_metadata property only is set on 
-*  user upon login, we will have to manually set it afterRefetch, if user modification
-*  was unsucessfull, the previous, unchanged session will be returned, yielding no effect.
-*  / Axel 
-*/
+/**
+ * Exports a function with authentication and error handling for user profile actions ('accepted' and 'edit').
+ * - `handleAuth` ensures requests are authenticated.
+ * - `WithErrorHandler` provides consistent error handling across actions.
+ *
+ * Actions:
+ * - `accepted`: Refetches the user profile and applies acceptance logic.
+ * - `edit`: Refetches the user profile and applies edit logic.
+ *
+ * Each action calls `handleProfile` with:
+ * - `refetch`: Boolean to refetch user profile data.
+ * - `afterRefetch`: Callback for action-specific logic (`userAccept` for accepted, `userEdit` for edit).
+ *
+ * This structure secures endpoints to authenticated users and manages errors gracefully, ensuring robust user profile management.
+ */
 export default handleAuth({
-    accepted: async (req, res) => {
-        try {
-            await handleProfile(req, res, {refetch: true, afterRefetch: userAccept});
-        } catch (error) {
-            console.error(error);
-        }
-    },
+    accepted: WithErrorHandler(async (req, res) => {
+        await handleProfile(req, res, {refetch: true, afterRefetch: userAccept});
+    }),
 
-    edit: async (req, res) => {
-        try {
-            await handleProfile(req, res, {refetch: true, afterRefetch: userEdit});
-        } catch (error) {
-            console.error(error);
-        }
-    }
+    edit: WithErrorHandler(async (req, res) => {
+        await handleProfile(req, res, {refetch: true, afterRefetch: userEdit});
+    })
 });
