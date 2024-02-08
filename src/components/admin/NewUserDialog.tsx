@@ -21,7 +21,7 @@ import BackendAPI from '../../apiHandlers/BackendAPI';
 const initialNewUserState: NewUser = {
     name: "",
     email: "",
-    connection: "Username-Password-Authenticated",
+    connection: "Username-Password-Authentication",
     password: "",
     email_verified: true,
     app_metadata: {

@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {SetStateAction, useState} from "react";
 import {
     Button,
     Typography,
@@ -10,13 +10,14 @@ import {
     ListItem,
     Divider,
     ListItemIcon,
-    DialogContent
+    DialogContent, SnackbarOrigin
 } from "@mui/material";
 import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
 import {LoadingButton} from "@mui/lab";
 import PersonIcon from '@mui/icons-material/Person';
 import BackendAPI from "../../apiHandlers/BackendAPI";
 import User from "../../classes/User";
+import {SnackInterface} from "../Snack";
 
 interface Props {
     showDeleteUserDialog: boolean,
@@ -26,7 +27,7 @@ interface Props {
     setUsers: (users: User[]) => void,
     searchedUsers: User[],
     setSearchedUsers: (users: User[]) => void,
-    setSnack: (message: string, severity: 'success' | 'error') => void,
+    setSnack: React.Dispatch<SetStateAction<SnackInterface>>,
 }
 
 const DeleteUserDialog = ({
@@ -52,7 +53,9 @@ const DeleteUserDialog = ({
 
         setUsers(updatedUsers);
         setSearchedUsers(updatedSearchedUsers);
-        setSnack(`Tog bort ${selected.length} användare`, 'success');
+
+        const alignment: SnackbarOrigin = {vertical: 'bottom', horizontal: 'left'}
+        setSnack({show: true, snackString: `Tog bort ${selected.length} användare`, severity: "success", alignment: alignment});
 
         setLoading(false);
         setShowDeleteUserDialog(false);

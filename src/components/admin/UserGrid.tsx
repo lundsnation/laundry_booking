@@ -1,75 +1,100 @@
-import { IconButton, InputAdornment, Skeleton, Button, Container, Paper, Grid, TextField, MenuItem, AlertColor, CircularProgress, ButtonGroup, Typography, SnackbarOrigin, TableFooter, Stack, Toolbar } from "@mui/material";
-import { Table, TableBody, TableHead, TableRow, TableContainer, TableCell, TablePagination } from "@mui/material"
-import { Snack, SnackInterface } from "../Snack"
-import { useState } from "react";
-import { Checkbox } from '@mui/material';
+import {
+    IconButton,
+    InputAdornment,
+    Skeleton,
+    Button,
+    Paper,
+    Grid,
+    TextField,
+    ButtonGroup,
+    Typography,
+    SnackbarOrigin,
+    Checkbox,
+} from "@mui/material";
+import {Table, TableBody, TableHead, TableRow, TableContainer, TableCell, TablePagination} from "@mui/material"
+import {Snack, SnackInterface} from "../Snack"
+import React, {useEffect, useState} from "react";
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import PersonAddOutlinedIcon from '@mui/icons-material/PersonAddOutlined';
 import NewUserDialog from "./NewUserDialog";
-import EditUserDialog from "./EditUserDialog";
 import DeleteIcon from '@mui/icons-material/DeleteOutlined';
 import DeleteUserDialog from "./DeleteUserDialog";
 import SearchIcon from '@mui/icons-material/Search';
-import Users from "../../classes/Users";
 import User from "../../classes/User";
+import backendAPI from "../../apiHandlers/BackendAPI";
 
-interface Props {
-    initUsers: Users
-    user: User
-}
-
-const UserGrid = ({ initUsers, user }: Props) => {
-    const [selected, setSelected] = useState<Users>(new Users());
+const UserGrid = () => {
+    const [selected, setSelected] = useState<User[]>([]);
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const [showEditDialog, setShowEditDialog] = useState(false)
     const [showDeleteUserDialog, setShowDeleteUserDialog] = useState(false)
     const [showAddDialog, setShowAddDialog] = useState(false)
     const [loadingData, setLoadingData] = useState(false)
-    const [users, setUsers] = useState<Users>(initUsers)
-    const alignment: SnackbarOrigin = { vertical: 'bottom', horizontal: 'left' }
-    const [snack, setSnack] = useState<SnackInterface>({ show: false, snackString: "", severity: "info", alignment: alignment })
+    const [users, setUsers] = useState<User[]>([])
+    const alignment: SnackbarOrigin = {vertical: 'bottom', horizontal: 'left'}
+    const [snack, setSnack] = useState<SnackInterface>({
+        show: false,
+        snackString: "",
+        severity: "info",
+        alignment: alignment
+    })
     const [searchString, setSearchString] = useState("")
-    const [searchedUsers, setSearchedUsers] = useState<Users>(users)
+    const [searchedUsers, setSearchedUsers] = useState<User[]>([])
 
-    //Osäker på om denna behövs med tanke på att vi använder getServerSideprops
+    useEffect(() => {
+        setLoadingData(true);
+
+        // Directly fetch and set users without try-catch
+        const fetchAndSetUsers = async () => {
+            const fetchedUsers = await backendAPI.fetchUsers() // Assuming this will be caught by global error handler if it fails
+            setUsers(fetchedUsers); // Update state with fetched users
+            setLoadingData(false); // Update loading state after fetching
+            console.log("Fetched users: ", fetchedUsers)
+        };
+
+        // Call the async function
+        fetchAndSetUsers();
+    }, []);
+
     const getTableContentSkelton = () => {
         let content = []
         for (let i = 0; i < rowsPerPage; i++) {
             content.push(
                 <TableRow key={"Skeleton" + i}>
-                    <TableCell padding="checkbox"><Skeleton variant="rounded" height="24px" width="24px" /></TableCell>
-                    <TableCell component="th" scope="row" padding="none"><Skeleton /></TableCell>
-                    <TableCell align="right"><Skeleton /></TableCell>
-                    <TableCell align="right"><Skeleton /></TableCell>
-                    <TableCell align="right"><Skeleton /></TableCell>
+                    <TableCell padding="checkbox"><Skeleton variant="rounded" height="24px" width="24px"/></TableCell>
+                    <TableCell component="th" scope="row" padding="none"><Skeleton/></TableCell>
+                    <TableCell align="right"><Skeleton/></TableCell>
+                    <TableCell align="right"><Skeleton/></TableCell>
+                    <TableCell align="right"><Skeleton/></TableCell>
                 </TableRow>
             )
         }
         return content
     }
 
-    const handleClick = (event: React.MouseEvent<unknown>, user: User) => {
+    const handleSelectedClick = (event: React.MouseEvent<unknown>, user: User) => {
         if (!isSelected(user)) {
-            const newSelected: Users = selected.add(user)
+            const newSelected = [...selected, user]
             setSelected(newSelected)
             return
         }
-        const newSelected = selected.remove(user)
+        const newSelected = selected.filter((selectedUser) => selectedUser.sub !== user.sub)
         setSelected(newSelected)
     }
 
     const handleSearchedUsers = (searchString: string) => {
-        if (searchString === "") {
-            setSearchedUsers(users)
-        }
-        const lowerCaseSearchString = searchString.toLowerCase()
-        setSearchString(searchString)
-        const searchedUsers = users.filter(user => user.name.toLowerCase().includes(lowerCaseSearchString) || user.email.toLowerCase().includes(lowerCaseSearchString))
-        setSearchedUsers(searchedUsers)
+        setSearchString(searchString); // Always update searchString state
+
+        const lowerCaseSearchString = searchString.toLowerCase();
+        const filteredUsers = users.filter(user =>
+            user.name.toLowerCase().includes(lowerCaseSearchString) ||
+            user.email.toLowerCase().includes(lowerCaseSearchString)
+        );
+        setSearchedUsers(filteredUsers);
     }
 
-    const handleChangePage = (event: unknown, newPage: number) => {
+    const handleChangePage = (event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => {
         setPage(newPage);
     }
 
@@ -77,17 +102,16 @@ const UserGrid = ({ initUsers, user }: Props) => {
         setRowsPerPage(parseInt(event.target.value, 10));
         setPage(0);
     }
-    const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - users.length()) : 0;
+    const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - users.length) : 0;
 
-    const isSelected = (user: User) => selected.contains(user);
+    const isSelected = (user: User) => selected.some(selectedUser => selectedUser.sub === user.sub);
 
     const getContent = () => {
-        // let display: Users = searchString != "" ? searchedUsers : users
-        let display: Users = searchedUsers
+        let display = searchString != "" ? searchedUsers : users
 
-        //console.log(searchString)
-        //console.log("Display", display)
-        display = display.sort((a, b) => { return a.name.localeCompare(b.name, 'sv') });
+        display = display.sort((a, b) => {
+            return a.name.localeCompare(b.name, 'sv')
+        });
         return (
             display.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((userEntry, index) => {
                 const isItemSelected = isSelected(userEntry)
@@ -96,34 +120,37 @@ const UserGrid = ({ initUsers, user }: Props) => {
                     <TableRow
                         hover
                         role="checkbox"
-                        onClick={(event) => handleClick(event, userEntry)}
-                        key={userEntry.name}
+                        onClick={(event) => handleSelectedClick(event, userEntry)}
+                        key={userEntry.sub}
                         tabIndex={-1}
-                        sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                        sx={{'&:last-child td, &:last-child th': {border: 0}}}
                         selected={isItemSelected}
                     ><TableCell padding="checkbox">
-                            <Checkbox color="primary" checked={isItemSelected} inputProps={{ 'aria-labelledby': labelId, }} />
-                        </TableCell>
+                        <Checkbox color="primary" checked={isItemSelected} inputProps={{'aria-labelledby': labelId,}}/>
+                    </TableCell>
                         <TableCell component="th" scope="row" id={labelId} padding="none">
                             {userEntry.name}
                         </TableCell>
                         <TableCell align="right">{userEntry.email}</TableCell>
-                        <TableCell align="right">{userEntry.allowedSlots}</TableCell>
-                        <TableCell align="right">{userEntry.telephone}</TableCell>
-                        <TableCell align="right">{userEntry.hasAcceptedTerms ? "Ja" : "Nej"}</TableCell>
+                        <TableCell align="right">{userEntry.app_metadata.allowedSlots}</TableCell>
+                        <TableCell align="right">{userEntry.user_metadata.telephone}</TableCell>
+                        <TableCell align="right">{userEntry.app_metadata.acceptedTerms ? "Ja" : "Nej"}</TableCell>
                     </TableRow>
                 )
             })
         )
     }
 
-    //Istället för att fetcha om users efter varje ändring så kan vi bara ändra i listan. 
+
+    //Istället för att fetcha om users efter varje ändring så kan vi bara ändra i listan.
     return (
-        <Paper sx={{ width: { lg: '1200px' } }} elevation={0} variant={"outlined"}>
+        <Paper sx={{width: {lg: '1200px'}}} elevation={0} variant={"outlined"}>
             <Grid item xs={12}>
-                <Typography variant="h5" sx={{ m: 2 }}> Redigera Användare</Typography>
+                <Typography variant="h5" sx={{m: 2}}> Redigera Användare</Typography>
             </Grid>
-            <Snack handleClose={() => { setSnack(snack => ({ ...snack, show: false })) }} state={snack}></Snack>
+            <Snack handleClose={() => {
+                setSnack(snack => ({...snack, show: false}))
+            }} state={snack}></Snack>
             <NewUserDialog
                 showAddDialog={showAddDialog}
                 setShowAddDialog={setShowAddDialog}
@@ -131,6 +158,8 @@ const UserGrid = ({ initUsers, user }: Props) => {
                 setSnack={setSnack}
                 setUsers={setUsers}
             />
+
+            {/*
             <EditUserDialog
                 showEditDialog={showEditDialog}
                 setShowEditDialog={setShowEditDialog}
@@ -141,22 +170,23 @@ const UserGrid = ({ initUsers, user }: Props) => {
                 users={users}
                 setUsers={setUsers}
             />
+            */}
+
             <DeleteUserDialog
                 showDeleteUserDialog={showDeleteUserDialog}
                 setShowDeleteUserDialog={setShowDeleteUserDialog}
                 selected={selected}
-                setSelected={setSelected}
                 searchedUsers={searchedUsers}
                 setSearchedUsers={setSearchedUsers}
                 users={users}
                 setUsers={setUsers}
-                snack={snack}
                 setSnack={setSnack}
             />
+
             <TableContainer component={Paper}>
-                <Table sx={{ minWidth: 750 }} size='small' aria-label="simple table">
+                <Table sx={{minWidth: 750}} size='small' aria-label="simple table">
                     <TableHead>
-                        <TableRow >
+                        <TableRow>
                             <TableCell></TableCell>
                             <TableCell padding="none">Användare</TableCell>
                             <TableCell align="right">E-post</TableCell>
@@ -166,14 +196,14 @@ const UserGrid = ({ initUsers, user }: Props) => {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {users.length() > 0 || !loadingData ? getContent() : getTableContentSkelton()}
+                        {users.length > 0 || !loadingData ? getContent() : getTableContentSkelton()}
                         {emptyRows > 0 && (
                             <TableRow
                                 style={{
                                     height: 33 * emptyRows,
                                 }}
                             >
-                                <TableCell colSpan={6} />
+                                <TableCell colSpan={6}/>
                             </TableRow>
                         )}
                     </TableBody>
@@ -183,10 +213,12 @@ const UserGrid = ({ initUsers, user }: Props) => {
             <Grid container alignItems='flex-end' justifyContent="stretch">
                 <Grid item xs={12} sm={6} md={2.5}>
                     <TextField
+                        id={'searchField'}
                         fullWidth
                         variant={'outlined'}
                         size="medium"
                         label="Sök efter användare"
+                        value={searchString}
                         onChange={(e) => {
                             handleSearchedUsers(e.target.value)
                         }}
@@ -194,7 +226,7 @@ const UserGrid = ({ initUsers, user }: Props) => {
                             endAdornment: (
                                 <InputAdornment position="end">
                                     <IconButton>
-                                        <SearchIcon />
+                                        <SearchIcon/>
                                     </IconButton>
                                 </InputAdornment>
                             )
@@ -202,20 +234,29 @@ const UserGrid = ({ initUsers, user }: Props) => {
                     />
                 </Grid>
                 <Grid item xs={12} sm={6} md={4}>
-                    <ButtonGroup fullWidth sx={{ height: '56px' }} orientation='horizontal' size="small" variant="outlined">
-                        <Button fullWidth onClick={() => { setShowDeleteUserDialog(true) }} disabled={selected.length() === 0} size='small' color="error" startIcon={<DeleteIcon />}> Ta Bort</Button>
-                        <Button fullWidth onClick={() => { setShowEditDialog(true) }} disabled={selected.length() === 0} size='small' color="warning" startIcon={<EditOutlinedIcon />} >Ändra</Button>
-                        <Button fullWidth onClick={() => { setShowAddDialog(true) }} size='small' color="primary" startIcon={<PersonAddOutlinedIcon />}>Lägg till</Button>
+                    <ButtonGroup fullWidth sx={{height: '56px'}} orientation='horizontal' size="small"
+                                 variant="outlined">
+                        <Button fullWidth onClick={() => {
+                            setShowDeleteUserDialog(true)
+                        }} disabled={selected.length === 0} size='small' color="error" startIcon={<DeleteIcon/>}> Ta
+                            Bort</Button>
+                        <Button fullWidth onClick={() => {
+                            setShowEditDialog(true)
+                        }} disabled={selected.length === 0} size='small' color="warning"
+                                startIcon={<EditOutlinedIcon/>}>Ändra</Button>
+                        <Button fullWidth onClick={() => {
+                            setShowAddDialog(true)
+                        }} size='small' color="primary" startIcon={<PersonAddOutlinedIcon/>}>Lägg till</Button>
                     </ButtonGroup>
                 </Grid>
 
-                <Grid item md={0.5} />
+                <Grid item md={0.5}/>
 
                 <Grid item xs={12} sm={12} md={5} justifyContent={'right'}>
                     <TablePagination
                         rowsPerPageOptions={[10, 25, 50]}
                         component="div"
-                        count={users.length()}
+                        count={users.length}
                         rowsPerPage={rowsPerPage}
                         page={page}
                         onPageChange={handleChangePage}
@@ -224,7 +265,7 @@ const UserGrid = ({ initUsers, user }: Props) => {
                     />
                 </Grid>
             </Grid>
-        </Paper >
+        </Paper>
     )
 }
 export default UserGrid;

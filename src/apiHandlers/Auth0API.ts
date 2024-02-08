@@ -7,19 +7,20 @@ import {JsonUser, NewUser, UserUpdate} from '../classes/User';
 class Auth0API {
 
     private static management = new ManagementClient({
-        domain: process.env.AUTH0_ISSUER_BASE_URL as string,
+        domain: process.env.AUTH0_DOMAIN as string,
         clientId: process.env.AUTH0_CLIENT_ID as string,
         clientSecret: process.env.AUTH0_CLIENT_SECRET as string
     });
 
     private static authentication = new AuthenticationClient({
-        domain: process.env.AUTH0_ISSUER_BASE_URL as string,
+        domain: process.env.AUTH0_API_DOMAIN as string,
         clientId: process.env.AUTH0_CLIENT_ID as string,
         clientSecret: process.env.AUTH0_CLIENT_SECRET as string
     });
 
     private static user_management = this.management.users;
     private static auth_management = this.authentication;
+
 
     static async getUser(UserID: string) {
         const user = (await this.user_management.get({id: UserID})).data
@@ -31,6 +32,7 @@ class Auth0API {
         return this.remapToJsonUser(user);
     }
 
+
     static async patchUser(id: string, modification: UserUpdate) {
         const user = (await this.user_management.update({id: id}, modification)).data
         return this.remapToJsonUser(user);
@@ -41,6 +43,7 @@ class Auth0API {
     }
 
     static async getUsers() {
+        console.log("Fetching users")
         const users = []
         let page = 0;
         let moreUsers = true;
@@ -59,7 +62,7 @@ class Auth0API {
                 page++;
             }
         }
-
+        console.log("Fetched users", users.length)
         return users.map(user => this.remapToJsonUser(user));
     }
 
