@@ -1,6 +1,6 @@
 import axios from "axios";
 import Booking, {JsonBooking, NewBooking} from "../classes/Booking";
-import User from "../classes/User";
+import User, {NewUser} from "../classes/User";
 import {LaundryBuilding} from "../configs/Config";
 
 // This class is used to communicate with the backend API from the frontend
@@ -35,6 +35,10 @@ class BackendAPI {
     // ------------------ USER RELATED ------------------
     static async fetchUser(id: string): Promise<User> {
         return await axios.get("api/users/" + id)
+    }
+
+    static async createUser(newUser: NewUser): Promise<User> {
+        return await axios.post("api/users", newUser)
     }
 
     static async deleteUser(id: string) {

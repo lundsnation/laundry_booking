@@ -31,6 +31,10 @@ export type NewUser = {
     connection: string,
     password: string,
     email_verified: boolean,
+    app_metadata: AppMetadata,
+    user_metadata: {
+        telephone: string
+    },
 }
 
 export interface UserUpdate {
