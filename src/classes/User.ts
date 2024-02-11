@@ -1,5 +1,5 @@
 import Booking from "./Booking";
-import {LaundryBuilding} from "../configs/Config";
+import { LaundryBuilding } from "../configs/Config";
 
 type AppMetadata = {
     acceptedTerms: boolean,
@@ -11,6 +11,18 @@ type AppMetadata = {
 type UserMetadata = {
     picture: string,
     telephone: string
+}
+
+export type ModificationObject = {
+    name: string,
+    email: string,
+    app_metadata: {
+        LaundryBuilding: LaundryBuilding,
+        allowedSlots: number
+    },
+    user_metadata: {
+        telephone: string
+    }
 }
 
 export type JsonUser = {
