@@ -1,6 +1,6 @@
 import axios from "axios";
 import Booking, { JsonBooking, NewBooking } from "../classes/Booking";
-import User from "../classes/User";
+import User, { JsonUser, NewUser } from "../classes/User";
 import { LaundryBuilding } from "../configs/Config";
 
 // This class is used to communicate with the backend API from the frontend
@@ -32,13 +32,23 @@ class BackendAPI {
         return bookings.map((booking: JsonBooking) => new Booking(booking))
     }
 
-    // ------------------ USER RELATED ------------------
+    // ------------------ USER API ------------------
     static async fetchUser(id: string): Promise<User> {
-        return await axios.get("api/users/" + id)
+        return new User((await axios.get("api/users/" + id)).data)
+    }
+
+    static async createUser(newUser: NewUser): Promise<User> {
+        const jsonuser = (await axios.post("api/users", newUser)).data
+        return new User(jsonuser)
     }
 
     static async deleteUser(id: string) {
         return await axios.delete("api/users/" + id)
+    }
+
+    static async fetchUsers(): Promise<User[]> {
+        const users = (await axios.get("api/users")).data
+        return users.map((user: JsonUser) => new User(user))
     }
 
     static async patchUsers(ids: string[], modification: object): Promise<User[]> {

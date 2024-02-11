@@ -1,67 +1,48 @@
-import {Typography} from "@mui/material";
-import {withPageAuthRequired, getSession} from '@auth0/nextjs-auth0';
-import UserGrid from "../src/components/admin/UserGrid";
-import {Grid} from "@mui/material";
-import Layout from "../src/components/layout/Layout";
-import User, {JsonUser} from "../src/classes/User";
-import Auth0API from "../src/apiHandlers/Auth0API";
-import Users from "../src/classes/Users";
+import React, {useEffect} from 'react';
+import {useUser} from '@auth0/nextjs-auth0/client';
+import router from 'next/router';
+import {Grid} from '@mui/material';
+import Layout from '../src/components/layout/Layout';
+import UserGrid from '../src/components/admin/UserGrid';
+import User, {JsonUser} from '../src/classes/User';
+import Loading from '../src/components/Loading';
 
-interface Props {
-    user: JsonUser;
-    jsonUsers: string;
-}
+const Admin = () => {
+    const {user, error, isLoading: userIsLoading} = useUser();
 
-// ... (other imports and code remain unchanged)
+    useEffect(() => {
+        if (!userIsLoading && user) {
+            const currentUser = new User(user as JsonUser);
+            if (!currentUser.app_metadata.roles.includes('admin')) {
+                // Redirect to login or unauthorized page if the user is not an admin
+                router.push('/index').then();
+                return; // Prevent further execution
+            }
+        }
+    }, [user, userIsLoading]);
 
-const Admin = ({user, jsonUsers}: Props) => {
-    const currentUser = new User(user);
-
-    // Guard protecting the page    
-    if (!currentUser.app_metadata.roles.includes('admin')) {
-        return (
-            <Layout user={currentUser as User}>
-                <Typography variant={'h1'}>Ej auktoriserad</Typography>
-            </Layout>
-        );
+    if (userIsLoading) {
+        // Render loading state while checking user authentication
+        return <Loading/>;
+    }
+    if (error) return <div>{error.message}</div>;
+    if (!user) {
+        // Redirect to login page if user is not authenticated
+        router.push('/api/auth/login').then();
+        return null; // Prevent further rendering until redirection is complete
     }
 
-
-    const initUsers = Users.fromJSON(JSON.parse(jsonUsers));
-    console.log(initUsers)
+    const currentUser = new User(user as JsonUser);
 
     return (
         <Layout user={currentUser}>
             <Grid container justifyContent="center">
                 <Grid item xs={12} sx={{px: {xs: 1}}}>
-                    <UserGrid user={currentUser} initUsers={initUsers}/>
+                    <UserGrid/>
                 </Grid>
             </Grid>
         </Layout>
     );
 };
-
-export const getServerSideProps = withPageAuthRequired({
-    // returnTo: '/unauthorized',
-    async getServerSideProps(ctx) {
-        // If session is needed
-        const session = await getSession(ctx.req, ctx.res);
-        if (!session?.user.app_metadata.roles.includes('admin')) {
-            return {
-                props: {
-                    jsonUsers: JSON.stringify([]), // Use an empty array instead of undefined
-                },
-            };
-        }
-
-        const users = await Auth0API.getUsersAsUserType();
-
-        return {
-            props: {
-                jsonUsers: JSON.stringify(users), // Return jsonUsers instead of users
-            },
-        };
-    },
-});
 
 export default Admin;

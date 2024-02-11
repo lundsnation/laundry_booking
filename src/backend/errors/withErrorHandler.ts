@@ -18,8 +18,11 @@ function withErrorHandler(fn: IFunction) {
                 return res.status(error.statusCode).json({error: error.message})
             }
 
-            //Catch all
-            return res.status(500).json({error: "Internal server error"})
+            if (error instanceof Error) {
+                return res.status(500).json({error: `Internal server error, ${error.message}`});
+            }
+
+            return res.status(500).json({error: "Internal server error"});
         }
     };
 }
