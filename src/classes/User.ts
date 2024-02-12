@@ -58,7 +58,7 @@ export interface UserUpdate {
     app_metadata?: {
         acceptedTerms?: boolean,
         allowedSlots?: number,
-        building?: string,
+        LaundryBuilding?: LaundryBuilding,
     },
 }
 
