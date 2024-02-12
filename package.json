@@ -30,7 +30,7 @@
     "hamburger-react": "^2.5.0",
     "json5": "^2.2.2",
     "libphonenumber-js": "^1.10.18",
-    "mongoose": "^6.7.2",
+    "mongoose": "^8.0.0",
     "mui-image": "^1.0.7",
     "next": "^13.0.5",
     "pusher": "^5.1.2",
