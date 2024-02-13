@@ -67,6 +67,8 @@ const UserGrid = () => {
                     <TableCell align="right"><Skeleton/></TableCell>
                     <TableCell align="right"><Skeleton/></TableCell>
                     <TableCell align="right"><Skeleton/></TableCell>
+                    <TableCell align="right"><Skeleton/></TableCell>
+                    <TableCell align="right"><Skeleton/></TableCell>
                 </TableRow>
             )
         }
@@ -128,13 +130,15 @@ const UserGrid = () => {
                     ><TableCell padding="checkbox">
                         <Checkbox color="primary" checked={isItemSelected} inputProps={{'aria-labelledby': labelId,}}/>
                     </TableCell>
-                        <TableCell component="th" scope="row" id={labelId} padding="none">
+                        <TableCell align="left" component="th" scope="row" id={labelId} padding="none">
                             {userEntry.name}
                         </TableCell>
-                        <TableCell align="right">{userEntry.email}</TableCell>
-                        <TableCell align="right">{userEntry.app_metadata.allowedSlots}</TableCell>
-                        <TableCell align="right">{userEntry.user_metadata.telephone}</TableCell>
-                        <TableCell align="right">{userEntry.app_metadata.acceptedTerms ? "Ja" : "Nej"}</TableCell>
+                        <TableCell align="left">{userEntry.email}</TableCell>
+                        <TableCell align="left">{userEntry.user_metadata.telephone}</TableCell>
+                        <TableCell
+                            align="left">{userEntry.app_metadata.laundryBuilding.charAt(0).toUpperCase() + userEntry.app_metadata.laundryBuilding.slice(1).toLowerCase()}</TableCell>
+                        <TableCell align="left">{userEntry.app_metadata.allowedSlots}</TableCell>
+                        <TableCell align="left">{userEntry.app_metadata.acceptedTerms ? "Ja" : "Nej"}</TableCell>
                     </TableRow>
                 )
             })
@@ -189,10 +193,11 @@ const UserGrid = () => {
                         <TableRow>
                             <TableCell></TableCell>
                             <TableCell padding="none">Användare</TableCell>
-                            <TableCell align="right">E-post</TableCell>
-                            <TableCell align="right">Tillåtna Bokningar</TableCell>
-                            <TableCell align="right">Telefon</TableCell>
-                            <TableCell align="right">Accepterat Villkor</TableCell>
+                            <TableCell align="left">E-post</TableCell>
+                            <TableCell align="left">Telefon</TableCell>
+                            <TableCell align="left">Tvättbyggnad</TableCell>
+                            <TableCell align="left">Tillåtna Bokningar</TableCell>
+                            <TableCell align="left">Accepterat Villkor</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>

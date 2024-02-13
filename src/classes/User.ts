@@ -1,5 +1,5 @@
 import Booking from "./Booking";
-import { LaundryBuilding } from "../configs/Config";
+import {LaundryBuilding} from "../configs/Config";
 
 type AppMetadata = {
     acceptedTerms: boolean,
@@ -49,8 +49,15 @@ export type NewUser = {
     },
 }
 
+export interface UserProfileUpdate {
+    email: string;
+    user_metadata: {
+        telephone: string;
+    };
+}
+
 export interface UserUpdate {
-    name: string,
+    name?: string,
     email?: string,
     user_metadata?: {
         telephone?: string,

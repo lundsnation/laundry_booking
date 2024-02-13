@@ -19,7 +19,7 @@ export type Building = Arkivet | Nationshuset | Finnhuset
 export enum LaundryBuilding {
     ARKIVET = "ARKIVET",
     NATIONSHUSET = "NATIONSHUSET",
-    //NYA = "NYA", // Unclear if they are going to have own laundry building
+    FINNHUSET = "FINNHUSET",
 }
 
 abstract class Config {
@@ -50,7 +50,7 @@ abstract class Config {
     }
 
     static get getLaundryBuildings(): LaundryBuilding[] {
-        return [LaundryBuilding.ARKIVET, LaundryBuilding.NATIONSHUSET]
+        return [LaundryBuilding.ARKIVET, LaundryBuilding.NATIONSHUSET, LaundryBuilding.FINNHUSET]
     }
 
     public getDryingBooth(inputString: string): number {

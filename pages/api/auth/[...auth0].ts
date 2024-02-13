@@ -1,38 +1,39 @@
-import {handleAuth, handleProfile, handleCallback, updateSession} from "@auth0/nextjs-auth0";
+import {handleAuth, handleProfile, Session} from "@auth0/nextjs-auth0";
 import UserService from "../../../src/backend/services/UserService";
 import WithErrorHandler from "../../../src/backend/errors/withErrorHandler";
+import {NextApiRequest, NextApiResponse} from "next";
 
 const userService = new UserService()
-// Patches the user profile with the acceptance flag and removes the refresh token from the session.
-const userAccept = async (req, res, session) => {
-    const updatedUser = {
-        ...session.user,
+// Patches the user profile with the  flag and removes the refresh token from the session.
+const acceptTerms = async (req: NextApiRequest, res: NextApiResponse, session: Session) => {
+    const userUpdate = {
         app_metadata: {...session.user.app_metadata, acceptedTerms: true}
     };
-
-    const patchedUser = await userService.patchUser(session.user.sub, updatedUser)
+    
+    await userService.patchUser(session.user.sub, userUpdate)
     session.user.app_metadata.acceptedTerms = true
     delete session.refreshToken
     return session
 }
 
 // Patches the user profile with the updated email and telephone, and removes the refresh token from the session.
-const userEdit = async (req, res, session) => {
-    const {email, telephone} = JSON.parse(req.body)
-
+const updateProfile = async (req: NextApiRequest, res: NextApiResponse, session: Session) => {
+    const profileUpdate = req.body
     const updatedUser = {
-        ...session.user,
-        email: email, user_metadata: {...session.user_metadata, telephone: telephone}
+        email: profileUpdate.email,
+        user_metadata: {...session.user_metadata, telephone: profileUpdate.user_metadata.telephone}
     };
 
-    const patchedUser = await userService.patchUser(session.user.sub, updatedUser)
+    await userService.patchUser(session.user.sub, updatedUser)
+    //console.log(patchedUser)
     delete session.refreshToken
-    session.user.user_metadata.telephone = telephone
-    session.user.email = email
+    session.user.email = profileUpdate.email
+    session.user.user_metadata.telephone = profileUpdate.user_metadata.telephone
     return session
 }
 
 /**
+ * *ProfileHandler
  * Exports a function with authentication and error handling for user profile actions ('accepted' and 'edit').
  * - `handleAuth` ensures requests are authenticated.
  * - `WithErrorHandler` provides consistent error handling across actions.
@@ -48,11 +49,11 @@ const userEdit = async (req, res, session) => {
  * This structure secures endpoints to authenticated users and manages errors gracefully, ensuring robust user profile management.
  */
 export default handleAuth({
-    accepted: WithErrorHandler(async (req, res) => {
-        await handleProfile(req, res, {refetch: true, afterRefetch: userAccept});
+    acceptTerms: WithErrorHandler(async (req, res) => {
+        await handleProfile(req, res, {refetch: true, afterRefetch: acceptTerms});
     }),
 
-    edit: WithErrorHandler(async (req, res) => {
-        await handleProfile(req, res, {refetch: true, afterRefetch: userEdit});
+    updateProfile: WithErrorHandler(async (req, res) => {
+        await handleProfile(req, res, {refetch: true, afterRefetch: updateProfile});
     })
 });

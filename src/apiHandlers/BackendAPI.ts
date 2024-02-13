@@ -1,7 +1,7 @@
-import axios from "axios";
-import Booking, { JsonBooking, NewBooking } from "../classes/Booking";
-import User, { JsonUser, NewUser } from "../classes/User";
-import { LaundryBuilding } from "../configs/Config";
+import axios, {AxiosResponse} from "axios";
+import Booking, {JsonBooking, NewBooking} from "../classes/Booking";
+import User, {JsonUser, NewUser, UserProfileUpdate} from "../classes/User";
+import {LaundryBuilding} from "../configs/Config";
 
 // This class is used to communicate with the backend API from the frontend
 class BackendAPI {
@@ -38,8 +38,7 @@ class BackendAPI {
     }
 
     static async createUser(newUser: NewUser): Promise<User> {
-        const jsonuser = (await axios.post("api/users", newUser)).data
-        return new User(jsonuser)
+        return new User((await axios.post("api/users", newUser)).data)
     }
 
     static async deleteUser(id: string) {
@@ -54,6 +53,18 @@ class BackendAPI {
     static async patchUsers(ids: string[], modification: object): Promise<User[]> {
         const updated = ids.map(async id => new User(await axios.patch("api/users/" + id, modification)))
         return await Promise.all(updated)
+    }
+
+    static async updateUserProfile(profileUpdate: UserProfileUpdate): Promise<User> {
+        return new User((await axios.patch("api/auth/updateProfile", profileUpdate)).data)
+    }
+
+    static async ChangePassword(email: string): Promise<AxiosResponse> {
+        return await axios.post("api/users/changePassword", email)
+    }
+
+    static async acceptTerms(): Promise<User> {
+        return new User((await axios.patch("api/auth/acceptTerms")).data)
     }
 }
 

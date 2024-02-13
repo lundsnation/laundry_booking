@@ -45,6 +45,8 @@ const Index: NextPage = () => {
 
     const userClass = new User(user as JsonUser, initialBookings)
     const config = ConfigUtil.getLaundryConfigByLaundryBuilding(userClass.app_metadata.laundryBuilding)
+
+    console.log("User in index: ", userClass)
     return (
         <Layout user={userClass}>
             <Terms user={userClass}/>

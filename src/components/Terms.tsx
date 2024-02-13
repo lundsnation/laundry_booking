@@ -1,9 +1,9 @@
-import {Modal, Typography, Box, Button, Grid, Divider} from "@mui/material"
+import {Modal, Typography, Box, Button, Grid} from "@mui/material"
 import {useState} from "react"
 import {LoadingButton} from "@mui/lab";
 import {EmailOutlined, Place} from "@mui/icons-material";
 import User from "../classes/User";
-import {getSession} from "@auth0/nextjs-auth0";
+import BackendAPI from "../apiHandlers/BackendAPI";
 
 const USER_AGREEMENT_MAIN_TITLE = "Användarvillkor"
 const USER_AGREEMENT_TITLE_1 = "GDPR"
@@ -38,7 +38,6 @@ export const Terms = (props: props) => {
     const {user} = props
     const [open, setOpen] = useState(true);
     const [loading, setLoading] = useState(false);
-    const handleOpen = () => setOpen(true);
     const handleClose = (event: any, reason: any) => {
         if (reason && reason == "backdropClick") {
             return;
@@ -47,24 +46,15 @@ export const Terms = (props: props) => {
     }
     const handleAccept = async () => {
         setLoading(true)
-        const response = await fetch("/api/auth/accepted")
-        const session = await response.json()
-        console.log(session.user)
-
-        if (response.ok) {
-
-            setLoading(false)
-            window.location.reload()
-            // const updatedUser = User.fromJSON(session.user as UserType)
-            // handleCurrentUser(updatedUser)
-            return
-        }
-
+        await BackendAPI.acceptTerms()
         setLoading(false)
+        window.location.reload()
+        return
     }
+    console.log("User.app_metadata.acceptedTerms: ", user.app_metadata.acceptedTerms)
     return (
         <div>
-            {user?.app_metadata?.acceptedTerms ? null :
+            {user.app_metadata.acceptedTerms ? null :
                 <Modal
                     open={open}
                     onClose={handleClose}
