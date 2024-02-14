@@ -43,6 +43,7 @@ const ConfirmBooking = ({
 
     const bookTimeSlot = async () => {
         await BackendAPI.postBooking({
+            user_id: user.sub,
             username: user.name,
             timeSlot: timeSlot.toString(),
             dryingBooth: timeSlot.dryingBooth,

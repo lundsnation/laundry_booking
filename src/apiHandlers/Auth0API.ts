@@ -1,5 +1,6 @@
 import {AuthenticationClient, GetUsers200ResponseOneOfInner, ManagementClient} from 'auth0';
-import {JsonUser, NewUser, UserUpdate} from '../classes/User';
+import {JsonUser, NewUser, UserUpdate, UserBookingInfo} from '../classes/User';
+import {LaundryBuilding} from "../configs/Config";
 
 // Class to handle communication with Auth0 API from the backend only
 
@@ -26,6 +27,29 @@ class Auth0API {
         const user = (await this.user_management.get({id: UserID})).data
         return this.remapToJsonUser(user);
     }
+
+    /**
+     * export type userBookingInfo = {
+     *     name: string,
+     *     email: string,
+     *     user_metadata: {
+     *         telephone: string
+     *     },
+     * }
+     * @param UserID
+     */
+
+    static async getUserBookingInfo(UserID: string): Promise<UserBookingInfo> {
+        const user = (await this.user_management.get({id: UserID})).data
+        return {
+            name: user.name,
+            email: user.email,
+            user_metadata: {
+                telephone: user.user_metadata.telephone
+            }
+        }
+    }
+
 
     static async createUser(newUser: NewUser) {
         const user = (await this.user_management.create(newUser)).data
@@ -73,6 +97,13 @@ class Auth0API {
         })
     }
 
+    static async usernameExistsInBuilding(username: string, laundryBuilding: LaundryBuilding) {
+        const user = (await this.user_management.getAll({
+            q: `name:"${username}" AND app_metadata.laundryBuilding:"${laundryBuilding}"`
+        })).data
+        return user.length > 0;
+    }
+
     private static remapToJsonUser(auth0User: GetUsers200ResponseOneOfInner): JsonUser {
         return {
             sub: auth0User.user_id,
@@ -88,8 +119,8 @@ class Auth0API {
                 laundryBuilding: auth0User.app_metadata.laundryBuilding,
             },
             user_metadata: {
-                picture: auth0User.user_metadata.picture || auth0User.picture, // Assuming picture can be in user_metadata or default to main picture
-                telephone: auth0User.user_metadata.telephone, // Assuming telephone is stored in user_metadata
+                picture: auth0User.user_metadata.picture,
+                telephone: auth0User.user_metadata.telephone,
             },
             updated_at: auth0User.updated_at.toString(),
         };

@@ -7,9 +7,10 @@ const userService = new UserService()
 // Patches the user profile with the  flag and removes the refresh token from the session.
 const acceptTerms = async (req: NextApiRequest, res: NextApiResponse, session: Session) => {
     const userUpdate = {
+        name: session.user.name,
         app_metadata: {...session.user.app_metadata, acceptedTerms: true}
     };
-    
+
     await userService.patchUser(session.user.sub, userUpdate)
     session.user.app_metadata.acceptedTerms = true
     delete session.refreshToken
@@ -20,8 +21,10 @@ const acceptTerms = async (req: NextApiRequest, res: NextApiResponse, session: S
 const updateProfile = async (req: NextApiRequest, res: NextApiResponse, session: Session) => {
     const profileUpdate = req.body
     const updatedUser = {
+        name: profileUpdate.name,
         email: profileUpdate.email,
-        user_metadata: {...session.user_metadata, telephone: profileUpdate.user_metadata.telephone}
+        user_metadata: {...session.user_metadata, telephone: profileUpdate.user_metadata.telephone},
+        app_metadata: {...session.app_metadata}
     };
 
     await userService.patchUser(session.user.sub, updatedUser)

@@ -57,15 +57,23 @@ export interface UserProfileUpdate {
 }
 
 export interface UserUpdate {
-    name?: string,
+    name: string,
     email?: string,
     user_metadata?: {
         telephone?: string,
     },
-    app_metadata?: {
+    app_metadata: {
         acceptedTerms?: boolean,
         allowedSlots?: number,
-        LaundryBuilding?: LaundryBuilding,
+        LaundryBuilding: LaundryBuilding,
+    },
+}
+
+export type UserBookingInfo = {
+    name: string,
+    email: string,
+    user_metadata: {
+        telephone: string
     },
 }
 

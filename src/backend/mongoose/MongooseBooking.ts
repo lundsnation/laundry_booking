@@ -2,14 +2,16 @@ import mongoose, {HydratedDocument, Model} from 'mongoose'
 import {LaundryBuilding} from "../../configs/Config";
 
 export interface IBooking {
+    user_id: string;
     username: string;
     timeSlot: string;
     dryingBooth: number;
+    laundryBuilding: string;
     startTime: Date;
     endTime: Date;
     createdAt: Date;
-    laundryBuilding: string;
 }
+
 
 interface IBookingMethods {
     // Can be used to add methods to the document
@@ -26,13 +28,14 @@ export type BookingDocument = HydratedDocument<IBooking, IBookingMethods>
 
 export const BookingSchema = new mongoose.Schema<IBooking, IBookingModel>(
     {
+        user_id: {type: String, required: true},
         username: {type: String, required: true},
         timeSlot: {type: String, required: true},
         dryingBooth: {type: Number, required: true},
+        laundryBuilding: {type: String, required: true},
         startTime: {type: Date, required: true},
         endTime: {type: Date, required: true},
         createdAt: {type: Date, required: true},
-        laundryBuilding: {type: String, required: true},
     },
     {
         autoIndex: true, // Explicitly enable autoIndex

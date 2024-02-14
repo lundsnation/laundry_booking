@@ -28,6 +28,8 @@ const Index: NextPage = () => {
         setFetchingData(false);
     }
 
+    console.log("User, error, userIsLoading: ", user);
+
     useEffect(() => {
         if (user && !userIsLoading) {
             // Fetch initial bookings here
