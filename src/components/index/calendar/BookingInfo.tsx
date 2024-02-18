@@ -1,68 +1,75 @@
+import React, {useState, useEffect} from "react";
 import {
-    List,
-    Button,
-    DialogActions,
     Dialog,
     DialogTitle,
+    DialogActions,
+    List,
     ListItem,
     Typography,
+    Button,
     Divider,
     Skeleton,
     Grid
-} from "@mui/material"
+} from "@mui/material";
 import AlternateEmailIcon from '@mui/icons-material/AlternateEmail';
 import CallIcon from '@mui/icons-material/Call';
-import {UserType} from "../../../../utils/types"
-import {useState, useEffect} from "react";
 import Booking from "../../../classes/Booking";
+import {UserBookingInfo} from "../../../classes/User";
+import BackendAPI from "../../../apiHandlers/BackendAPI";
 
 interface Props {
-    booking: Booking,
-    showBookingInfo: boolean,
-    setShowBookingInfo: (state: boolean) => void
+    booking: Booking;
+    showBookingInfo: boolean;
+    setShowBookingInfo: (state: boolean) => void;
 }
 
-const BookingInfo = (props: Props) => {
-    const [loading, setLoading] = useState(false)
-    const {booking, showBookingInfo, setShowBookingInfo} = props
-    const [userInfo, setUserInfo] = useState<UserType>({} as UserType)
+const initUserBookingInfo = {
+    name: "",
+    email: "",
+    user_metadata: {
+        telephone: "",
+    }
+}
+
+const BookingInfo: React.FC<Props> = ({booking, showBookingInfo, setShowBookingInfo}) => {
+    const [loading, setLoading] = useState<boolean>(false);
+    const [userInfo, setUserInfo] = useState<UserBookingInfo>(initUserBookingInfo);
 
     useEffect(() => {
-        if (showBookingInfo) {
-            showBookedTime()
-        }
-    }, [showBookingInfo])
+        const showBookedTime = async () => {
+            if (showBookingInfo) {
+                setLoading(true);
 
-    const showBookedTime = async () => {
-        setLoading(true)
-        //Fixa med Adams nya klass
-        const response = await fetch("/api/user/" + booking?.userName)
-        if (response.ok) {
-            try {
-                const responseContent = await response.json()
-                setUserInfo({...responseContent})
-            } catch (error) {
-                console.log(error)
+                const fetchedUser = await BackendAPI.fetchUserBookingInfo(booking.user_id)
+                setUserInfo((oldUserInfo: UserBookingInfo) => ({
+                    ...oldUserInfo,
+                    email: fetchedUser.email,
+                    name: fetchedUser.name,
+                    user_metadata: {
+                        telephone: fetchedUser.user_metadata.telephone,
+                    },
+                }));
+
+                setLoading(false);
             }
-        }
-        setLoading(false)
-    }
+        };
+
+        showBookedTime();
+    }, [showBookingInfo, booking.user_id]);
+
 
     return (
-        <Dialog onClose={() => {
-            setShowBookingInfo(false)
-        }}
-                open={showBookingInfo} fullWidth>
-            <DialogTitle> Info om bokning </DialogTitle>
+        <Dialog onClose={() => setShowBookingInfo(false)} open={showBookingInfo} fullWidth>
+            <DialogTitle>Bokningsinformation</DialogTitle>
             <Divider variant="middle"/>
             <List>
                 <ListItem>
-                    Tid bokad av &nbsp;{loading ? <Skeleton width={80}/> :
+                    Booked by &nbsp;{loading ? <Skeleton width={80}/> :
                     <Typography style={{fontWeight: 'bold'}}>{userInfo.name}</Typography>}
                 </ListItem>
                 <ListItem>
                     <CallIcon fontSize="small"/>  &nbsp; {loading ? <Skeleton width={150}/> :
-                    <Typography style={{paddingLeft: 5}}>{userInfo.user_metadata?.telephone}</Typography>}
+                    <Typography style={{paddingLeft: 5}}>{userInfo.user_metadata.telephone}</Typography>}
                 </ListItem>
                 <ListItem>
                     <AlternateEmailIcon fontSize="small"/>  &nbsp; {loading ? <Skeleton width={150}/> :
@@ -73,16 +80,15 @@ const BookingInfo = (props: Props) => {
                 <Grid container padding={2}>
                     <Grid item xs={8}>
                         <Typography sx={{fontStyle: "italic"}} variant="caption">Kom ihåg att hålla god ton mot andra
-                            hyrestagare</Typography>
+                            hyrestagare.</Typography>
                     </Grid>
                     <Grid item xs={4}>
-                        <Button onClick={() => {
-                            setShowBookingInfo(false)
-                        }}>Stäng</Button>
+                        <Button onClick={() => setShowBookingInfo(false)}>Close</Button>
                     </Grid>
                 </Grid>
             </DialogActions>
         </Dialog>
-    )
-}
+    );
+};
+
 export default BookingInfo;

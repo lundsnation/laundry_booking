@@ -1,4 +1,4 @@
-import BookingDao, {BookingDocument, IBooking} from '../mongoose/MongooseBooking'
+import BookingDao, {BookingDocument} from '../mongoose/MongooseBooking'
 import HttpError from "../errors/HttpError";
 import {isValidPhoneNumber} from "libphonenumber-js";
 import {Claims} from "@auth0/nextjs-auth0";
@@ -70,24 +70,17 @@ class BookingService {
             throw new HttpError(HttpError.StatusCode.BAD_REQUEST, "Too many slots booked");
         }
 
-        const dateBookings = await BookingDao.find({date: booking.startTime});
-        const buildingBookingExists = dateBookings.some((booking) => {
-            const userBuilding = user.laundryBuilding
-            const bookingBuilding = booking.laundryBuilding
-            return userBuilding === bookingBuilding
-        });
-
-        if (buildingBookingExists) {
-            throw new HttpError(HttpError.StatusCode.BAD_REQUEST, "Booking for building already exists");
+        if (!(user.app_metadata.roles.includes("admin")) && booking.laundryBuilding !== user.app_metadata.laundryBuilding) {
+            throw new HttpError(HttpError.StatusCode.FORBIDDEN, "Forbidden to create booking for other laundry building")
         }
 
-        if (user.name != booking.username && !user.app_metadata.roles.includes("admin")) {
-            throw new HttpError(HttpError.StatusCode.UNAUTHORIZED, "Unauthorized to create booking for other user")
+        if (user.sub != booking.user_id && !user.app_metadata.roles.includes("admin")) {
+            throw new HttpError(HttpError.StatusCode.UNAUTHORIZED, "Unauthorized to create bookings for other user")
         }
 
         //Type should be changed to IBookingDocument
         const bookingDoc: BookingDocument = await BookingDao.create(booking);
-        
+
         await this.backendPusher.bookingUpdateTrigger(booking.laundryBuilding as LaundryBuilding, {
             username: user.name,
             timeSlot: booking.timeSlot,

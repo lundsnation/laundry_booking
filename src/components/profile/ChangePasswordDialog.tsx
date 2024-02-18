@@ -1,66 +1,73 @@
-import { SnackInterface } from "../Snack";
-import { Dialog, DialogActions, DialogTitle, DialogContent, Divider, Typography, Grid, Button, Card } from "@mui/material";
-import { LoadingButton } from "@mui/lab";
-import { useState } from "react";
-import { UserType } from "../../../utils/types";
-import User from "../../classes/User";
+import React, {useState} from 'react';
+import {
+    Dialog,
+    DialogActions,
+    DialogTitle,
+    DialogContent,
+    Divider,
+    Typography,
+    Grid,
+    Button,
+} from '@mui/material';
+import {LoadingButton} from '@mui/lab';
+import User from '../../classes/User';
+import {SnackInterface} from "../Snack";
+import BackendAPI from "../../apiHandlers/BackendAPI"; // Ensure this import is correct
 
-
-interface props {
-    showPasswordChangeDialog: boolean,
-    setshowPasswordChangeDialog: (obj: boolean) => void,
-    user: User,
-    setSnack: (state: SnackInterface) => void
+interface Props {
+    showPasswordChangeDialog: boolean;
+    setShowPasswordChangeDialog: (show: boolean) => void;
+    user: User;
+    setSnack: (snack: SnackInterface) => void;
 }
 
-const ChangePasswordDialog = (props: props) => {
-    const [loading, setLoading] = useState(false)
-    const { showPasswordChangeDialog, setshowPasswordChangeDialog, user, setSnack, } = props
-
+const ChangePasswordDialog: React.FC<Props> = ({
+                                                   showPasswordChangeDialog,
+                                                   setShowPasswordChangeDialog,
+                                                   user,
+                                                   setSnack,
+                                               }) => {
+    const [loading, setLoading] = useState(false);
 
     const handlePasswordChange = async () => {
-        setLoading(true)
-        const response = await fetch("/api/user/changePassword", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email: user?.email })
-        })
-        if (response?.ok) {
-            setSnack({ show: true, snackString: "Mail om ändring av lösenord skickat!", severity: "success" })
-            setshowPasswordChangeDialog(false)
-        } else {
-            setSnack({ show: true, snackString: await response.json(), severity: "error" })
-        }
-        setLoading(false)
-    }
+        setLoading(true);
+        await BackendAPI.ChangePassword(user.email);
+
+        setSnack({show: true, snackString: "Mail om ändring av lösenord skickat!", severity: "success"});
+        setShowPasswordChangeDialog(false);
+        setLoading(false);
+    };
 
     return (
-        <Dialog
-            open={showPasswordChangeDialog}
-            onClose={() => { setshowPasswordChangeDialog(false) }}
-        >
-            <DialogTitle> Ändra lösenord</DialogTitle>
-            <Divider variant="middle" />
+        <Dialog open={showPasswordChangeDialog} onClose={() => setShowPasswordChangeDialog(false)}>
+            <DialogTitle>Ändra lösenord</DialogTitle>
+            <Divider variant="middle"/>
             <DialogContent>
-                <Typography> Är du säker att du vill ändra lösenord? <br />Ett mail med instruktioner kommer att skickas till:  <br /> </Typography>
-
-                <Typography align="center" variant="body1" sx={{ fontWeight: "bold", mt: 2 }}>{user?.email}</Typography>
-
-
+                <Typography>
+                    Är du säker att du vill ändra lösenord? <br/>
+                    Ett mail med instruktioner kommer att skickas till: <br/>
+                </Typography>
+                <Typography align="center" variant="body1" sx={{fontWeight: "bold", mt: 2}}>
+                    {user.email}
+                </Typography>
             </DialogContent>
             <DialogActions>
                 <Grid container alignItems='center' justifyContent='center'>
                     <Grid item>
-                        <Button sx={{ margin: "12px", marginTop: 0 }} color='warning' variant="outlined" onClick={() => { setshowPasswordChangeDialog(false) }}>Nej</Button>
+                        <Button color='warning' variant="outlined" onClick={() => setShowPasswordChangeDialog(false)}>
+                            Nej
+                        </Button>
                     </Grid>
                     <Grid item>
-                        <LoadingButton type="submit" loading={loading} variant="outlined" color='primary' sx={{ margin: "12px", marginTop: 0 }} onClick={handlePasswordChange}>Ja</LoadingButton>
+                        <LoadingButton loading={loading} variant="outlined" color='primary'
+                                       onClick={handlePasswordChange}>
+                            Ja
+                        </LoadingButton>
                     </Grid>
                 </Grid>
-
             </DialogActions>
-
         </Dialog>
-    )
-}
+    );
+};
+
 export default ChangePasswordDialog;

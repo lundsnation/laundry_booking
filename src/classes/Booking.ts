@@ -1,10 +1,9 @@
-import user from "./User";
 import TimeSlot from "./TimeSlot";
 import User from "./User";
-import {LaundryBuilding} from "../configs/Config";
 
 export type JsonBooking = {
     _id: string,
+    user_id: string,
     username: string,
     timeSlot: string
     dryingBooth: number
@@ -16,6 +15,7 @@ export type JsonBooking = {
 
 export type NewBooking = Omit<JsonBooking, '_id'>;
 
+
 class Booking {
     readonly _id: string
     readonly username: string
@@ -25,6 +25,7 @@ class Booking {
     readonly startTime: Date
     readonly endTime: Date
     readonly createdAt: Date
+    readonly user_id: string
 
 
     constructor(jsonBooking: JsonBooking) {
@@ -36,6 +37,7 @@ class Booking {
         this.startTime = new Date(jsonBooking.startTime)
         this.endTime = new Date(jsonBooking.endTime)
         this.createdAt = new Date(jsonBooking.createdAt)
+        this.user_id = jsonBooking.user_id
     }
 
     hasPassed(): boolean {
