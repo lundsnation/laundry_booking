@@ -9,6 +9,8 @@ import TimeSlot from '../../classes/TimeSlot';
 import User from "../../classes/User";
 import BackendAPI from "../../../apiHandlers/BackendAPI";
 import DateUtils from "../../utils/DateUtils";
+import useAsyncError from "../../errorHandling/asyncError";
+import {isAxiosError} from "axios";
 
 function PaperComponent(props: PaperProps) {
     return (
@@ -40,19 +42,27 @@ const ConfirmBooking = ({
                         }: Props) => {
     const snackAlignment: SnackbarOrigin = {vertical: 'bottom', horizontal: 'left'};
     const isAdmin = user.app_metadata.roles.includes("admin");
+    const throwAsyncError = useAsyncError();
 
     const bookTimeSlot = async () => {
-        await BackendAPI.postBooking({
-            user_id: user.sub,
-            username: user.name,
-            timeSlot: timeSlot.toString(),
-            dryingBooth: timeSlot.dryingBooth,
-            laundryBuilding: user.app_metadata.laundryBuilding,
-            startTime: timeSlot.startTime.toISOString(),
-            endTime: timeSlot.endTime.toISOString(),
-            createdAt: new Date().toISOString(),
-        });
-        snackTrigger("success", `Du har bokat: ${timeSlot}`, snackAlignment);
+        try {
+            await BackendAPI.postBooking({
+                user_id: user.sub,
+                username: user.name,
+                timeSlot: timeSlot.toString(),
+                dryingBooth: timeSlot.dryingBooth,
+                laundryBuilding: user.app_metadata.laundryBuilding,
+                startTime: timeSlot.startTime.toISOString(),
+                endTime: timeSlot.endTime.toISOString(),
+                createdAt: new Date().toISOString(),
+            });
+            snackTrigger("success", `Du har bokat: ${timeSlot}`, snackAlignment);
+        } catch (e) {
+            if (isAxiosError(e)) {
+                // Hack to propagate the error to the ErrorBoundary and display the error snack
+                throwAsyncError(new Error("Något gick fel när du skulle boka tiden. Försök igen."));
+            }
+        }
     };
 
     const cancelBooking = async () => {

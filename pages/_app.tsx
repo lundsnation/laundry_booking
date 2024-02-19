@@ -6,7 +6,7 @@ import CssBaseline from '@mui/material/CssBaseline';
 import {CacheProvider, EmotionCache} from '@emotion/react';
 import createEmotionCache from '../src/frontend/createEmotionCache';
 import {UserProvider} from '@auth0/nextjs-auth0/client';
-import ErrorBoundary from "../src/frontend/components/ErrorBoundary";
+import ErrorBoundary from "../src/frontend/errorHandling/ErrorBoundary";
 
 
 // Client-side cache, shared for the whole session of the user in the browser.

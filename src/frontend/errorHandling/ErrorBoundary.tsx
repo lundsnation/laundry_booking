@@ -1,4 +1,5 @@
 import React, {Component, ErrorInfo} from 'react';
+import ErrorSnack from "./ErrorSnack";
 import Button from '@mui/material/Button';
 import axios, {AxiosError} from 'axios';
 
@@ -22,21 +23,22 @@ class ErrorBoundary extends Component<Props, State> {
         };
     }
 
-    componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+    componentDidCatch(error: Error | AxiosError, errorInfo: ErrorInfo) {
         console.error('ErrorBoundary caught an error: ', error, errorInfo);
 
-
         let isServerError = false;
-        let axiosError: AxiosError | undefined;
+        let errorMessage = 'Something went wrong.';
 
         if (axios.isAxiosError(error)) {
             isServerError = true;
-            axiosError = error as AxiosError;
+            errorMessage = error.message || errorMessage;
+        } else {
+            errorMessage = error.message;
         }
 
         this.setState({
             hasError: true,
-            errorMessage: error.message || 'Something went wrong.',
+            errorMessage,
             isServerError,
         });
     }
@@ -46,22 +48,26 @@ class ErrorBoundary extends Component<Props, State> {
     };
 
     render() {
+        //Errors thrown by asyncError will be propagated to here
+        if (this.state.isServerError) {
+            return (
+                <React.Fragment>
+                    <ErrorSnack message={this.state.errorMessage || "Something went wrong"}/>
+                    {this.props.children}
+                </React.Fragment>
+            );
+        }
+
         if (this.state.hasError) {
             return (
-                <div>
-                    <h1>Something went wrong. If this unexpected behaviour, contact system administrator.</h1>
-                    {this.state.errorMessage && (
-                        <div>
-                            <p>{this.state.errorMessage}</p>
-                            {this.state.isServerError && (
-                                <p>This is a server-side error.</p>
-                            )}
-                            <Button onClick={this.resetError} variant="contained" color="primary">
-                                Reset
-                            </Button>
-                        </div>
-                    )}
-                </div>
+                <React.Fragment>
+                    <h1>Something went wrong. </h1>
+                    <h1>Error Message: {this.state.errorMessage || "Unknown Error"}</h1>
+                    <h1>Contact system administrator for help</h1>
+                    <Button onClick={this.resetError} variant="contained" color="primary">
+                        Retry
+                    </Button>
+                </React.Fragment>
             );
         }
 
