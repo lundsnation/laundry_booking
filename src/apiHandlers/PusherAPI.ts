@@ -1,7 +1,7 @@
 import Pusher from 'pusher'
 import PusherClient from 'pusher-js'
 import {Channel} from 'pusher-js'
-import {LaundryBuilding} from "../configs/Config";
+import {LaundryBuilding} from "../frontend/configs/Config";
 
 const {PUSHER_APP_ID, PUSHER_KEY, PUSHER_SECRET, PUSHER_CLUSTER} = process.env
 

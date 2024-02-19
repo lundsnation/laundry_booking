@@ -3,9 +3,9 @@ import HttpError from "../errors/HttpError";
 import {isValidPhoneNumber} from "libphonenumber-js";
 import {Claims} from "@auth0/nextjs-auth0";
 import {BackendPusher} from "../../apiHandlers/PusherAPI";
-import {LaundryBuilding} from "../../configs/Config";
-import User from "../../classes/User";
-import {JsonBooking} from "../../classes/Booking";
+import {LaundryBuilding} from "../../frontend/configs/Config";
+import User from "../../frontend/classes/User";
+import {JsonBooking} from "../../frontend/classes/Booking";
 
 class BookingService {
     private backendPusher: BackendPusher

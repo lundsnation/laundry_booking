@@ -2,10 +2,10 @@ import {useUser} from "@auth0/nextjs-auth0/client";
 import {Grid, Paper} from "@mui/material";
 import {NextPage} from "next";
 import {useRouter} from "next/router";
-import {AboutText} from "../src/components/about/AboutText";
-import Layout from "../src/components/layout/Layout";
-import Loading from "../src/components/Loading";
-import User, {JsonUser} from "../src/classes/User";
+import {AboutText} from "../src/frontend/components/about/AboutText";
+import Layout from "../src/frontend/components/layout/Layout";
+import Loading from "../src/frontend/components/Loading";
+import User, {JsonUser} from "../src/frontend/classes/User";
 
 const About: NextPage = () => {
     const {user, isLoading, error} = useUser()

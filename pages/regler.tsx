@@ -1,11 +1,11 @@
 import {Grid, Paper} from "@mui/material";
 import {useUser} from "@auth0/nextjs-auth0/client";
 import {useRouter} from "next/router";
-import Loading from "../src/components/Loading";
+import Loading from "../src/frontend/components/Loading";
 import {NextPage} from "next";
-import RulesText from "../src/components/rules/RulesText";
-import Layout from "../src/components/layout/Layout";
-import User, {JsonUser} from "../src/classes/User";
+import RulesText from "../src/frontend/components/rules/RulesText";
+import Layout from "../src/frontend/components/layout/Layout";
+import User, {JsonUser} from "../src/frontend/classes/User";
 
 
 const Rules: NextPage = () => {

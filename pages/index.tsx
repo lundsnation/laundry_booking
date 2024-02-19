@@ -1,17 +1,17 @@
 import React, {useState, useEffect} from 'react';
 import type {NextPage} from 'next';
 import {Grid} from '@mui/material';
-import BookingCalendar from '../src/components/index/calendar/BookingCalendar';
-import Terms from '../src/components/Terms';
-import Rules from '../src/components/rules/Rules';
-import Layout from '../src/components/layout/Layout';
-import User, {JsonUser} from '../src/classes/User';
-import ConfigUtil from "../utils/ConfigUtil";
+import BookingCalendar from '../src/frontend/components/index/calendar/BookingCalendar';
+import Terms from '../src/frontend/components/Terms';
+import Rules from '../src/frontend/components/rules/Rules';
+import Layout from '../src/frontend/components/layout/Layout';
+import User, {JsonUser} from '../src/frontend/classes/User';
+import ConfigUtil from "../src/frontend/utils/ConfigUtil";
 import {useUser} from '@auth0/nextjs-auth0/client';
-import Loading from "../src/components/Loading";
+import Loading from "../src/frontend/components/Loading";
 import router from 'next/router';
 import backendAPI from "../src/apiHandlers/BackendAPI";
-import Booking from "../src/classes/Booking";
+import Booking from "../src/frontend/classes/Booking";
 
 
 const Index: NextPage = () => {

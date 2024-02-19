@@ -2,10 +2,10 @@ import React, {useEffect} from 'react';
 import {useUser} from '@auth0/nextjs-auth0/client';
 import router from 'next/router';
 import {Grid} from '@mui/material';
-import Layout from '../src/components/layout/Layout';
-import UserGrid from '../src/components/admin/UserGrid';
-import User, {JsonUser} from '../src/classes/User';
-import Loading from '../src/components/Loading';
+import Layout from '../src/frontend/components/layout/Layout';
+import UserGrid from '../src/frontend/components/admin/UserGrid';
+import User, {JsonUser} from '../src/frontend/classes/User';
+import Loading from '../src/frontend/components/Loading';
 
 const Admin = () => {
     const {user, error, isLoading: userIsLoading} = useUser();

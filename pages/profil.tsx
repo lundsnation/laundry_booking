@@ -3,10 +3,10 @@ import {withPageAuthRequired} from '@auth0/nextjs-auth0';
 import {NextPage} from "next";
 import {useState} from "react";
 import {Snack, SnackInterface} from
-        "../src/components/Snack";
-import EditProfile from "../src/components/profile/EditProfile";
-import Layout from "../src/components/layout/Layout";
-import User, {JsonUser} from "../src/classes/User";
+        "../src/frontend/components/Snack";
+import EditProfile from "../src/frontend/components/profile/EditProfile";
+import Layout from "../src/frontend/components/layout/Layout";
+import User, {JsonUser} from "../src/frontend/classes/User";
 
 interface Props {
     user: JsonUser

@@ -4,7 +4,7 @@ import {connect} from "../../../../src/backend/mongoose/connection";
 import BookingService from "../../../../src/backend/services/BookingService";
 import {getSession, withApiAuthRequired} from "@auth0/nextjs-auth0";
 import withErrorHandler from "../../../../src/backend/errors/withErrorHandler";
-import {LaundryBuilding} from "../../../../src/configs/Config";
+import {LaundryBuilding} from "../../../../src/frontend/configs/Config";
 
 const bookingService = new BookingService();
 

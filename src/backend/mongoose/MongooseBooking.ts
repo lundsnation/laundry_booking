@@ -1,5 +1,5 @@
 import mongoose, {HydratedDocument, Model} from 'mongoose'
-import {LaundryBuilding} from "../../configs/Config";
+import {LaundryBuilding} from "../../frontend/configs/Config";
 
 export interface IBooking {
     user_id: string;

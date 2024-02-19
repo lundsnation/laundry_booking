@@ -4,7 +4,7 @@ import {withApiAuthRequired, getSession} from '@auth0/nextjs-auth0';
 import withErrorHandler from "../../../src/backend/errors/withErrorHandler";
 import HttpError from "../../../src/backend/errors/HttpError";
 import BookingService from "../../../src/backend/services/BookingService";
-import User from "../../../src/classes/User";
+import User from "../../../src/frontend/classes/User";
 
 const bookingService = new BookingService();
 const handler = withApiAuthRequired(withErrorHandler(async (req: NextApiRequest, res: NextApiResponse) => {
