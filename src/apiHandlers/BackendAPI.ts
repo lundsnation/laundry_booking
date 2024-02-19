@@ -1,6 +1,6 @@
 import axios, {AxiosResponse} from "axios";
 import Booking, {JsonBooking, NewBooking} from "../classes/Booking";
-import User, {JsonUser, NewUser, UserBookingInfo, UserProfileUpdate} from "../classes/User";
+import User, {JsonUser, NewUser, UserBookingInfo, UserProfileUpdate, UserUpdate} from "../classes/User";
 import {LaundryBuilding} from "../configs/Config";
 
 
@@ -52,9 +52,8 @@ class BackendAPI {
         return users.map((user: JsonUser) => new User(user))
     }
 
-    static async patchUsers(ids: string[], modification: object): Promise<User[]> {
-        const updated = ids.map(async id => new User(await axios.patch("api/users/" + id, modification)))
-        return await Promise.all(updated)
+    static async patchUser(id: string, modification: UserUpdate): Promise<User> {
+        return new User((await axios.patch("api/users/" + id, modification)).data)
     }
 
     static async updateUserProfile(profileUpdate: UserProfileUpdate): Promise<User> {

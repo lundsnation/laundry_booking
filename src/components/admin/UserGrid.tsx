@@ -22,9 +22,12 @@ import DeleteUserDialog from "./DeleteUserDialog";
 import SearchIcon from '@mui/icons-material/Search';
 import User from "../../classes/User";
 import backendAPI from "../../apiHandlers/BackendAPI";
+import BackendAPI from "../../apiHandlers/BackendAPI";
+import EditSingleUserDialog from "./editUsers/EditSingleUserDialog";
+import EditMultipleUserDialog from "./editUsers/EditMultipleUserDialog";
 
 const UserGrid = () => {
-    const [selected, setSelected] = useState<User[]>([]);
+    const [selectedUsers, setSelectedUsers] = useState<User[]>([]);
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const [showEditDialog, setShowEditDialog] = useState(false)
@@ -75,14 +78,34 @@ const UserGrid = () => {
         return content
     }
 
+    const handleDeleteUsers = async () => {
+        await Promise.all(selectedUsers.map(user => BackendAPI.deleteUser(user.sub)));
+
+        setUsers(currentUsers =>
+            currentUsers.filter(user => !selectedUsers.find(selectedUser => selectedUser.sub === user.sub))
+        );
+        setSearchedUsers(currentSearchedUsers =>
+            currentSearchedUsers.filter(user => !selectedUsers.find(selectedUser => selectedUser.sub === user.sub))
+        );
+        setSelectedUsers([]);
+
+        const alignment: SnackbarOrigin = {vertical: 'bottom', horizontal: 'left'}
+        setSnack({
+            show: true,
+            snackString: `Tog bort ${selectedUsers.length} användare`,
+            severity: "success",
+            alignment: alignment
+        });
+    }
+
     const handleSelectedClick = (event: React.MouseEvent<unknown>, user: User) => {
         if (!isSelected(user)) {
-            const newSelected = [...selected, user]
-            setSelected(newSelected)
+            const newSelected = [...selectedUsers, user]
+            setSelectedUsers(newSelected)
             return
         }
-        const newSelected = selected.filter((selectedUser) => selectedUser.sub !== user.sub)
-        setSelected(newSelected)
+        const newSelected = selectedUsers.filter((selectedUser) => selectedUser.sub !== user.sub)
+        setSelectedUsers(newSelected)
     }
 
     const handleSearchedUsers = (searchString: string) => {
@@ -106,7 +129,7 @@ const UserGrid = () => {
     }
     const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - users.length) : 0;
 
-    const isSelected = (user: User) => selected.some(selectedUser => selectedUser.sub === user.sub);
+    const isSelected = (user: User) => selectedUsers.some(selectedUser => selectedUser.sub === user.sub);
 
     const getContent = () => {
         let display = searchString != "" ? searchedUsers : users
@@ -136,7 +159,13 @@ const UserGrid = () => {
                         <TableCell align="left">{userEntry.email}</TableCell>
                         <TableCell align="left">{userEntry.user_metadata.telephone}</TableCell>
                         <TableCell
-                            align="left">{userEntry.app_metadata.laundryBuilding.charAt(0).toUpperCase() + userEntry.app_metadata.laundryBuilding.slice(1).toLowerCase()}</TableCell>
+                            align="left">
+                            {
+                                (userEntry.app_metadata.laundryBuilding
+                                    ? userEntry.app_metadata.laundryBuilding.charAt(0).toUpperCase() + userEntry.app_metadata.laundryBuilding.slice(1).toLowerCase()
+                                    : 'Ingen byggnad')
+                            }
+                        </TableCell>
                         <TableCell align="left">{userEntry.app_metadata.allowedSlots}</TableCell>
                         <TableCell align="left">{userEntry.app_metadata.acceptedTerms ? "Ja" : "Nej"}</TableCell>
                     </TableRow>
@@ -163,28 +192,41 @@ const UserGrid = () => {
                 setUsers={setUsers}
             />
 
-            {/*
-            <EditUserDialog
-                showEditDialog={showEditDialog}
-                setShowEditDialog={setShowEditDialog}
-                snack={snack}
-                setSnack={setSnack}
-                selected={selected}
-                setSelected={setSelected}
-                users={users}
-                setUsers={setUsers}
-            />
-            */}
+            {
+                selectedUsers.length === 1 && (
+                    <EditSingleUserDialog
+                        showEditDialog={showEditDialog}
+                        setShowEditDialog={setShowEditDialog}
+                        setSnack={setSnack}
+                        selectedUser={selectedUsers[0]} // Assuming selectedUser is the expected prop for a single user
+                        setSearchedUsers={setSearchedUsers}
+                        setUsers={setUsers}
+                        setSelected={setSelectedUsers}
+                    />
+                )
+            }
+
+            {
+                selectedUsers.length > 1 && (
+                    <EditMultipleUserDialog
+                        showEditDialog={showEditDialog}
+                        setShowEditDialog={setShowEditDialog}
+                        setSnack={setSnack}
+                        selectedUsers={selectedUsers}
+                        setSelected={setSelectedUsers}
+                        users={users}
+                        setUsers={setUsers}
+                        setSearchedUsers={setSearchedUsers}
+                    />
+                )
+            }
+
 
             <DeleteUserDialog
                 showDeleteUserDialog={showDeleteUserDialog}
                 setShowDeleteUserDialog={setShowDeleteUserDialog}
-                selected={selected}
-                searchedUsers={searchedUsers}
-                setSearchedUsers={setSearchedUsers}
-                users={users}
-                setUsers={setUsers}
-                setSnack={setSnack}
+                selected={selectedUsers}
+                handleDeleteUsers={handleDeleteUsers}
             />
 
             <TableContainer component={Paper}>
@@ -243,11 +285,12 @@ const UserGrid = () => {
                                  variant="outlined">
                         <Button fullWidth onClick={() => {
                             setShowDeleteUserDialog(true)
-                        }} disabled={selected.length === 0} size='small' color="error" startIcon={<DeleteIcon/>}> Ta
+                        }} disabled={selectedUsers.length === 0} size='small' color="error"
+                                startIcon={<DeleteIcon/>}> Ta
                             Bort</Button>
                         <Button fullWidth onClick={() => {
                             setShowEditDialog(true)
-                        }} disabled={selected.length === 0} size='small' color="warning"
+                        }} disabled={selectedUsers.length === 0} size='small' color="warning"
                                 startIcon={<EditOutlinedIcon/>}>Ändra</Button>
                         <Button fullWidth onClick={() => {
                             setShowAddDialog(true)

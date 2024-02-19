@@ -186,36 +186,6 @@ function NewUserDialog({showAddDialog, setShowAddDialog, setSnack, setUsers}: Pr
                         />
                     </ListItem>
 
-                    {/* Email */}
-                    <ListItem>
-                        <TextField
-                            id="email"
-                            required={true}
-                            label="Email"
-                            name="email"
-                            margin="dense"
-                            type={"email"}
-                            fullWidth
-                            value={newUser.email}
-                            onChange={handleEmailChange}
-                            helperText={"Användarens emailadress"}
-                        />
-                    </ListItem>
-
-                    {/* Telephone */}
-                    <ListItem>
-                        <TextField
-                            id="telephone"
-                            label="Telefonnummer"
-                            name="telephone"
-                            margin="dense"
-                            fullWidth
-                            value={newUser.user_metadata.telephone || ""}
-                            onChange={handleTelephoneNbrChange}
-                            helperText={"Riktnummer enbart vid utländskt nummer"}
-                        />
-                    </ListItem>
-
                     {/* Allowed Slots */}
                     <ListItem>
                         <TextField
@@ -252,6 +222,36 @@ function NewUserDialog({showAddDialog, setShowAddDialog, setSnack, setUsers}: Pr
                         </TextField>
                     </ListItem>
 
+                    {/* Email */}
+                    <ListItem>
+                        <TextField
+                            id="email"
+                            required={true}
+                            label="Email"
+                            name="email"
+                            margin="dense"
+                            type={"email"}
+                            fullWidth
+                            value={newUser.email}
+                            onChange={handleEmailChange}
+                            helperText={"Användarens emailadress"}
+                        />
+                    </ListItem>
+
+                    {/* Telephone */}
+                    <ListItem>
+                        <TextField
+                            id="telephone"
+                            label="Telefonnummer"
+                            name="telephone"
+                            margin="dense"
+                            fullWidth
+                            value={newUser.user_metadata.telephone || ""}
+                            onChange={handleTelephoneNbrChange}
+                            helperText={"Riktnummer enbart vid utländskt nummer"}
+                        />
+                    </ListItem>
+
                     {/* Password */}
                     <ListItem>
                         <TextField
@@ -270,7 +270,7 @@ function NewUserDialog({showAddDialog, setShowAddDialog, setSnack, setUsers}: Pr
                 </List>
                 <DialogActions>
                     <Grid container alignItems="center" justifyContent="center">
-                        <Button color="warning" variant="outlined" onClick={handleCloseDialog}>Close</Button>
+                        <Button color="warning" variant="outlined" onClick={handleCloseDialog}>Stäng</Button>
                         <LoadingButton
                             type="submit"
                             loading={isLoading}

@@ -1,5 +1,5 @@
 import Booking from "./Booking";
-import {LaundryBuilding} from "../configs/Config";
+import Config, {Building, LaundryBuilding} from "../configs/Config";
 
 type AppMetadata = {
     acceptedTerms: boolean,
@@ -17,7 +17,7 @@ export type ModificationObject = {
     name: string,
     email: string,
     app_metadata: {
-        LaundryBuilding: LaundryBuilding,
+        laundryBuilding: LaundryBuilding,
         allowedSlots: number
     },
     user_metadata: {
@@ -65,7 +65,7 @@ export interface UserUpdate {
     app_metadata: {
         acceptedTerms?: boolean,
         allowedSlots?: number,
-        LaundryBuilding: LaundryBuilding,
+        laundryBuilding: LaundryBuilding,
     },
 }
 
@@ -109,6 +109,29 @@ class User {
                 this.pastBookings.push(bookings)
             }
         })
+    }
+
+    get building(): Building {
+        const buildingMatch = this.name.match(/[A-Za-z]+/);
+        if (!buildingMatch) {
+            throw new Error(`No building found in username: ${this.name}`);
+        }
+
+        const buildingCode = buildingMatch[0];
+        // Check against all known buildings
+        const allBuildings: Building[] = Config.getBuildings;
+        const foundBuilding = allBuildings.find((b) => b === buildingCode);
+
+        if (!foundBuilding) {
+            throw new Error(`Building not found for username: ${this.name}`);
+        }
+
+        return foundBuilding;
+    }
+
+    get roomNumber(): string {
+        const roomNumberMatch = this.name.match(/\d+/);
+        return roomNumberMatch ? roomNumberMatch[0] : '';
     }
 
     toJSON() {

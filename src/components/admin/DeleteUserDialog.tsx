@@ -1,4 +1,4 @@
-import React, {SetStateAction, useState} from "react";
+import React, {useState} from "react";
 import {
     Button,
     Typography,
@@ -15,47 +15,27 @@ import {
 import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
 import {LoadingButton} from "@mui/lab";
 import PersonIcon from '@mui/icons-material/Person';
-import BackendAPI from "../../apiHandlers/BackendAPI";
 import User from "../../classes/User";
-import {SnackInterface} from "../Snack";
 
 interface Props {
     showDeleteUserDialog: boolean,
     setShowDeleteUserDialog: (state: boolean) => void,
     selected: User[],
-    users: User[],
-    setUsers: (users: User[]) => void,
-    searchedUsers: User[],
-    setSearchedUsers: (users: User[]) => void,
-    setSnack: React.Dispatch<SetStateAction<SnackInterface>>,
+    handleDeleteUsers: () => void,
 }
 
 const DeleteUserDialog = ({
                               showDeleteUserDialog,
                               setShowDeleteUserDialog,
                               selected,
-                              users,
-                              setUsers,
-                              searchedUsers,
-                              setSearchedUsers,
-                              setSnack
+                              handleDeleteUsers,
                           }: Props) => {
     const [loading, setLoading] = useState(false);
 
-    const handleDeleteUser = async () => {
+    const handleDelete = async () => {
         setLoading(true);
         // Attempt to delete all selected users.
-        await Promise.all(selected.map(user => BackendAPI.deleteUser(user.sub)));
-
-        // Update state only if all deletes are successful.
-        const updatedUsers = users.filter(user => !selected.find(selectedUser => selectedUser.sub === user.sub));
-        const updatedSearchedUsers = searchedUsers.filter(user => !selected.find(selectedUser => selectedUser.sub === user.sub));
-
-        setUsers(updatedUsers);
-        setSearchedUsers(updatedSearchedUsers);
-
-        const alignment: SnackbarOrigin = {vertical: 'bottom', horizontal: 'left'}
-        setSnack({show: true, snackString: `Tog bort ${selected.length} användare`, severity: "success", alignment: alignment});
+        handleDeleteUsers();
 
         setLoading(false);
         setShowDeleteUserDialog(false);
@@ -97,7 +77,7 @@ const DeleteUserDialog = ({
                             color="error"
                             endIcon={<DeleteOutlinedIcon/>}
                             sx={{margin: "12px", marginTop: 0}}
-                            onClick={handleDeleteUser}>
+                            onClick={handleDelete}>
                             Ja
                         </LoadingButton>
                     </Grid>

@@ -17,7 +17,7 @@ const Header = ({user}: Props) => {
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setAuth(event.target.checked);
     };
-    const logoText = "TVÄTT " + user.app_metadata.laundryBuilding;
+    const logoText = "TVÄTT " + (user.app_metadata.roles.includes("admin") ? "ADMIN" : user.app_metadata.laundryBuilding);
 
     const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorEl(event.currentTarget);

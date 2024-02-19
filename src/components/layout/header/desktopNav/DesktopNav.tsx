@@ -2,7 +2,6 @@ import * as React from 'react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import router from 'next/router';
-import {UserType} from '../../../../../utils/types';
 import AdminButton from './DeskAdminButton'
 import {Typography} from '@mui/material';
 import ProfileMenuButton from './ProfileMenuButton';
@@ -30,7 +29,6 @@ const DesktopNav = (props: Props) => {
         router.push(navLink);
     }
 
-    //Borde ha user.role == admin, så kan vilket konto som helst vara ett adminkonto?
     return (
         <Box sx={{display: {xs: 'none', sm: 'block'}}}>
             {navItems.map(({navText, navLink}) => (
