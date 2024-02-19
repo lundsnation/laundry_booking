@@ -14,6 +14,8 @@ import {LoadingButton} from '@mui/lab';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import User, {UserUpdate} from '../../../classes/User';
 import {SnackInterface} from '../../Snack';
+import Config, {Building, LaundryBuilding} from "../../../configs/Config";
+import BackendAPI from "../../../apiHandlers/BackendAPI";
 
 interface Props {
     showEditDialog: boolean;
