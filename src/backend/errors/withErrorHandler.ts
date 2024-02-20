@@ -1,5 +1,7 @@
 import {NextApiRequest, NextApiResponse} from "next"
 import HttpError from "./HttpError";
+import * as Sentry from "@sentry/nextjs";
+
 
 //async (req: NextApiRequest, res: NextApiResponse)
 interface IFunction {
@@ -12,8 +14,8 @@ function withErrorHandler(fn: IFunction) {
         try {
             return await fn(req, res);
         } catch (error) {
-            //Log error
-            console.log(error)
+            //Log error to Sentry
+            Sentry.captureException(error);
             if (error instanceof HttpError) {
                 return res.status(error.statusCode).json({error: error.message})
             }

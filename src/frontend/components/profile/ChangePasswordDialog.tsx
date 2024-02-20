@@ -10,7 +10,7 @@ import {
     Button,
 } from '@mui/material';
 import {LoadingButton} from '@mui/lab';
-import User from '../../classes/User';
+import User from '../../models/User';
 import {SnackInterface} from "../Snack";
 import BackendAPI from "../../../apiHandlers/BackendAPI";
 import useAsyncError from "../../errorHandling/asyncError"; // Ensure this import is correct

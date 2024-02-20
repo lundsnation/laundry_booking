@@ -14,7 +14,7 @@ import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import {LoadingButton} from '@mui/lab';
 // Make sure BackendAPI, User, and SnackInterface are correctly imported
 import BackendAPI from '../../../../apiHandlers/BackendAPI';
-import User from '../../../classes/User'; // Assuming UserUpdate is correctly defined
+import User from '../../../models/User'; // Assuming UserUpdate is correctly defined
 import {SnackInterface} from '../../Snack';
 import Config, {LaundryBuilding} from "../../../configs/Config";
 import useAsyncError from "../../../errorHandling/asyncError";

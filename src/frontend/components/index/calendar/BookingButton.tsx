@@ -3,9 +3,9 @@ import {Button, Paper, Grid, IconButton, Typography, Tooltip, AlertColor, Snackb
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import BookingInfo from "./BookingInfo";
 import ConfirmBooking from "../ConfirmBooking";
-import Booking from "../../../classes/Booking";
-import TimeSlot from "../../../classes/TimeSlot";
-import User from "../../../classes/User";
+import Booking from "../../../models/Booking";
+import TimeSlot from "../../../models/TimeSlot";
+import User from "../../../models/User";
 
 interface Props {
     user: User;

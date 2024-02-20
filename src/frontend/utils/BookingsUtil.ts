@@ -1,5 +1,5 @@
-import Booking from "../classes/Booking";
-import {JsonBooking} from "../classes/Booking";
+import Booking from "../models/Booking";
+import {JsonBooking} from "../models/Booking";
 
 class BookingsUtil {
     static fromJSON(jsonBookings: JsonBooking[]): Booking[] {

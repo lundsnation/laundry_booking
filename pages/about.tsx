@@ -5,7 +5,7 @@ import {useRouter} from "next/router";
 import {AboutText} from "../src/frontend/components/about/AboutText";
 import Layout from "../src/frontend/components/layout/Layout";
 import Loading from "../src/frontend/components/Loading";
-import User, {JsonUser} from "../src/frontend/classes/User";
+import User, {JsonUser} from "../src/frontend/models/User";
 
 const About: NextPage = () => {
     const {user, isLoading, error} = useUser()

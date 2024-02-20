@@ -15,7 +15,7 @@ import {
 import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
 import {LoadingButton} from "@mui/lab";
 import PersonIcon from '@mui/icons-material/Person';
-import User from "../../classes/User";
+import User from "../../models/User";
 
 interface Props {
     showDeleteUserDialog: boolean,

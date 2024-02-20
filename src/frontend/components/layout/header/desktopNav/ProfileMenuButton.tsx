@@ -6,7 +6,7 @@ import {AccountCircle, Logout} from '@mui/icons-material/';
 import {Button, ListItemIcon, MenuItem, SvgIconTypeMap} from '@mui/material';
 import router from 'next/router';
 import {OverridableComponent} from '@mui/material/OverridableComponent';
-import User from '../../../../classes/User';
+import User from '../../../../models/User';
 
 interface Props {
     user: User

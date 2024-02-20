@@ -1,5 +1,5 @@
 import {AuthenticationClient, GetUsers200ResponseOneOfInner, ManagementClient} from 'auth0';
-import {JsonUser, NewUser, UserUpdate, UserBookingInfo} from '../frontend/classes/User';
+import {JsonUser, NewUser, UserUpdate, UserBookingInfo} from '../frontend/models/User';
 import {LaundryBuilding} from "../frontend/configs/Config";
 
 // Class to handle communication with Auth0 API from the backend only

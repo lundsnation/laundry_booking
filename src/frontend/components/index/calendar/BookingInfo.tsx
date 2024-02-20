@@ -13,8 +13,8 @@ import {
 } from "@mui/material";
 import AlternateEmailIcon from '@mui/icons-material/AlternateEmail';
 import CallIcon from '@mui/icons-material/Call';
-import Booking from "../../../classes/Booking";
-import {UserBookingInfo} from "../../../classes/User";
+import Booking from "../../../models/Booking";
+import {UserBookingInfo} from "../../../models/User";
 import BackendAPI from "../../../../apiHandlers/BackendAPI";
 import useAsyncError from "../../../errorHandling/asyncError";
 

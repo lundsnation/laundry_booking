@@ -2,9 +2,9 @@ import React, {useState} from "react";
 import {AlertColor, Button, ButtonGroup, Fade, ListItem, SnackbarOrigin, Typography} from "@mui/material";
 import ConfirmBooking from "../ConfirmBooking";
 import {LoadingButton} from "@mui/lab";
-import Booking from "../../../classes/Booking";
-import User from "../../../classes/User";
-import TimeSlot from "../../../classes/TimeSlot";
+import Booking from "../../../models/Booking";
+import User from "../../../models/User";
+import TimeSlot from "../../../models/TimeSlot";
 import DateUtils from "../../../utils/DateUtils";
 
 interface Props {

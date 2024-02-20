@@ -4,7 +4,7 @@ import router from 'next/router';
 import {Grid} from '@mui/material';
 import Layout from '../src/frontend/components/layout/Layout';
 import UserGrid from '../src/frontend/components/admin/UserGrid';
-import User, {JsonUser} from '../src/frontend/classes/User';
+import User, {JsonUser} from '../src/frontend/models/User';
 import Loading from '../src/frontend/components/Loading';
 
 const Admin = () => {

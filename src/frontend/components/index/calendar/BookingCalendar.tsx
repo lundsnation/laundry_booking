@@ -8,9 +8,9 @@ import BookedTimes from '../bookedTimes/BookedTimes';
 import {Snack, SnackInterface} from "../../Snack"
 import {BookingUpdate, FrontendPusher} from '../../../../apiHandlers/PusherAPI'
 import BookingsUtil from '../../../utils/BookingsUtil';
-import User from "../../../classes/User";
+import User from "../../../models/User";
 import Config, {LaundryBuilding} from "../../../configs/Config";
-import Booking from "../../../classes/Booking";
+import Booking from "../../../models/Booking";
 import BackendAPI from "../../../../apiHandlers/BackendAPI";
 import DateUtils from "../../../utils/DateUtils";
 import useAsyncError from "../../../errorHandling/asyncError";
@@ -50,13 +50,16 @@ const BookingCalendar = ({config, user: initUser, initialBookings}: Props) => {
     //This should not have a dependency array as the cleanup function should only be called once on component unmount,
     // and not everytime user.app_metadata.laundryBuilding changes
     useEffect(() => {
+        console.log("Running useEffect in BookingCalendar")
         if (!frontendPusher.current) {
             frontendPusher.current = new FrontendPusher();
         }
         return () => {
             frontendPusher.current!.cleanup(user.app_metadata.laundryBuilding);
         };
-    }, [user.app_metadata.laundryBuilding]);
+        //Don't add user.app_metadata.laundryBuilding as a dependency here, as it will cause the cleanup function to be called
+        // everytime the building changes, which is not the intended behavior.
+    }, []);
 
 
     const updateBookings = useCallback(async () => {
@@ -73,9 +76,13 @@ const BookingCalendar = ({config, user: initUser, initialBookings}: Props) => {
         }
     }, [user, throwAsyncError]);
 
-    const handleBuildingChange = (building: LaundryBuilding) => {
-        frontendPusher.current!.bookingUpdateUnsubscribe(user.app_metadata.laundryBuilding);
+    const handleBuildingChange = useCallback((building: LaundryBuilding) => {
+        // Unsubscribe from the current building's updates
+        if (frontendPusher.current) {
+            frontendPusher.current.bookingUpdateUnsubscribe(user.app_metadata.laundryBuilding);
+        }
 
+        // Update the user object and its state
         const updatedUser = {
             ...user.toJSON(),
             app_metadata: {
@@ -85,7 +92,11 @@ const BookingCalendar = ({config, user: initUser, initialBookings}: Props) => {
         };
 
         setUser(new User(updatedUser));
-    };
+
+        // Re-subscribe to the new building's updates
+        // This logic has been moved to ensure subscriptions are always correctly managed
+        updateBookings(); // Fetch new bookings for the updated building
+    }, [updateBookings, user]);
 
     useEffect(() => {
         const currentFrontendPusher = frontendPusher.current!;

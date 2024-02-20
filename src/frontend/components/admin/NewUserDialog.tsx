@@ -13,7 +13,7 @@ import {
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import {LoadingButton} from '@mui/lab';
-import User, {NewUser} from '../../classes/User';
+import User, {NewUser} from '../../models/User';
 import {SnackInterface} from "../Snack";
 import Config, {LaundryBuilding, Building} from "../../configs/Config";
 import BackendAPI from '../../../apiHandlers/BackendAPI';

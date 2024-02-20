@@ -2,7 +2,7 @@ import {Box} from '@mui/material';
 import * as React from 'react';
 import MobileAdminButton from './MobileAdminButton';
 import MobileMenuButton from './MobileMenuButton';
-import User from '../../../../classes/User';
+import User from '../../../../models/User';
 
 interface Props {
     user: User

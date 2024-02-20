@@ -5,13 +5,13 @@ import BookingCalendar from '../src/frontend/components/index/calendar/BookingCa
 import Terms from '../src/frontend/components/Terms';
 import Rules from '../src/frontend/components/rules/Rules';
 import Layout from '../src/frontend/components/layout/Layout';
-import User, {JsonUser} from '../src/frontend/classes/User';
+import User, {JsonUser} from '../src/frontend/models/User';
 import ConfigUtil from "../src/frontend/utils/ConfigUtil";
 import {useUser} from '@auth0/nextjs-auth0/client';
 import Loading from "../src/frontend/components/Loading";
 import router from 'next/router';
 import backendAPI from "../src/apiHandlers/BackendAPI";
-import Booking from "../src/frontend/classes/Booking";
+import Booking from "../src/frontend/models/Booking";
 import {isAxiosError} from "axios";
 import useAsyncError from "../src/frontend/errorHandling/asyncError";
 

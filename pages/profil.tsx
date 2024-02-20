@@ -6,7 +6,7 @@ import {Snack, SnackInterface} from
         "../src/frontend/components/Snack";
 import EditProfile from "../src/frontend/components/profile/EditProfile";
 import Layout from "../src/frontend/components/layout/Layout";
-import User, {JsonUser} from "../src/frontend/classes/User";
+import User, {JsonUser} from "../src/frontend/models/User";
 
 interface Props {
     user: JsonUser

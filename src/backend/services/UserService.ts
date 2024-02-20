@@ -1,4 +1,4 @@
-import {JsonUser, NewUser, UserBookingInfo, UserUpdate} from "../../frontend/classes/User";
+import {JsonUser, NewUser, UserBookingInfo, UserUpdate} from "../../frontend/models/User";
 import Auth0API from "../../apiHandlers/Auth0API";
 import HttpError from "../errors/HttpError";
 

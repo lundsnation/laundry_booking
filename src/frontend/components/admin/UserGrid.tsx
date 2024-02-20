@@ -20,7 +20,7 @@ import NewUserDialog from "./NewUserDialog";
 import DeleteIcon from '@mui/icons-material/DeleteOutlined';
 import DeleteUserDialog from "./DeleteUserDialog";
 import SearchIcon from '@mui/icons-material/Search';
-import User from "../../classes/User";
+import User from "../../models/User";
 import backendAPI from "../../../apiHandlers/BackendAPI";
 import BackendAPI from "../../../apiHandlers/BackendAPI";
 import EditSingleUserDialog from "./editUsers/EditSingleUserDialog";

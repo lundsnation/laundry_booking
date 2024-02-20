@@ -5,7 +5,7 @@ import router from 'next/router';
 import AdminButton from './DeskAdminButton'
 import {Typography} from '@mui/material';
 import ProfileMenuButton from './ProfileMenuButton';
-import User from "../../../../classes/User"
+import User from "../../../../models/User"
 
 interface Props {
     user: User

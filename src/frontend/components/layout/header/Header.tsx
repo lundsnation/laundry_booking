@@ -3,7 +3,7 @@ import {Toolbar, AppBar} from '@mui/material';
 import {HeaderLogo} from './HeaderLogo';
 import DesktopNav from './desktopNav/DesktopNav';
 import MobileNav from './mobileNav/MobileNav';
-import User from '../../../classes/User';
+import User from '../../../models/User';
 
 interface Props {
     user: User;

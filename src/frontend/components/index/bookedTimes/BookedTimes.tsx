@@ -1,8 +1,8 @@
 import React from "react";
 import {Card, Box, Grid, Divider, AlertColor, Typography, List, ListItem, SnackbarOrigin} from "@mui/material";
 import BookedTimesItem from "./BookedTimesItem";
-import Booking from "../../../classes/Booking";
-import User from "../../../classes/User";
+import Booking from "../../../models/Booking";
+import User from "../../../models/User";
 
 
 interface Props {

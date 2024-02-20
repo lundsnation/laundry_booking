@@ -1,6 +1,6 @@
 import axios, {AxiosResponse} from "axios";
-import Booking, {JsonBooking, NewBooking} from "../frontend/classes/Booking";
-import User, {JsonUser, NewUser, UserBookingInfo, UserProfileUpdate, UserUpdate} from "../frontend/classes/User";
+import Booking, {JsonBooking, NewBooking} from "../frontend/models/Booking";
+import User, {JsonUser, NewUser, UserBookingInfo, UserProfileUpdate, UserUpdate} from "../frontend/models/User";
 import {LaundryBuilding} from "../frontend/configs/Config";
 
 

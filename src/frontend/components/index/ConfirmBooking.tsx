@@ -4,13 +4,15 @@ import {
     DialogTitle, Divider, Paper, PaperProps, AlertColor, SnackbarOrigin
 } from '@mui/material';
 import Draggable from 'react-draggable';
-import Booking from '../../classes/Booking';
-import TimeSlot from '../../classes/TimeSlot';
-import User from "../../classes/User";
+import Booking from '../../models/Booking';
+import TimeSlot from '../../models/TimeSlot';
+import User from "../../models/User";
 import BackendAPI from "../../../apiHandlers/BackendAPI";
 import DateUtils from "../../utils/DateUtils";
 import useAsyncError from "../../errorHandling/asyncError";
 import {isAxiosError} from "axios";
+import {useState} from "react";
+import {LoadingButton} from "@mui/lab";
 
 function PaperComponent(props: PaperProps) {
     return (
@@ -43,8 +45,10 @@ const ConfirmBooking = ({
     const snackAlignment: SnackbarOrigin = {vertical: 'bottom', horizontal: 'left'};
     const isAdmin = user.app_metadata.roles.includes("admin");
     const throwAsyncError = useAsyncError();
+    const [loading, setLoading] = useState<boolean>(false);
 
     const bookTimeSlot = async () => {
+        setLoading(true);
         try {
             await BackendAPI.postBooking({
                 user_id: user.sub,
@@ -62,11 +66,14 @@ const ConfirmBooking = ({
                 // Hack to propagate the error to the ErrorBoundary and display the error snack
                 throwAsyncError(new Error("Något gick fel när du skulle boka tiden. Försök igen."));
             }
+        } finally {
+            setLoading(false);
         }
     };
 
     const cancelBooking = async () => {
         if (!booking) return;
+        setLoading(true);
 
         try {
             await BackendAPI.deleteBooking(booking._id);
@@ -75,6 +82,8 @@ const ConfirmBooking = ({
             //This will be caught by the ErrorBoundary. Can be tweaked to use more specific error messages.
             // For example the error itself can be thrown or information from it.
             throwAsyncError(new Error("Något gick fel när du skulle avboka tiden. Försök igen."));
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -118,13 +127,15 @@ const ConfirmBooking = ({
                 </DialogContentText>
             </DialogContent>
             <DialogActions>
-                <Button fullWidth autoFocus variant="outlined" onClick={() => handleOpenConfirmation(false)}
+                <Button fullWidth autoFocus variant="outlined"
+                        onClick={() => handleOpenConfirmation(false)}
                         color="warning">
                     Avbryt
                 </Button>
-                <Button fullWidth variant="outlined" onClick={handleAction} color={actionButtonColor}>
+                <LoadingButton loading={loading} fullWidth variant="outlined" onClick={handleAction}
+                               color={actionButtonColor}>
                     {getActionButtonText()}
-                </Button>
+                </LoadingButton>
             </DialogActions>
         </Dialog>
     );

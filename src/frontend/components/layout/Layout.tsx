@@ -2,7 +2,7 @@ import Header from "./header/Header"
 import Footer from "./Footer"
 import {Grid} from "@mui/material"
 import React from "react"
-import User from "../../classes/User"
+import User from "../../models/User"
 
 
 const img = "/logotyp02.png"

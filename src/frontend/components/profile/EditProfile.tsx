@@ -4,7 +4,7 @@ import {
 } from '@mui/material';
 
 import {isValidPhoneNumber} from 'libphonenumber-js';
-import User, {UserProfileUpdate} from '../../classes/User';
+import User, {UserProfileUpdate} from '../../models/User';
 import ChangePasswordDialog from './ChangePasswordDialog';
 import {SnackInterface} from "../Snack";
 import BackendAPI from "../../../apiHandlers/BackendAPI";

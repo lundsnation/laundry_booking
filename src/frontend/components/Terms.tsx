@@ -2,7 +2,7 @@ import {Modal, Typography, Box, Button, Grid} from "@mui/material"
 import {useState} from "react"
 import {LoadingButton} from "@mui/lab";
 import {EmailOutlined, Place} from "@mui/icons-material";
-import User from "../classes/User";
+import User from "../models/User";
 import BackendAPI from "../../apiHandlers/BackendAPI";
 import useAsyncError from "../errorHandling/asyncError";
 

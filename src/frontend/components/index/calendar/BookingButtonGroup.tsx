@@ -1,9 +1,9 @@
 import BookingButton from "./BookingButton";
 import {ButtonGroup, AlertColor, SnackbarOrigin} from "@mui/material";
-import Booking from "../../../classes/Booking";
+import Booking from "../../../models/Booking";
 import Config from "../../../configs/Config";
-import User from "../../../classes/User";
-import TimeSlot from "../../../classes/TimeSlot";
+import User from "../../../models/User";
+import TimeSlot from "../../../models/TimeSlot";
 
 interface Props {
     bookedBookings: Booking[];

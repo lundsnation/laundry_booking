@@ -5,7 +5,7 @@ import Loading from "../src/frontend/components/Loading";
 import {NextPage} from "next";
 import RulesText from "../src/frontend/components/rules/RulesText";
 import Layout from "../src/frontend/components/layout/Layout";
-import User, {JsonUser} from "../src/frontend/classes/User";
+import User, {JsonUser} from "../src/frontend/models/User";
 
 
 const Rules: NextPage = () => {
