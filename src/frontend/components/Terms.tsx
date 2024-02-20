@@ -4,6 +4,7 @@ import {LoadingButton} from "@mui/lab";
 import {EmailOutlined, Place} from "@mui/icons-material";
 import User from "../classes/User";
 import BackendAPI from "../../apiHandlers/BackendAPI";
+import useAsyncError from "../errorHandling/asyncError";
 
 const USER_AGREEMENT_MAIN_TITLE = "Användarvillkor"
 const USER_AGREEMENT_TITLE_1 = "GDPR"
@@ -38,6 +39,7 @@ export const Terms = (props: props) => {
     const {user} = props
     const [open, setOpen] = useState(true);
     const [loading, setLoading] = useState(false);
+    const throwAsyncError = useAsyncError();
     const handleClose = (event: any, reason: any) => {
         if (reason && reason == "backdropClick") {
             return;
@@ -46,10 +48,15 @@ export const Terms = (props: props) => {
     }
     const handleAccept = async () => {
         setLoading(true)
-        await BackendAPI.acceptTerms()
-        setLoading(false)
-        window.location.reload()
-        return
+        try {
+            await BackendAPI.acceptTerms()
+            window.location.reload()
+            return
+        } catch (e) {
+            throwAsyncError(new Error("Något gick fel när du skulle acceptera användarvillkoren. Försök igen."));
+        } finally {
+            setLoading(false);
+        }
     }
     console.log("User.app_metadata.acceptedTerms: ", user.app_metadata.acceptedTerms)
     return (

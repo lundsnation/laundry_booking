@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useCallback} from 'react';
 import type {NextPage} from 'next';
 import {Grid} from '@mui/material';
 import BookingCalendar from '../src/frontend/components/index/calendar/BookingCalendar';
@@ -12,30 +12,38 @@ import Loading from "../src/frontend/components/Loading";
 import router from 'next/router';
 import backendAPI from "../src/apiHandlers/BackendAPI";
 import Booking from "../src/frontend/classes/Booking";
+import {isAxiosError} from "axios";
+import useAsyncError from "../src/frontend/errorHandling/asyncError";
 
 
 const Index: NextPage = () => {
     const {user, error, isLoading: userIsLoading} = useUser();
     const [initialBookings, setInitialBookings] = useState<Booking[]>([]);
     const [fetchingData, setFetchingData] = useState<boolean>(false);
+    const throwAsyncError = useAsyncError();
 
-    const fetchData = async () => {
-        setFetchingData(true);
-
-        const bookings = await backendAPI.fetchBookings();
-        setInitialBookings(bookings);
-
-        setFetchingData(false);
-    }
-
-    console.log("User, error, userIsLoading: ", user);
+    const fetchData = useCallback(async () => {
+        try {
+            setFetchingData(true);
+            const bookings = await backendAPI.fetchBookings();
+            setInitialBookings(bookings);
+        } catch (e) {
+            if (isAxiosError(e)) {
+                throwAsyncError(new Error("An error occurred while fetching bookings. Please try again."));
+            } else {
+                throwAsyncError(new Error("An unexpected error occurred. Please try again."));
+            }
+        } finally {
+            setFetchingData(false);
+        }
+    }, [setFetchingData, setInitialBookings, throwAsyncError]); // Add all dependencies here
 
     useEffect(() => {
         if (user && !userIsLoading) {
-            // Fetch initial bookings here
-            fetchData().then(() => console.log("fetchData is done"));
+            fetchData();
         }
-    }, [user, userIsLoading]);
+    }, [user, userIsLoading, fetchData]); // fetchData is stable now
+
 
     if (userIsLoading || fetchingData) return <Loading/>;
     if (error) return <div>{error.message}</div>;

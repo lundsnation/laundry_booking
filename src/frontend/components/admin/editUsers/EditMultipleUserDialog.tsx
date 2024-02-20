@@ -17,6 +17,7 @@ import BackendAPI from '../../../../apiHandlers/BackendAPI';
 import User from '../../../classes/User'; // Assuming UserUpdate is correctly defined
 import {SnackInterface} from '../../Snack';
 import Config, {LaundryBuilding} from "../../../configs/Config";
+import useAsyncError from "../../../errorHandling/asyncError";
 
 interface EditUserDialogProps {
     showEditDialog: boolean;
@@ -24,7 +25,6 @@ interface EditUserDialogProps {
     setSnack: (value: (((prevState: SnackInterface) => SnackInterface) | SnackInterface)) => void;
     selectedUsers: User[];
     setSelected: React.Dispatch<React.SetStateAction<User[]>>;
-    users: User[];
     setUsers: React.Dispatch<React.SetStateAction<User[]>>;
     setSearchedUsers: React.Dispatch<React.SetStateAction<User[]>>;
 }
@@ -35,7 +35,6 @@ const EditUserDialog: React.FC<EditUserDialogProps> = ({
                                                            setSnack,
                                                            selectedUsers,
                                                            setSelected,
-                                                           users,
                                                            setUsers,
                                                            setSearchedUsers,
                                                        }) => {
@@ -46,46 +45,53 @@ const EditUserDialog: React.FC<EditUserDialogProps> = ({
             allowedSlots: 1,
         }
     });
+    const throwAsyncError = useAsyncError();
 
-    console.log("Selected users in editmul: ", selectedUsers)
     const handleEditUser = async (e: FormEvent) => {
-        e.preventDefault();
-        setLoading(true);
+        try {
+            e.preventDefault();
+            setLoading(true);
 
-        const updatePromises = selectedUsers.map(user =>
-            BackendAPI.patchUser(user.sub, {...modification, name: user.name})
-        );
+            const updatePromises = selectedUsers.map(user =>
+                BackendAPI.patchUser(user.sub, {...modification, name: user.name})
+            );
 
-        // Wait for all patch operations to complete
-        const updatedUsers = await Promise.all(updatePromises);
+            // Wait for all patch operations to complete
+            const updatedUsers = await Promise.all(updatePromises);
 
-        // Update users and searched users state
-        setUsers(currentUsers =>
-            currentUsers.map(user => updatedUsers.find(u => u.sub === user.sub) || user)
-        );
+            // Update users and searched users state
+            setUsers(currentUsers =>
+                currentUsers.map(user => updatedUsers.find(u => u.sub === user.sub) || user)
+            );
 
-        setSearchedUsers(currentSearchedUsers =>
-            currentSearchedUsers.map(user => updatedUsers.find(u => u.sub === user.sub) || user)
-        );
+            setSearchedUsers(currentSearchedUsers =>
+                currentSearchedUsers.map(user => updatedUsers.find(u => u.sub === user.sub) || user)
+            );
 
-        // Display success snack
-        setSnack({
-            show: true,
-            snackString: `Updated ${selectedUsers.length} users`,
-            severity: 'success',
-            alignment: {vertical: 'bottom', horizontal: 'left'},
-        });
+            // Display success snack
+            setSnack({
+                show: true,
+                snackString: `Updated ${selectedUsers.length} users`,
+                severity: 'success',
+                alignment: {vertical: 'bottom', horizontal: 'left'},
+            });
 
-        // Reset state and close dialog
-        setLoading(false);
-        setSelected([]);
-        setShowEditDialog(false);
-        setModification({
-            app_metadata: {
-                laundryBuilding: LaundryBuilding.NATIONSHUSET,
-                allowedSlots: 1,
-            }
-        });
+            // Reset state and close dialog
+            setSelected([]);
+            setShowEditDialog(false);
+            setModification({
+                app_metadata: {
+                    laundryBuilding: LaundryBuilding.NATIONSHUSET,
+                    allowedSlots: 1,
+                }
+            });
+        } catch (e) {
+            // This will be caught by the ErrorBoundary. Can be tweaked to use more specific error messages.
+            throwAsyncError(new Error('Något gick fel när du skulle uppdatera användaren.'));
+        } finally {
+            // Reset loading state and any other cleanup actions here
+            setLoading(false);
+        }
     };
 
     return (

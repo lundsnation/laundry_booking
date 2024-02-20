@@ -12,7 +12,8 @@ import {
 import {LoadingButton} from '@mui/lab';
 import User from '../../classes/User';
 import {SnackInterface} from "../Snack";
-import BackendAPI from "../../../apiHandlers/BackendAPI"; // Ensure this import is correct
+import BackendAPI from "../../../apiHandlers/BackendAPI";
+import useAsyncError from "../../errorHandling/asyncError"; // Ensure this import is correct
 
 interface Props {
     showPasswordChangeDialog: boolean;
@@ -28,14 +29,21 @@ const ChangePasswordDialog: React.FC<Props> = ({
                                                    setSnack,
                                                }) => {
     const [loading, setLoading] = useState(false);
+    const throwAsyncError = useAsyncError();
 
     const handlePasswordChange = async () => {
         setLoading(true);
-        await BackendAPI.ChangePassword(user.email);
 
-        setSnack({show: true, snackString: "Mail om ändring av lösenord skickat!", severity: "success"});
-        setShowPasswordChangeDialog(false);
-        setLoading(false);
+        try {
+            await BackendAPI.ChangePassword(user.email);
+
+            setSnack({show: true, snackString: "Mail om ändring av lösenord skickat!", severity: "success"});
+            setShowPasswordChangeDialog(false);
+        } catch (e) {
+            throwAsyncError(new Error("Något gick fel när du skulle ändra lösenordet. Försök igen."));
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (

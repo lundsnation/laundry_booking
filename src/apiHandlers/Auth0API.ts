@@ -3,8 +3,6 @@ import {JsonUser, NewUser, UserUpdate, UserBookingInfo} from '../frontend/classe
 import {LaundryBuilding} from "../frontend/configs/Config";
 
 // Class to handle communication with Auth0 API from the backend only
-
-
 class Auth0API {
 
     private static management = new ManagementClient({

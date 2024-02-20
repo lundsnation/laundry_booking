@@ -13,6 +13,7 @@ import Config, {LaundryBuilding} from "../../../configs/Config";
 import Booking from "../../../classes/Booking";
 import BackendAPI from "../../../../apiHandlers/BackendAPI";
 import DateUtils from "../../../utils/DateUtils";
+import useAsyncError from "../../../errorHandling/asyncError";
 
 interface Props {
     config: Config
@@ -43,6 +44,7 @@ const BookingCalendar = ({config, user: initUser, initialBookings}: Props) => {
     const [user, setUser] = useState<User>(initUser);
     const frontendPusher = useRef<FrontendPusher | null>(null);
     const isAdmin = user.app_metadata.roles.includes("admin");
+    const throwAsyncError = useAsyncError(); //Used to propagate errors to ErrorBoundary
 
 
     //This should not have a dependency array as the cleanup function should only be called once on component unmount,
@@ -54,17 +56,22 @@ const BookingCalendar = ({config, user: initUser, initialBookings}: Props) => {
         return () => {
             frontendPusher.current!.cleanup(user.app_metadata.laundryBuilding);
         };
-    }, []);
+    }, [user.app_metadata.laundryBuilding]);
 
 
     const updateBookings = useCallback(async () => {
-        const bookings = await BackendAPI.fetchBookingsForBuilding(user.app_metadata.laundryBuilding);
-        setBookings(bookings);
-        // Assuming setUserBookings updates the user object with the new bookings
-        // This might need adjustment depending on how user state is managed
-        user.setUserBookings(bookings);
-    }, [user]);
-
+        try {
+            const bookings = await BackendAPI.fetchBookingsForBuilding(user.app_metadata.laundryBuilding);
+            setBookings(bookings);
+            // Assuming setUserBookings updates the user object with the new bookings
+            // This might need adjustment depending on how user state is managed
+            user.setUserBookings(bookings);
+        } catch (e) {
+            //This will be caught by the ErrorBoundary. Can be tweaked to use more specific error messages.
+            // For example the error itself can be thrown or information from it.
+            throwAsyncError(new Error("Failed to fetch bookings for building: " + user.app_metadata.laundryBuilding));
+        }
+    }, [user, throwAsyncError]);
 
     const handleBuildingChange = (building: LaundryBuilding) => {
         frontendPusher.current!.bookingUpdateUnsubscribe(user.app_metadata.laundryBuilding);

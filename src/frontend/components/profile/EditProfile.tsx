@@ -9,6 +9,7 @@ import ChangePasswordDialog from './ChangePasswordDialog';
 import {SnackInterface} from "../Snack";
 import BackendAPI from "../../../apiHandlers/BackendAPI";
 import {LoadingButton} from '@mui/lab';
+import useAsyncError from "../../errorHandling/asyncError";
 
 interface Props {
     initUser: User;
@@ -24,6 +25,7 @@ const EditProfile: React.FC<Props> = ({initUser, setSnack}: Props) => {
         email: user.email,
         user_metadata: {telephone: user.user_metadata.telephone}
     });
+    const throwAsyncError = useAsyncError();
 
     const handleEditProfile = (profileUpdate: UserProfileUpdate) => {
         setProfileUpdate(profileUpdate);
@@ -45,12 +47,18 @@ const EditProfile: React.FC<Props> = ({initUser, setSnack}: Props) => {
             return;
         }
 
-        const user = await BackendAPI.updateUserProfile((profileUpdate));
-        console.log("Feteched user: ", user);
-        setUser(user);
-        setLoading(false);
-        setAllowSave(false);
-        setSnack({show: true, snackString: 'Användare sparad', severity: 'success'});
+        try {
+
+
+            const user = await BackendAPI.updateUserProfile((profileUpdate));
+            setUser(user);
+            setSnack({show: true, snackString: 'Användare sparad', severity: 'success'});
+        } catch (e) {
+            throwAsyncError(new Error("Något gick fel när du skulle spara användaruppgifterna. Försök igen."));
+        } finally {
+            setLoading(false);
+            setAllowSave(false);
+        }
     };
 
     return (

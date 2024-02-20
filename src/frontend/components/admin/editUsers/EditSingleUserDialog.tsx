@@ -16,6 +16,7 @@ import User, {UserUpdate} from '../../../classes/User';
 import {SnackInterface} from '../../Snack';
 import Config, {Building, LaundryBuilding} from "../../../configs/Config";
 import BackendAPI from "../../../../apiHandlers/BackendAPI";
+import useAsyncError from "../../../errorHandling/asyncError";
 
 interface Props {
     showEditDialog: boolean;
@@ -66,44 +67,54 @@ const EditSingleUserDialog: React.FC<Props> = ({
         },
     });
     const [loading, setLoading] = useState<boolean>(false);
+    const throwAsyncError = useAsyncError();
 
 
     const handleSubmit = async (e: FormEvent) => {
+
         e.preventDefault();
         setLoading(true);
 
-        const updatedUser: UserUpdate = {
-            name: editedUser.building + editedUser.room,
-            email: editedUser.email,
-            user_metadata: editedUser.user_metadata,
-            app_metadata: editedUser.app_metadata,
-        };
-
-        const updatedUserData = await BackendAPI.patchUser(selectedUser.sub, updatedUser);
-        setUsers(currentUsers =>
-            currentUsers.map(user =>
-                user.sub === updatedUserData.sub ? updatedUserData : user
-            )
-        );
-
-        setSearchedUsers(currentUsers =>
-            currentUsers.map(user =>
-                user.sub === updatedUserData.sub ? updatedUserData : user
-            )
-        );
+        try {
 
 
-        setSnack({
-            show: true,
-            snackString: `User updated: ${selectedUser.name}`,
-            severity: 'success',
-            alignment: {vertical: 'bottom', horizontal: 'left'},
-        });
+            const updatedUser: UserUpdate = {
+                name: editedUser.building + editedUser.room,
+                email: editedUser.email,
+                user_metadata: editedUser.user_metadata,
+                app_metadata: editedUser.app_metadata,
+            };
 
-        setShowEditDialog(false);
-        setSelected([])
-        setEditeduser({} as EditUser);
-        setLoading(false);
+            const updatedUserData = await BackendAPI.patchUser(selectedUser.sub, updatedUser);
+            setUsers(currentUsers =>
+                currentUsers.map(user =>
+                    user.sub === updatedUserData.sub ? updatedUserData : user
+                )
+            );
+
+            setSearchedUsers(currentUsers =>
+                currentUsers.map(user =>
+                    user.sub === updatedUserData.sub ? updatedUserData : user
+                )
+            );
+
+
+            setSnack({
+                show: true,
+                snackString: `User updated: ${selectedUser.name}`,
+                severity: 'success',
+                alignment: {vertical: 'bottom', horizontal: 'left'},
+            });
+
+            setShowEditDialog(false);
+            setSelected([])
+            setEditeduser({} as EditUser);
+
+        } catch (e) {
+            throwAsyncError(new Error("Något gick fel när du skulle uppdatera användaren. Försök igen."))
+        } finally {
+            setLoading(false);
+        }
     };
 
 

@@ -25,6 +25,7 @@ import backendAPI from "../../../apiHandlers/BackendAPI";
 import BackendAPI from "../../../apiHandlers/BackendAPI";
 import EditSingleUserDialog from "./editUsers/EditSingleUserDialog";
 import EditMultipleUserDialog from "./editUsers/EditMultipleUserDialog";
+import useAsyncError from "../../errorHandling/asyncError";
 
 const UserGrid = () => {
     const [selectedUsers, setSelectedUsers] = useState<User[]>([]);
@@ -44,11 +45,11 @@ const UserGrid = () => {
     })
     const [searchString, setSearchString] = useState("")
     const [searchedUsers, setSearchedUsers] = useState<User[]>([])
+    const throwAsyncError = useAsyncError();
 
     useEffect(() => {
         setLoadingData(true);
 
-        // Directly fetch and set users without try-catch
         const fetchAndSetUsers = async () => {
             const fetchedUsers = await backendAPI.fetchUsers() // Assuming this will be caught by global error handler if it fails
             setUsers(fetchedUsers); // Update state with fetched users
@@ -56,9 +57,12 @@ const UserGrid = () => {
             console.log("Fetched users: ", fetchedUsers)
         };
 
-        // Call the async function
-        fetchAndSetUsers();
-    }, []);
+        try {
+            fetchAndSetUsers();
+        } catch (e) {
+            throwAsyncError(new Error("Något gick fel när du skulle hämta användarna."));
+        }
+    }, [throwAsyncError]);
 
     const getTableContentSkelton = () => {
         let content = []
@@ -79,23 +83,29 @@ const UserGrid = () => {
     }
 
     const handleDeleteUsers = async () => {
-        await Promise.all(selectedUsers.map(user => BackendAPI.deleteUser(user.sub)));
+        try {
+            await Promise.all(selectedUsers.map(user => BackendAPI.deleteUser(user.sub)));
 
-        setUsers(currentUsers =>
-            currentUsers.filter(user => !selectedUsers.find(selectedUser => selectedUser.sub === user.sub))
-        );
-        setSearchedUsers(currentSearchedUsers =>
-            currentSearchedUsers.filter(user => !selectedUsers.find(selectedUser => selectedUser.sub === user.sub))
-        );
-        setSelectedUsers([]);
+            setUsers(currentUsers =>
+                currentUsers.filter(user => !selectedUsers.find(selectedUser => selectedUser.sub === user.sub))
+            );
+            setSearchedUsers(currentSearchedUsers =>
+                currentSearchedUsers.filter(user => !selectedUsers.find(selectedUser => selectedUser.sub === user.sub))
+            );
+            setSelectedUsers([]);
 
-        const alignment: SnackbarOrigin = {vertical: 'bottom', horizontal: 'left'}
-        setSnack({
-            show: true,
-            snackString: `Tog bort ${selectedUsers.length} användare`,
-            severity: "success",
-            alignment: alignment
-        });
+            const alignment: SnackbarOrigin = {vertical: 'bottom', horizontal: 'left'}
+            setSnack({
+                show: true,
+                snackString: `Tog bort ${selectedUsers.length} användare`,
+                severity: "success",
+                alignment: alignment
+            });
+        } catch (e) {
+            //This will be caught by the ErrorBoundary. Can be tweaked to use more specific error messages.
+            // For example the error itself can be thrown or information from it.
+            throwAsyncError(new Error("Något gick fel när du skulle skapa användaren."));
+        }
     }
 
     const handleSelectedClick = (event: React.MouseEvent<unknown>, user: User) => {
@@ -214,7 +224,6 @@ const UserGrid = () => {
                         setSnack={setSnack}
                         selectedUsers={selectedUsers}
                         setSelected={setSelectedUsers}
-                        users={users}
                         setUsers={setUsers}
                         setSearchedUsers={setSearchedUsers}
                     />

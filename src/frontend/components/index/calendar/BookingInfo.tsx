@@ -16,6 +16,7 @@ import CallIcon from '@mui/icons-material/Call';
 import Booking from "../../../classes/Booking";
 import {UserBookingInfo} from "../../../classes/User";
 import BackendAPI from "../../../../apiHandlers/BackendAPI";
+import useAsyncError from "../../../errorHandling/asyncError";
 
 interface Props {
     booking: Booking;
@@ -34,28 +35,35 @@ const initUserBookingInfo = {
 const BookingInfo: React.FC<Props> = ({booking, showBookingInfo, setShowBookingInfo}) => {
     const [loading, setLoading] = useState<boolean>(false);
     const [userInfo, setUserInfo] = useState<UserBookingInfo>(initUserBookingInfo);
+    const throwAsyncError = useAsyncError();
 
     useEffect(() => {
         const showBookedTime = async () => {
-            if (showBookingInfo) {
-                setLoading(true);
+            try {
+                if (showBookingInfo) {
+                    setLoading(true);
 
-                const fetchedUser = await BackendAPI.fetchUserBookingInfo(booking.user_id)
-                setUserInfo((oldUserInfo: UserBookingInfo) => ({
-                    ...oldUserInfo,
-                    email: fetchedUser.email,
-                    name: fetchedUser.name,
-                    user_metadata: {
-                        telephone: fetchedUser.user_metadata.telephone,
-                    },
-                }));
+                    const fetchedUser = await BackendAPI.fetchUserBookingInfo(booking.user_id)
+                    setUserInfo((oldUserInfo: UserBookingInfo) => ({
+                        ...oldUserInfo,
+                        email: fetchedUser.email,
+                        name: fetchedUser.name,
+                        user_metadata: {
+                            telephone: fetchedUser.user_metadata.telephone,
+                        },
+                    }));
 
-                setLoading(false);
+                    setLoading(false);
+                }
+            } catch (e) {
+                //This will be caught by the ErrorBoundary. Can be tweaked to use more specific error messages.
+                // For example the error itself can be thrown or information from it.
+                throwAsyncError(new Error("Något gick fel när du skulle hämta bokningsinformationen."));
             }
         };
 
         showBookedTime();
-    }, [showBookingInfo, booking.user_id]);
+    }, [showBookingInfo, booking.user_id, throwAsyncError]);
 
 
     return (

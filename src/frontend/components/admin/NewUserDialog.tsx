@@ -17,6 +17,7 @@ import User, {NewUser} from '../../classes/User';
 import {SnackInterface} from "../Snack";
 import Config, {LaundryBuilding, Building} from "../../configs/Config";
 import BackendAPI from '../../../apiHandlers/BackendAPI';
+import useAsyncError from "../../errorHandling/asyncError";
 
 const initialNewUserState: NewUser = {
     name: "",
@@ -50,6 +51,7 @@ function NewUserDialog({showAddDialog, setShowAddDialog, setSnack, setUsers}: Pr
     const [building, setBuilding] = useState<Building>(Config.getBuildings[0]);
     const [roomNbr, setRoomNbr] = useState<string>("");
     const [isLoading, setIsLoading] = useState(false);
+    const throwAsyncError = useAsyncError();
 
     const handleRoomNbrChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const newValue = e.target.value;
@@ -114,29 +116,35 @@ function NewUserDialog({showAddDialog, setShowAddDialog, setSnack, setUsers}: Pr
     }
 
     const handleCreateUser = async (event: any) => {
-        event.preventDefault();
-        setIsLoading(true);
+        try {
+            event.preventDefault();
+            setIsLoading(true);
 
-        const name = `${building}${roomNbr}`;
-        const newUserWithName: NewUser = {
-            ...newUser,
-            name,
-        };
+            const name = `${building}${roomNbr}`;
+            const newUserWithName: NewUser = {
+                ...newUser,
+                name,
+            };
 
-        const user = await BackendAPI.createUser(newUserWithName);
+            const user = await BackendAPI.createUser(newUserWithName);
 
-        setIsLoading(false);
+            setIsLoading(false);
 
-        setSnack({
-            show: true,
-            snackString: `Created ${user.name}`,
-            severity: 'success',
-            alignment,
-        });
+            setSnack({
+                show: true,
+                snackString: `Created ${user.name}`,
+                severity: 'success',
+                alignment,
+            });
 
-        setNewUser(initialNewUserState);
-        setShowAddDialog(false);
-        setUsers((prevUsers) => [...prevUsers, user]);
+            setNewUser(initialNewUserState);
+            setShowAddDialog(false);
+            setUsers((prevUsers) => [...prevUsers, user]);
+        } catch (e) {
+            //This will be caught by the ErrorBoundary. Can be tweaked to use more specific error messages.
+            // For example the error itself can be thrown or information from it.
+            throwAsyncError(new Error("Något gick fel när du skulle skapa användaren."));
+        }
     }
 
 

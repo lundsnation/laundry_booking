@@ -68,8 +68,14 @@ const ConfirmBooking = ({
     const cancelBooking = async () => {
         if (!booking) return;
 
-        await BackendAPI.deleteBooking(booking._id);
-        snackTrigger("success", "Du har avbokat tiden", snackAlignment);
+        try {
+            await BackendAPI.deleteBooking(booking._id);
+            snackTrigger("success", "Du har avbokat tiden", snackAlignment);
+        } catch (e) {
+            //This will be caught by the ErrorBoundary. Can be tweaked to use more specific error messages.
+            // For example the error itself can be thrown or information from it.
+            throwAsyncError(new Error("Något gick fel när du skulle avboka tiden. Försök igen."));
+        }
     };
 
     const handleAction = () => {
