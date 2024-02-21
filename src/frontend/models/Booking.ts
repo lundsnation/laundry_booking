@@ -63,6 +63,38 @@ class Booking {
 
         return bookingYear === otherYear && bookingMonth === otherMonth && bookingDay === otherDay;
     }
+
+    // Helper methods to format date and time for the calendar
+
+    formatDateForCalendar(date: Date): string {
+        // Convert to ISO string, then slice to get the YYYY-MM-DD format
+        return date.toISOString().split('T')[0];
+    }
+    
+    formatTimeForCalendar(date: Date, timeZone: string = 'Europe/Stockholm'): string {
+        return new Intl.DateTimeFormat('en-US', {
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: false,
+            timeZone
+        }).format(date);
+    }
+
+    get getStartDateAsAddToCal(): string {
+        return this.formatDateForCalendar(this.startTime);
+    }
+
+    get getEndDateAsAddToCal(): string {
+        return this.formatDateForCalendar(this.endTime);
+    }
+
+    get getStartTimeAsAddToCal(): string {
+        return this.formatTimeForCalendar(this.startTime);
+    }
+
+    get getEndTimeAsAddToCal(): string {
+        return this.formatTimeForCalendar(this.endTime);
+    }
 }
 
 export default Booking
