@@ -1,4 +1,4 @@
-import React, {FormEvent, useState} from 'react';
+import React, { FormEvent, useState } from 'react';
 import {
     Button,
     Dialog,
@@ -11,12 +11,12 @@ import {
     TextField,
 } from '@mui/material';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
-import {LoadingButton} from '@mui/lab';
+import { LoadingButton } from '@mui/lab';
 // Make sure BackendAPI, User, and SnackInterface are correctly imported
 import BackendAPI from '../../../../apiHandlers/BackendAPI';
 import User from '../../../models/User'; // Assuming UserUpdate is correctly defined
-import {SnackInterface} from '../../Snack';
-import Config, {LaundryBuilding} from "../../../configs/Config";
+import { SnackInterface } from '../../Snack';
+import Config, { LaundryBuilding } from "../../../configs/Config";
 import useAsyncError from "../../../errorHandling/asyncError";
 
 interface EditUserDialogProps {
@@ -30,14 +30,14 @@ interface EditUserDialogProps {
 }
 
 const EditUserDialog: React.FC<EditUserDialogProps> = ({
-                                                           showEditDialog,
-                                                           setShowEditDialog,
-                                                           setSnack,
-                                                           selectedUsers,
-                                                           setSelected,
-                                                           setUsers,
-                                                           setSearchedUsers,
-                                                       }) => {
+    showEditDialog,
+    setShowEditDialog,
+    setSnack,
+    selectedUsers,
+    setSelected,
+    setUsers,
+    setSearchedUsers,
+}) => {
     const [loading, setLoading] = useState(false);
     const [modification, setModification] = useState({ // Adjusted to match the expected update structure
         app_metadata: {
@@ -53,7 +53,7 @@ const EditUserDialog: React.FC<EditUserDialogProps> = ({
             setLoading(true);
 
             const updatePromises = selectedUsers.map(user =>
-                BackendAPI.patchUser(user.sub, {...modification, name: user.name})
+                BackendAPI.patchUser(user.sub, { ...modification, name: user.name })
             );
 
             // Wait for all patch operations to complete
@@ -73,7 +73,7 @@ const EditUserDialog: React.FC<EditUserDialogProps> = ({
                 show: true,
                 snackString: `Updated ${selectedUsers.length} users`,
                 severity: 'success',
-                alignment: {vertical: 'bottom', horizontal: 'left'},
+                alignment: { vertical: 'bottom', horizontal: 'left' },
             });
 
             // Reset state and close dialog
@@ -96,8 +96,8 @@ const EditUserDialog: React.FC<EditUserDialogProps> = ({
 
     return (
         <Dialog open={showEditDialog} onClose={() => setShowEditDialog(false)}>
-            <DialogTitle>{`Edit User${selectedUsers.length > 1 ? 's' : `: ${selectedUsers[0]?.name}`}`}</DialogTitle>
-            <Divider/>
+            <DialogTitle>{"Ändra flera användare"}</DialogTitle>
+            <Divider />
             <form onSubmit={handleEditUser}>
                 <List>
                     <ListItem>
@@ -162,12 +162,12 @@ const EditUserDialog: React.FC<EditUserDialogProps> = ({
                 <DialogActions>
                     <Grid container justifyContent="space-between" padding={2}>
                         <Button onClick={() => setShowEditDialog(false)} color="warning"
-                                variant="outlined">Stäng</Button>
+                            variant="outlined">Stäng</Button>
                         <LoadingButton
                             type="submit"
                             loading={loading}
                             variant="outlined"
-                            startIcon={<EditOutlinedIcon/>}
+                            startIcon={<EditOutlinedIcon />}
                         >
                             Spara
                         </LoadingButton>
