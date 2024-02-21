@@ -1,5 +1,5 @@
 import Booking from "./Booking";
-import Config, {Building, LaundryBuilding} from "../configs/Config";
+import Config, { Building, LaundryBuilding, Nationshuset } from "../configs/Config";
 
 type AppMetadata = {
     acceptedTerms: boolean,
@@ -112,21 +112,26 @@ class User {
     }
 
     get building(): Building {
-        const buildingMatch = this.name.match(/[A-Za-z]+/);
-        if (!buildingMatch) {
-            throw new Error(`No building found in username: ${this.name}`);
+        if (!this.app_metadata.roles.includes('admin')) {
+
+            let buildingMatch = this.name.match(/[A-Za-z]+/)?.[0];
+            if (!buildingMatch) {
+                throw new Error(`No building found in username: ${this.name}`);
+            }
+
+            const buildingCode = buildingMatch;
+
+
+            // Check against all known buildings
+            const allBuildings: Building[] = Config.getBuildings;
+            const foundBuilding = allBuildings.find((b) => b === buildingCode);
+
+            if (!foundBuilding) {
+                throw new Error(`Building not found for username: ${this.name}`);
+            }
+            return foundBuilding;
         }
-
-        const buildingCode = buildingMatch[0];
-        // Check against all known buildings
-        const allBuildings: Building[] = Config.getBuildings;
-        const foundBuilding = allBuildings.find((b) => b === buildingCode);
-
-        if (!foundBuilding) {
-            throw new Error(`Building not found for username: ${this.name}`);
-        }
-
-        return foundBuilding;
+        return Nationshuset.NH;
     }
 
     get roomNumber(): string {
