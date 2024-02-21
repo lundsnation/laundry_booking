@@ -1,6 +1,5 @@
 //IMPORT MONGOOSE
 import mongoose from "mongoose"
-import HttpError from "../errors/HttpError";
 
 // CONNECTING TO MONGOOSE (Get Database Url from .env.local)
 const {DATABASE_URL} = process.env
