@@ -33,7 +33,6 @@ class UserService {
     async patchUser(id: string, userUpdate: UserUpdate): Promise<JsonUser> {
         //Ensure uniqueness of username in building
         const user = await Auth0API.getUser(id)
-        console.log("UserUpdatename", userUpdate.name)
         if (user.name !== userUpdate.name && await Auth0API.usernameExistsInBuilding(userUpdate.name, user.app_metadata.laundryBuilding)) {
             throw new HttpError(HttpError.StatusCode.BAD_REQUEST, "Username already exists in building")
         }

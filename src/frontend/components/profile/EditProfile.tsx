@@ -30,9 +30,6 @@ const EditProfile: React.FC<Props> = ({initUser, setSnack}: Props) => {
     const handleEditProfile = (profileUpdate: UserProfileUpdate) => {
         setProfileUpdate(profileUpdate);
         // Check if the user has made any changes to the profile, if yes, allow save.
-        console.log('profileUpdate', profileUpdate);
-        console.log("user.email", user.email, "profileUpdate.email", profileUpdate.email);
-        console.log("user.user_metadata.telephone", user.user_metadata.telephone, "profileUpdate.user_metadata.telephone", profileUpdate.user_metadata.telephone);
         setAllowSave(user.email !== profileUpdate.email || user.user_metadata.telephone !== profileUpdate.user_metadata.telephone);
     };
 

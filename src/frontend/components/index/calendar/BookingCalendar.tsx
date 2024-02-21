@@ -50,7 +50,6 @@ const BookingCalendar = ({config, user: initUser, initialBookings}: Props) => {
     //This should not have a dependency array as the cleanup function should only be called once on component unmount,
     // and not everytime user.app_metadata.laundryBuilding changes
     useEffect(() => {
-        console.log("Running useEffect in BookingCalendar")
         if (!frontendPusher.current) {
             frontendPusher.current = new FrontendPusher();
         }

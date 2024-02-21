@@ -58,7 +58,7 @@ export const Terms = (props: props) => {
             setLoading(false);
         }
     }
-    console.log("User.app_metadata.acceptedTerms: ", user.app_metadata.acceptedTerms)
+
     return (
         <div>
             {user.app_metadata.acceptedTerms ? null :

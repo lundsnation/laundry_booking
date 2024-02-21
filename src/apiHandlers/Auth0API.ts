@@ -65,7 +65,6 @@ class Auth0API {
     }
 
     static async getUsers() {
-        console.log("Fetching users")
         const users = []
         let page = 0;
         let moreUsers = true;
@@ -84,7 +83,6 @@ class Auth0API {
                 page++;
             }
         }
-        console.log("Fetched users", users.length)
         return users.map(user => this.remapToJsonUser(user));
     }
 

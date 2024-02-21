@@ -20,7 +20,6 @@ const handler = withApiAuthRequired(withErrorHandler(async (req: NextApiRequest,
     await connect()
     switch (req.method) {
         case 'GET':
-            console.log("Getting bookings for user: " + username)
             const booking = await bookingService.getBookingsByUsername(username)
             return res.status(200).json(booking)
 

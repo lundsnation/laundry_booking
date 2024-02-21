@@ -54,7 +54,6 @@ const UserGrid = () => {
             const fetchedUsers = await backendAPI.fetchUsers() // Assuming this will be caught by global error handler if it fails
             setUsers(fetchedUsers); // Update state with fetched users
             setLoadingData(false); // Update loading state after fetching
-            console.log("Fetched users: ", fetchedUsers)
         };
 
         try {

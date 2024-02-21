@@ -59,7 +59,6 @@ class BookingService {
 
         // Should be handled in validation
         if (new Date(booking.startTime).getTime() < Date.now()) {
-            console.log("MongooseBooking date is in the past", booking.startTime, Date.now())
             throw new HttpError(HttpError.StatusCode.BAD_REQUEST, "Booking date is in the past");
         }
 
