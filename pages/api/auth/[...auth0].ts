@@ -24,8 +24,10 @@ const updateProfile = async (req: NextApiRequest, res: NextApiResponse, session:
         name: profileUpdate.name,
         email: profileUpdate.email,
         user_metadata: {...session.user_metadata, telephone: profileUpdate.user_metadata.telephone},
-        app_metadata: {...session.app_metadata}
+        app_metadata: {...session.user.app_metadata}
     };
+
+    console.log(updatedUser)
 
     await userService.patchUser(session.user.sub, updatedUser)
     //console.log(patchedUser)

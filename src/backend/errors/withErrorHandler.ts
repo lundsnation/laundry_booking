@@ -16,6 +16,7 @@ function withErrorHandler(fn: IFunction) {
         } catch (error) {
             //Log error to Sentry
             Sentry.captureException(error);
+            console.log(error)
             if (error instanceof HttpError) {
                 return res.status(error.statusCode).json({error: error.message})
             }

@@ -63,8 +63,9 @@ const ConfirmBooking = ({
             snackTrigger("success", `Du har bokat: ${timeSlot}`, snackAlignment);
         } catch (e) {
             if (isAxiosError(e)) {
-                // Hack to propagate the error to the ErrorBoundary and display the error snack
-                throwAsyncError(new Error("Något gick fel när du skulle boka tiden. Försök igen."));
+                console.log("Error in dis", e)
+                // Hack to propagate the error to the ErrorBoundary and display the error message
+                throwAsyncError(new Error("Något gick fel när du skulle boka tiden - " + e.response?.data.error));
             }
         } finally {
             setLoading(false);
@@ -81,6 +82,7 @@ const ConfirmBooking = ({
         } catch (e) {
             //This will be caught by the ErrorBoundary. Can be tweaked to use more specific error messages.
             // For example the error itself can be thrown or information from it.
+            console.log(e)
             throwAsyncError(new Error("Något gick fel när du skulle avboka tiden. Försök igen."));
         } finally {
             setLoading(false);
