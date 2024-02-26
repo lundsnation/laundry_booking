@@ -26,7 +26,7 @@ class UserService {
     }
 
     async deleteUser(userID: string): Promise<void> {
-        //Perhaps logic for deleting bookings by user should be here
+        //Perhaps logic for deleting bookings in db by user should be here
         await Auth0API.deleteUser(userID)
     }
 

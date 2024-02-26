@@ -10,6 +10,7 @@ import {SnackInterface} from "../Snack";
 import BackendAPI from "../../../apiHandlers/BackendAPI";
 import {LoadingButton} from '@mui/lab';
 import useAsyncError from "../../errorHandling/asyncError";
+import {isAxiosError} from "axios";
 
 interface Props {
     initUser: User;
@@ -51,7 +52,11 @@ const EditProfile: React.FC<Props> = ({initUser, setSnack}: Props) => {
             setUser(user);
             setSnack({show: true, snackString: 'Användare sparad', severity: 'success'});
         } catch (e) {
-            throwAsyncError(new Error("Något gick fel när du skulle spara användaruppgifterna. Försök igen."));
+            if (isAxiosError(e)) {
+                throwAsyncError(e);
+            } else {
+                throwAsyncError(new Error("An error occurred while updating user profile"));
+            }
         } finally {
             setLoading(false);
             setAllowSave(false);

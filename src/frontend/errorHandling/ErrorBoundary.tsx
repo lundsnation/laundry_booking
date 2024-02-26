@@ -10,7 +10,7 @@ interface Props {
 
 interface State {
     hasError: boolean;
-    errorMessage: string | null;
+    error: Error | AxiosError | null;
     isServerError: boolean;
 }
 
@@ -20,7 +20,7 @@ class ErrorBoundary extends Component<Props, State> {
 
         this.state = {
             hasError: false,
-            errorMessage: null,
+            error: null,
             isServerError: false,
         };
     }
@@ -29,51 +29,63 @@ class ErrorBoundary extends Component<Props, State> {
         console.error('ErrorBoundary caught an error: ', error, errorInfo);
 
         let isServerError = false;
-        let errorMessage = 'Something went wrong.';
 
         if (axios.isAxiosError(error)) {
             isServerError = true;
-            errorMessage = error.message || errorMessage;
-        } else {
-            errorMessage = error.message;
         }
 
         this.setState({
             hasError: true,
-            errorMessage,
+            error,
             isServerError,
         });
 
-        //Send error to Sentry
+        // Send error to Sentry
         Sentry.captureException(error);
     }
 
     resetError = () => {
-        this.setState({hasError: false, errorMessage: null, isServerError: false});
+        this.setState({hasError: false, error: null, isServerError: false});
+    };
+
+    renderErrorMessage = () => {
+        const {error, isServerError} = this.state;
+        if (!error) return "Something went wrong";
+
+        if (isServerError && axios.isAxiosError(error)) {
+            // If the error is from Axios and contains a response, display the server-provided message
+            return error.response?.data.error || "An error occurred on the server";
+        }
+
+        // Fallback for non-Axios errors or Axios errors without a response
+        return error.message || "An unknown error occurred";
     };
 
     render() {
-        //Errors thrown by asyncError will be propagated to here
-        if (this.state.isServerError) {
-            return (
-                <React.Fragment>
-                    <ErrorSnack message={this.state.errorMessage || "Something went wrong"}/>
-                    {this.props.children}
-                </React.Fragment>
-            );
-        }
+        const {hasError, isServerError} = this.state;
 
-        if (this.state.hasError) {
-            return (
-                <React.Fragment>
-                    <h1>Something went wrong. </h1>
-                    <h1>Error Message: {this.state.errorMessage || "Unknown Error"}</h1>
-                    <h1>Contact system administrator for help</h1>
-                    <Button onClick={this.resetError} variant="contained" color="primary">
-                        Retry
-                    </Button>
-                </React.Fragment>
-            );
+        if (hasError) {
+            if (isServerError) {
+                // Use ErrorSnack for server errors
+                return (
+                    <React.Fragment>
+                        <ErrorSnack message={this.renderErrorMessage()}/>
+                        {this.props.children}
+                    </React.Fragment>
+                );
+            } else {
+                // Render a generic error fallback UI for non-server errors
+                return (
+                    <React.Fragment>
+                        <h1>Something went wrong.</h1>
+                        <h2>Error Message: {this.renderErrorMessage()}</h2>
+                        <h2>Contact system administrator for help</h2>
+                        <Button onClick={this.resetError} variant="contained" color="primary">
+                            Retry
+                        </Button>
+                    </React.Fragment>
+                );
+            }
         }
 
         return this.props.children;

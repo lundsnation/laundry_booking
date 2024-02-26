@@ -14,6 +14,7 @@ import Booking from "../../../models/Booking";
 import BackendAPI from "../../../../apiHandlers/BackendAPI";
 import DateUtils from "../../../utils/DateUtils";
 import useAsyncError from "../../../errorHandling/asyncError";
+import {isAxiosError} from "axios";
 
 interface Props {
     config: Config
@@ -71,7 +72,11 @@ const BookingCalendar = ({config, user: initUser, initialBookings}: Props) => {
         } catch (e) {
             //This will be caught by the ErrorBoundary. Can be tweaked to use more specific error messages.
             // For example the error itself can be thrown or information from it.
-            throwAsyncError(new Error("Failed to fetch bookings for building: " + user.app_metadata.laundryBuilding));
+            if (isAxiosError(e)) {
+                throwAsyncError(e);
+            } else {
+                throwAsyncError(new Error("An error occurred while fetching bookings"));
+            }
         }
     }, [user, throwAsyncError]);
 

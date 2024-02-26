@@ -22,9 +22,11 @@ class Auth0API {
 
 
     static async getUser(UserID: string) {
-        const user = (await this.user_management.get({id: UserID})).data
+        const fields = 'user_id,name,nickname,email,email_verified,picture,app_metadata,user_metadata,updated_at';
+        const user = (await this.user_management.get({id: UserID, fields: fields, include_fields: true})).data;
         return this.remapToJsonUser(user);
     }
+
 
     /**
      * export type userBookingInfo = {

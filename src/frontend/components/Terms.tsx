@@ -5,6 +5,7 @@ import {EmailOutlined, Place} from "@mui/icons-material";
 import User from "../models/User";
 import BackendAPI from "../../apiHandlers/BackendAPI";
 import useAsyncError from "../errorHandling/asyncError";
+import {isAxiosError} from "axios";
 
 const USER_AGREEMENT_MAIN_TITLE = "Användarvillkor"
 const USER_AGREEMENT_TITLE_1 = "GDPR"
@@ -53,7 +54,11 @@ export const Terms = (props: props) => {
             window.location.reload()
             return
         } catch (e) {
-            throwAsyncError(new Error("Något gick fel när du skulle acceptera användarvillkoren. Försök igen."));
+            if (isAxiosError(e)) {
+                throwAsyncError(e);
+            } else {
+                throwAsyncError(new Error("An error occurred while accepting terms"));
+            }
         } finally {
             setLoading(false);
         }

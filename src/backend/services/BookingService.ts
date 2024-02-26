@@ -63,9 +63,9 @@ class BookingService {
         }
 
         const allowedNumBookings = user.app_metadata.allowedSlots || 1
-        const activeBookings = await BookingDao.find({userName: user.name, date: {$gte: new Date()}})
-
-        if (activeBookings.length > allowedNumBookings) {
+        const activeBookings = await BookingDao.find({username: user.name, startTime: {$gte: new Date()}})
+        
+        if (activeBookings.length == allowedNumBookings) {
             throw new HttpError(HttpError.StatusCode.BAD_REQUEST, "Too many slots booked");
         }
 

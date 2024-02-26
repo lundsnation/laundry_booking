@@ -26,6 +26,7 @@ import BackendAPI from "../../../apiHandlers/BackendAPI";
 import EditSingleUserDialog from "./editUsers/EditSingleUserDialog";
 import EditMultipleUserDialog from "./editUsers/EditMultipleUserDialog";
 import useAsyncError from "../../errorHandling/asyncError";
+import {AxiosError, isAxiosError} from "axios";
 
 const UserGrid = () => {
     const [selectedUsers, setSelectedUsers] = useState<User[]>([]);
@@ -59,7 +60,11 @@ const UserGrid = () => {
         try {
             fetchAndSetUsers();
         } catch (e) {
-            throwAsyncError(new Error("Något gick fel när du skulle hämta användarna."));
+            if (isAxiosError(e)) {
+                throwAsyncError(e);
+            } else {
+                throwAsyncError(new Error("An error occurred while fetching users"));
+            }
         }
     }, [throwAsyncError]);
 
@@ -103,7 +108,11 @@ const UserGrid = () => {
         } catch (e) {
             //This will be caught by the ErrorBoundary. Can be tweaked to use more specific error messages.
             // For example the error itself can be thrown or information from it.
-            throwAsyncError(new Error("Något gick fel när du skulle skapa användaren."));
+            if (isAxiosError(e)) {
+                throwAsyncError(e);
+            } else {
+                throwAsyncError(new AxiosError("An error occurred while deleting users"));
+            }
         }
     }
 

@@ -1,4 +1,4 @@
-import React, { FormEvent, useState } from 'react';
+import React, {FormEvent, useState} from 'react';
 import {
     Button, ButtonGroup,
     Dialog,
@@ -10,13 +10,14 @@ import {
     MenuItem,
     TextField
 } from '@mui/material';
-import { LoadingButton } from '@mui/lab';
+import {LoadingButton} from '@mui/lab';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
-import User, { UserUpdate } from '../../../models/User';
-import { SnackInterface } from '../../Snack';
-import Config, { Building, LaundryBuilding } from "../../../configs/Config";
+import User, {UserUpdate} from '../../../models/User';
+import {SnackInterface} from '../../Snack';
+import Config, {Building, LaundryBuilding} from "../../../configs/Config";
 import BackendAPI from "../../../../apiHandlers/BackendAPI";
 import useAsyncError from "../../../errorHandling/asyncError";
+import {isAxiosError} from "axios";
 
 interface Props {
     showEditDialog: boolean;
@@ -45,14 +46,14 @@ interface EditUser {
 
 
 const EditSingleUserDialog: React.FC<Props> = ({
-    showEditDialog,
-    setShowEditDialog,
-    setSnack,
-    selectedUser,
-    setUsers,
-    setSelected,
-    setSearchedUsers,
-}) => {
+                                                   showEditDialog,
+                                                   setShowEditDialog,
+                                                   setSnack,
+                                                   selectedUser,
+                                                   setUsers,
+                                                   setSelected,
+                                                   setSearchedUsers,
+                                               }) => {
     const [editedUser, setEditeduser] = useState<EditUser>({
         building: selectedUser.building as Building,
         room: selectedUser.roomNumber,
@@ -103,7 +104,7 @@ const EditSingleUserDialog: React.FC<Props> = ({
                 show: true,
                 snackString: `User updated: ${selectedUser.name}`,
                 severity: 'success',
-                alignment: { vertical: 'bottom', horizontal: 'left' },
+                alignment: {vertical: 'bottom', horizontal: 'left'},
             });
 
             setShowEditDialog(false);
@@ -111,7 +112,11 @@ const EditSingleUserDialog: React.FC<Props> = ({
             setEditeduser({} as EditUser);
 
         } catch (e) {
-            throwAsyncError(new Error("Något gick fel när du skulle uppdatera användaren. Försök igen."))
+            if (isAxiosError(e)) {
+                throwAsyncError(e);
+            } else {
+                throwAsyncError(new Error("An error occurred while updating user"));
+            }
         } finally {
             setLoading(false);
         }
@@ -127,7 +132,7 @@ const EditSingleUserDialog: React.FC<Props> = ({
     return (
         <Dialog open={showEditDialog} onClose={() => setShowEditDialog(false)}>
             <DialogTitle>Ändra användare</DialogTitle>
-            <Divider variant="middle" />
+            <Divider variant="middle"/>
             <form onSubmit={handleSubmit}>
 
                 <List>
@@ -141,7 +146,7 @@ const EditSingleUserDialog: React.FC<Props> = ({
                             fullWidth
                             value={editedUser.building}
                             onChange={(e) => {
-                                setEditeduser({ ...editedUser, building: e.target.value as Building });
+                                setEditeduser({...editedUser, building: e.target.value as Building});
                             }}
                             label="Välj Byggnad"
                             helperText="Välj Byggnad"
@@ -160,7 +165,7 @@ const EditSingleUserDialog: React.FC<Props> = ({
                             fullWidth
                             value={editedUser.room}
                             onChange={(e) => {
-                                setEditeduser({ ...editedUser, room: e.target.value });
+                                setEditeduser({...editedUser, room: e.target.value});
                             }}
                             helperText={"Max 4 siffror + eventuell bokstav"}
                             inputMode={"numeric"}
@@ -170,6 +175,7 @@ const EditSingleUserDialog: React.FC<Props> = ({
                     {/* Email */}
                     <ListItem>
                         <TextField
+                            required
                             id="email"
                             label="Email"
                             name="email"
@@ -178,7 +184,7 @@ const EditSingleUserDialog: React.FC<Props> = ({
                             fullWidth
                             value={editedUser.email}
                             onChange={(e) => {
-                                setEditeduser({ ...editedUser, email: e.target.value });
+                                setEditeduser({...editedUser, email: e.target.value});
                             }}
                         />
                     </ListItem>
@@ -186,6 +192,7 @@ const EditSingleUserDialog: React.FC<Props> = ({
                     {/* Telephone */}
                     <ListItem>
                         <TextField
+                            required
                             id="telephone"
                             label="Telefonnummer"
                             name="telephone"
@@ -196,7 +203,7 @@ const EditSingleUserDialog: React.FC<Props> = ({
                             onChange={(e) => {
                                 setEditeduser({
                                     ...editedUser,
-                                    user_metadata: { ...editedUser.user_metadata, telephone: e.target.value },
+                                    user_metadata: {...editedUser.user_metadata, telephone: e.target.value},
                                 });
                             }}
                         />
@@ -205,6 +212,7 @@ const EditSingleUserDialog: React.FC<Props> = ({
                     {/* Laundry Building */}
                     <ListItem>
                         <TextField
+                            required
                             id="laundry-building"
                             margin="dense"
                             select
@@ -233,6 +241,7 @@ const EditSingleUserDialog: React.FC<Props> = ({
                     {/* Accepted Terms */}
                     <ListItem>
                         <TextField
+                            required
                             id="accepted-terms"
                             margin="dense"
                             select
@@ -262,17 +271,18 @@ const EditSingleUserDialog: React.FC<Props> = ({
                     {/* Allowed Slots */}
                     <ListItem>
                         <TextField
+                            required
                             id="allowed-slots"
                             label="Antal bokningar"
                             name="allowedSlots"
                             margin="dense"
                             type={"number"}
                             fullWidth
-                            value={editedUser.app_metadata?.allowedSlots || 1}
+                            value={editedUser.app_metadata.allowedSlots}
                             onChange={(e) => {
                                 setEditeduser({
                                     ...editedUser,
-                                    app_metadata: { ...editedUser.app_metadata, allowedSlots: parseInt(e.target.value) },
+                                    app_metadata: {...editedUser.app_metadata, allowedSlots: parseInt(e.target.value)},
                                 });
                             }}
                             helperText={"Antal bokningar"}
@@ -290,13 +300,13 @@ const EditSingleUserDialog: React.FC<Props> = ({
                         fullWidth
                     >
                         <Button color="warning"
-                            onClick={() => setShowEditDialog(false)}>Stäng
+                                onClick={() => setShowEditDialog(false)}>Stäng
                         </Button>
                         <LoadingButton
                             variant={'outlined'}
                             type="submit"
                             loading={loading}
-                            startIcon={<EditOutlinedIcon />}
+                            startIcon={<EditOutlinedIcon/>}
                         >
                             Ändra
                         </LoadingButton>

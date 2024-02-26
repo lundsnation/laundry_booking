@@ -56,7 +56,6 @@ export class FrontendPusher extends PusherClient {
     private _bookingUpdateEvent: string
 
     constructor() {
-        //console.log("New FrontendPusher")
         super(process.env.REACT_APP_PUSHER_KEY as string, frontendOptions)
         this._bookingUpdateChannel = bookingUpdateChannel;
         this._bookingUpdateEvent = bookingUpdateEvent;

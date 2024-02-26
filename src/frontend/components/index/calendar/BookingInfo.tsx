@@ -17,6 +17,7 @@ import Booking from "../../../models/Booking";
 import {UserBookingInfo} from "../../../models/User";
 import BackendAPI from "../../../../apiHandlers/BackendAPI";
 import useAsyncError from "../../../errorHandling/asyncError";
+import {isAxiosError} from "axios";
 
 interface Props {
     booking: Booking;
@@ -58,7 +59,11 @@ const BookingInfo: React.FC<Props> = ({booking, showBookingInfo, setShowBookingI
             } catch (e) {
                 //This will be caught by the ErrorBoundary. Can be tweaked to use more specific error messages.
                 // For example the error itself can be thrown or information from it.
-                throwAsyncError(new Error("Något gick fel när du skulle hämta bokningsinformationen."));
+                if (isAxiosError(e)) {
+                    throwAsyncError(e);
+                } else {
+                    throwAsyncError(new Error("An error occurred while fetching user info"));
+                }
             }
         };
 

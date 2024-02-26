@@ -1,11 +1,10 @@
 import React, {useState} from 'react';
 import {
-    Button,
+    Button, ButtonGroup,
     Dialog,
     DialogActions,
     DialogTitle,
     Divider,
-    Grid,
     List,
     ListItem,
     MenuItem, SnackbarOrigin,
@@ -18,6 +17,7 @@ import {SnackInterface} from "../Snack";
 import Config, {LaundryBuilding, Building} from "../../configs/Config";
 import BackendAPI from '../../../apiHandlers/BackendAPI';
 import useAsyncError from "../../errorHandling/asyncError";
+import {isAxiosError} from "axios";
 
 const initialNewUserState: NewUser = {
     name: "",
@@ -143,7 +143,11 @@ function NewUserDialog({showAddDialog, setShowAddDialog, setSnack, setUsers}: Pr
         } catch (e) {
             //This will be caught by the ErrorBoundary. Can be tweaked to use more specific error messages.
             // For example the error itself can be thrown or information from it.
-            throwAsyncError(new Error("Något gick fel när du skulle skapa användaren."));
+            if (isAxiosError(e)) {
+                throwAsyncError(e);
+            } else {
+                throwAsyncError(new Error("An error occurred while creating user"));
+            }
         }
     }
 
@@ -277,18 +281,21 @@ function NewUserDialog({showAddDialog, setShowAddDialog, setSnack, setUsers}: Pr
 
                 </List>
                 <DialogActions>
-                    <Grid container alignItems="center" justifyContent="center">
-                        <Button color="warning" variant="outlined" onClick={handleCloseDialog}>Stäng</Button>
+                    <ButtonGroup
+                        variant="outlined"
+                        color="primary"
+                        aria-label="text primary button group"
+                        fullWidth
+                    > <Button color="warning" variant="outlined" onClick={handleCloseDialog}>Stäng</Button>
                         <LoadingButton
                             type="submit"
                             loading={isLoading}
                             variant="outlined"
                             endIcon={<AddIcon/>}
-                            sx={{margin: "12px", marginTop: 0}}
                         >
                             Skapa
                         </LoadingButton>
-                    </Grid>
+                    </ButtonGroup>
                 </DialogActions>
             </form>
         </Dialog>
