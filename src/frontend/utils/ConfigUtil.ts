@@ -1,6 +1,7 @@
 import Config, {Arkivet, Building, LaundryBuilding, Nationshuset} from "../configs/Config";
 import ArkivetConfig from "../configs/ArkivetConfig";
 import NationshusetConfig from "../configs/NationshusetConfig";
+import FinnhusetConfig from "../configs/Finnhuset";
 
 class ConfigUtil {
 
@@ -24,8 +25,10 @@ class ConfigUtil {
                 return new ArkivetConfig()
             case LaundryBuilding.NATIONSHUSET:
                 return new NationshusetConfig()
+            case LaundryBuilding.FINNHUSET:
+                return new FinnhusetConfig()
             default:
-                throw new Error("Invalid building")
+                throw new Error("Invalid laundry building")
         }
     }
 }

@@ -6,7 +6,6 @@ import UserService from "../../../src/backend/services/UserService";
 
 const userService = new UserService()
 const handler = withApiAuthRequired(withErrorHandler(async (req: NextApiRequest, res: NextApiResponse) => {
-    // Request is user.name (*/api/user/NH1111 for example)
     const userSession = await getSession(req, res)
     const id: string = req.query.id as string
 

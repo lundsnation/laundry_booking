@@ -29,7 +29,7 @@ const Index: NextPage = () => {
             setInitialBookings(bookings);
         } catch (e) {
             if (isAxiosError(e)) {
-                throwAsyncError(new Error("An error occurred while fetching bookings. Please try again."));
+                throwAsyncError(e);
             } else {
                 throwAsyncError(new Error("An unexpected error occurred. Please try again."));
             }
