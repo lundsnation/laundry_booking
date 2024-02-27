@@ -135,9 +135,13 @@ class User {
         })
     }
 
-    // Can perhaps be placed in User class
     hasBookingOnDay(day: Date): boolean {
         return this.activeBookings.some(booking => booking.isSameDay(day));
+    }
+
+    //Can be used in a future refactor to determine if the user has admin rights
+    isAdmin(): boolean {
+        return this.app_metadata.roles.includes('admin');
     }
 }
 
