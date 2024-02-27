@@ -111,10 +111,12 @@ class Auth0API {
             email_verified: auth0User.email_verified,
             picture: auth0User.picture,
             app_metadata: {
-                acceptedTerms: auth0User.app_metadata.acceptedTerms,
-                allowedSlots: auth0User.app_metadata.allowedSlots,
-                roles: auth0User.app_metadata.roles,
+                building: auth0User.app_metadata.building,
+                apartment: auth0User.app_metadata.apartment,
                 laundryBuilding: auth0User.app_metadata.laundryBuilding,
+                allowedSlots: auth0User.app_metadata.allowedSlots,
+                acceptedTerms: auth0User.app_metadata.acceptedTerms,
+                roles: auth0User.app_metadata.roles,
             },
             user_metadata: {
                 picture: auth0User.user_metadata.picture,

@@ -30,6 +30,8 @@ const initialNewUserState: NewUser = {
         laundryBuilding: LaundryBuilding.NATIONSHUSET,
         roles: ['user'],
         acceptedTerms: false,
+        building: Config.getBuildings[0], // Default value (Arkivet.A)
+        apartment: "",
     },
     user_metadata: {
         telephone: "",
@@ -48,15 +50,29 @@ const alignment: SnackbarOrigin = {vertical: 'bottom', horizontal: 'left'};
 
 function NewUserDialog({showAddDialog, setShowAddDialog, setSnack, setUsers}: Props) {
     const [newUser, setNewUser] = useState(initialNewUserState);
-    const [building, setBuilding] = useState<Building>(Config.getBuildings[0]);
-    const [roomNbr, setRoomNbr] = useState<string>("");
     const [isLoading, setIsLoading] = useState(false);
     const throwAsyncError = useAsyncError();
+    const handleBuildingChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const newValue = e.target.value as Building;
+        setNewUser((prev) => ({
+            ...prev,
+            app_metadata: {
+                ...prev.app_metadata,
+                building: newValue,
+            },
+        }));
+    };
 
-    const handleRoomNbrChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleApartmentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const newValue = e.target.value;
         if (/^\d{0,4}[A-Za-z]?$/.test(newValue)) {
-            setRoomNbr(newValue);
+            setNewUser((prev) => ({
+                ...prev,
+                app_metadata: {
+                    ...prev.app_metadata,
+                    apartment: newValue,
+                },
+            }));
         }
     };
 
@@ -120,7 +136,7 @@ function NewUserDialog({showAddDialog, setShowAddDialog, setSnack, setUsers}: Pr
             event.preventDefault();
             setIsLoading(true);
 
-            const name = `${building}${roomNbr}`;
+            const name = `${newUser.app_metadata.building}${newUser.app_metadata.apartment}`;
             const newUserWithName: NewUser = {
                 ...newUser,
                 name,
@@ -171,8 +187,8 @@ function NewUserDialog({showAddDialog, setShowAddDialog, setSnack, setUsers}: Pr
                             select
                             fullWidth
                             helperText={"Välj byggnad"}
-                            value={building}
-                            onChange={(e) => setBuilding(e.target.value as Building)}
+                            value={newUser.app_metadata.building}
+                            onChange={handleBuildingChange}
                         >
                             {Config.getBuildings.map((option) => (
                                 <MenuItem key={option} value={option}>
@@ -191,8 +207,8 @@ function NewUserDialog({showAddDialog, setShowAddDialog, setSnack, setUsers}: Pr
                             name="roomNbr"
                             margin="dense"
                             fullWidth
-                            value={roomNbr}
-                            onChange={handleRoomNbrChange}
+                            value={newUser.app_metadata.apartment}
+                            onChange={handleApartmentChange}
                             helperText={"Max 4 siffror samt eventuell bokstav"}
                             inputMode={"numeric"}
                         />

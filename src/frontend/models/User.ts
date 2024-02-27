@@ -1,28 +1,19 @@
 import Booking from "./Booking";
-import Config, { Building, LaundryBuilding, Nationshuset } from "../configs/Config";
+import {Building, LaundryBuilding} from "../configs/Config";
+
 
 type AppMetadata = {
     acceptedTerms: boolean,
     allowedSlots: number,
-    roles: string[]
+    roles: string[],
+    building: Building,
+    apartment: string, // Room/apartment nbr. Can contain letters, e.g. "0000a" when multiple users share apartment.
     laundryBuilding: LaundryBuilding
 }
 
 type UserMetadata = {
     picture: string,
     telephone: string
-}
-
-export type ModificationObject = {
-    name: string,
-    email: string,
-    app_metadata: {
-        laundryBuilding: LaundryBuilding,
-        allowedSlots: number
-    },
-    user_metadata: {
-        telephone: string
-    }
 }
 
 export type JsonUser = {
@@ -49,6 +40,8 @@ export type NewUser = {
     },
 }
 
+//EditUser type is in  editSingleUserDialog.tsx since it is only used there
+
 export interface UserProfileUpdate {
     email: string;
     user_metadata: {
@@ -56,6 +49,7 @@ export interface UserProfileUpdate {
     };
 }
 
+// Send username and laundryBuilding to check for existing users in the same building
 export interface UserUpdate {
     name: string,
     email?: string,
@@ -65,6 +59,8 @@ export interface UserUpdate {
     app_metadata: {
         acceptedTerms?: boolean,
         allowedSlots?: number,
+        building?: Building,
+        apartment?: string,
         laundryBuilding: LaundryBuilding,
     },
 }
@@ -109,34 +105,6 @@ class User {
                 this.pastBookings.push(bookings)
             }
         })
-    }
-
-    get building(): Building {
-        if (!this.app_metadata.roles.includes('admin')) {
-
-            let buildingMatch = this.name.match(/[A-Za-z]+/)?.[0];
-            if (!buildingMatch) {
-                throw new Error(`No building found in username: ${this.name}`);
-            }
-
-            const buildingCode = buildingMatch;
-
-
-            // Check against all known buildings
-            const allBuildings: Building[] = Config.getBuildings;
-            const foundBuilding = allBuildings.find((b) => b === buildingCode);
-
-            if (!foundBuilding) {
-                throw new Error(`Building not found for username: ${this.name}`);
-            }
-            return foundBuilding;
-        }
-        return Nationshuset.NH;
-    }
-
-    get roomNumber(): string {
-        const roomNumberMatch = this.name.match(/\d+[A-Za-z]?/);
-        return roomNumberMatch ? roomNumberMatch[0] : '';
     }
 
     toJSON() {

@@ -64,7 +64,7 @@ class BookingService {
 
         const allowedNumBookings = user.app_metadata.allowedSlots || 1
         const activeBookings = await BookingDao.find({username: user.name, startTime: {$gte: new Date()}})
-        
+
         if (activeBookings.length == allowedNumBookings) {
             throw new HttpError(HttpError.StatusCode.BAD_REQUEST, "Too many slots booked");
         }
@@ -77,7 +77,6 @@ class BookingService {
             throw new HttpError(HttpError.StatusCode.UNAUTHORIZED, "Unauthorized to create bookings for other user")
         }
 
-        //Type should be changed to IBookingDocument
         const bookingDoc: BookingDocument = await BookingDao.create(booking);
 
         await this.backendPusher.bookingUpdateTrigger(booking.laundryBuilding as LaundryBuilding, {

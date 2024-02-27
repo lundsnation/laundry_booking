@@ -31,8 +31,6 @@ interface Props {
 
 
 interface EditUser {
-    building: Building,
-    room: string,
     email: string,
     user_metadata: {
         telephone: string,
@@ -40,6 +38,8 @@ interface EditUser {
     app_metadata: {
         acceptedTerms: boolean,
         allowedSlots: number,
+        building: Building,
+        apartment: string,
         laundryBuilding: LaundryBuilding,
     },
 }
@@ -55,8 +55,6 @@ const EditSingleUserDialog: React.FC<Props> = ({
                                                    setSearchedUsers,
                                                }) => {
     const [editedUser, setEditeduser] = useState<EditUser>({
-        building: selectedUser.building as Building,
-        room: selectedUser.roomNumber,
         email: selectedUser.email,
         user_metadata: {
             telephone: selectedUser.user_metadata.telephone,
@@ -64,11 +62,16 @@ const EditSingleUserDialog: React.FC<Props> = ({
         app_metadata: {
             acceptedTerms: selectedUser.app_metadata.acceptedTerms,
             allowedSlots: selectedUser.app_metadata.allowedSlots,
+            building: selectedUser.app_metadata.building,
+            apartment: selectedUser.app_metadata.apartment,
             laundryBuilding: selectedUser.app_metadata.laundryBuilding,
         },
     });
     const [loading, setLoading] = useState<boolean>(false);
     const throwAsyncError = useAsyncError();
+
+    console.log("selectedUser", selectedUser);
+    console.log("editedUser", editedUser)
 
 
     const handleSubmit = async (e: FormEvent) => {
@@ -80,7 +83,7 @@ const EditSingleUserDialog: React.FC<Props> = ({
 
 
             const updatedUser: UserUpdate = {
-                name: editedUser.building + editedUser.room,
+                name: editedUser.app_metadata.building + editedUser.app_metadata.apartment,
                 email: editedUser.email,
                 user_metadata: editedUser.user_metadata,
                 app_metadata: editedUser.app_metadata,
@@ -144,31 +147,45 @@ const EditSingleUserDialog: React.FC<Props> = ({
                             margin="dense"
                             select
                             fullWidth
-                            value={editedUser.building}
-                            onChange={(e) => {
-                                setEditeduser({...editedUser, building: e.target.value as Building});
-                            }}
+                            value={editedUser.app_metadata.building}
+                            onChange={(e) => setEditeduser(prev => ({
+                                ...prev,
+                                app_metadata: {
+                                    ...prev.app_metadata,
+                                    building: e.target.value as Building
+                                },
+                            }))}
                             label="Välj Byggnad"
                             helperText="Välj Byggnad"
                         >
                             {buildingMenuItems}
                         </TextField>
                     </ListItem>
-                    {/* Room Number */}
+                    {/* Apartment */}
                     <ListItem>
                         <TextField
                             required
-                            id="room-number"
+                            id="apartment"
                             label="Rums-/lägenhetsnummer,"
-                            name="roomNbr"
+                            name="apartment"
                             margin="dense"
                             fullWidth
-                            value={editedUser.room}
-                            onChange={(e) => {
-                                setEditeduser({...editedUser, room: e.target.value});
-                            }}
+                            value={editedUser.app_metadata.apartment}
                             helperText={"Max 4 siffror + eventuell bokstav"}
                             inputMode={"numeric"}
+                            onChange={(e) => {
+                                const newValue = e.target.value;
+                                if (/^\d{0,4}[A-Za-z]?$/.test(newValue)) {
+                                    setEditeduser(prev => ({
+                                        ...prev,
+                                        app_metadata: {
+                                            ...prev.app_metadata,
+                                            apartment: newValue
+                                        },
+                                    }));
+                                }
+                            }}
+
                         />
                     </ListItem>
 
