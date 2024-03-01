@@ -62,16 +62,21 @@ class BookingService {
             throw new HttpError(HttpError.StatusCode.BAD_REQUEST, "Booking date is in the past");
         }
 
+        if (!(user.app_metadata.roles.includes("admin")) && booking.laundryBuilding !== user.app_metadata.laundryBuilding) {
+            throw new HttpError(HttpError.StatusCode.FORBIDDEN, "Forbidden to create booking for other laundry building")
+        }
+
         const allowedNumBookings = user.app_metadata.allowedSlots || 1
-        const activeBookings = await BookingDao.find({username: user.name, startTime: {$gte: new Date()}})
+        const activeBookings = await BookingDao.find({
+            username: user.name,
+            startTime: {$gte: new Date()},
+            laundryBuilding: booking.laundryBuilding
+        })
 
         if (activeBookings.length == allowedNumBookings) {
             throw new HttpError(HttpError.StatusCode.BAD_REQUEST, "Too many slots booked");
         }
 
-        if (!(user.app_metadata.roles.includes("admin")) && booking.laundryBuilding !== user.app_metadata.laundryBuilding) {
-            throw new HttpError(HttpError.StatusCode.FORBIDDEN, "Forbidden to create booking for other laundry building")
-        }
 
         if (user.sub != booking.user_id && !user.app_metadata.roles.includes("admin")) {
             throw new HttpError(HttpError.StatusCode.UNAUTHORIZED, "Unauthorized to create bookings for other user")
