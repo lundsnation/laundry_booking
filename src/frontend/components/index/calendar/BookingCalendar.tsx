@@ -213,6 +213,22 @@ const BookingCalendar = ({config, user: initUser, initialBookings}: Props) => {
         })
     }
 
+    const LaundryBuildingButtons = () => {
+        return (
+            <>
+                {Config.getLaundryBuildings.sort().map((building, index) => (
+                    <Button key={building}
+                            disableElevation={true}
+                            variant={user.app_metadata.laundryBuilding === building ? "contained" : "outlined"}
+                            onClick={() => handleBuildingChange(building)}
+                            sx={{ml: index > 0 ? "4px" : "0px"}}>
+                        {building}
+                    </Button>
+                ))}
+            </>
+        );
+    };
+
     const bookingButtonGroup = (
         <BookingButtonGroup
             bookedBookings={BookingsUtil.getBookingsByDate(bookings, selectedDate)}
@@ -232,18 +248,7 @@ const BookingCalendar = ({config, user: initUser, initialBookings}: Props) => {
                 (
                     <Grid item xs={12} sx={{mb: "2px"}}>
                         <Grid container justifyContent="flex-end">
-
-                            <Button disableElevation={true}
-                                    variant={user.app_metadata.laundryBuilding === LaundryBuilding.NATIONSHUSET ? "contained" : "outlined"}
-                                    onClick={() => handleBuildingChange(LaundryBuilding.NATIONSHUSET)}>
-                                Nationshuset
-                            </Button>
-                            <Button disableElevation={true}
-                                    variant={user.app_metadata.laundryBuilding === LaundryBuilding.ARKIVET ? "contained" : "outlined"}
-                                    onClick={() => handleBuildingChange(LaundryBuilding.ARKIVET)}
-                                    sx={{ml: "4px"}}>
-                                Arkivet
-                            </Button>
+                            <LaundryBuildingButtons/>
                         </Grid>
                     </Grid>
                 )
