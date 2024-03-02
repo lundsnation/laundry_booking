@@ -1,16 +1,20 @@
-import { Grid } from "@mui/material";
-import { useUser } from '@auth0/nextjs-auth0/client';
-import { NextPage } from "next";
-import { useState } from "react";
-import { UserType } from "../utils/types"
-import { Snack, SnackInterface } from "../src/components/Snack";
-import EditProfile from "../src/components/profile/EditProfile";
-import Loading from "../src/components/Loading";
-import router from "next/router";
-import Layout from "../src/components/layout/Layout";
+import {Grid} from "@mui/material";
+import {withPageAuthRequired} from '@auth0/nextjs-auth0';
+import {NextPage} from "next";
+import {useState} from "react";
+import {Snack, SnackInterface} from
+        "../src/frontend/components/Snack";
+import EditProfile from "../src/frontend/components/profile/EditProfile";
+import Layout from "../src/frontend/components/layout/Layout";
+import User, {JsonUser} from "../src/frontend/models/User";
 
-const Profile: NextPage = () => {
-    const { user, isLoading, error } = useUser()
+interface Props {
+    user: JsonUser
+}
+
+const Profile: NextPage<Props> = ({user}: Props) => {
+
+    const currentUser = new User(user, [])
     const [snack, setSnack] = useState<SnackInterface>({
         show: false,
         snackString: "",
@@ -18,27 +22,23 @@ const Profile: NextPage = () => {
     })
 
     const resetSnack = () => {
-        setSnack({ show: false, snackString: snack.snackString, severity: snack.severity })
+        setSnack({show: false, snackString: snack.snackString, severity: snack.severity})
     }
 
-    if (isLoading) return <Loading />
-    if (error) return <div>{error.message}</div>
-    if (!user) {
-        router.push('/api/auth/login')
-        return null
-    } else {
-        return (
-            <Layout>
-                <Snack state={snack} handleClose={resetSnack} />
-                <Grid container>
-                    <Grid item xs={12} mx={2} my={'10%'}>
-                        <EditProfile user={user as UserType} setSnack={setSnack} />
-                    </Grid>
-
+    return (
+        <Layout user={currentUser}>
+            <Snack state={snack} handleClose={resetSnack}/>
+            <Grid container>
+                <Grid item xs={12} mx={2} my={'10%'}>
+                    <EditProfile initUser={currentUser} setSnack={setSnack}/>
                 </Grid>
-            </Layout >
-        )
-    }
+
+            </Grid>
+        </Layout>
+    )
 }
+
+
+export const getServerSideProps = withPageAuthRequired();
 
 export default Profile

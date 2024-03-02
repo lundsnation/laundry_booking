@@ -1,64 +1,32 @@
-import { NextApiRequest, NextApiResponse } from "next"
-import { connect } from "../../../utils/connection"
-import { logRequest } from "../../../utils/backendLogger"
-import { ResponseFuncs, ERROR_MSG, UserType } from "../../../utils/types"
-import Booking from '../../../models/Booking'
-import { withApiAuthRequired, getSession } from "@auth0/nextjs-auth0"
-import { getUsers } from '../../../utils/getAuth0Users'
-import { pusherBackend } from "../../../utils/pusherAPI"
-import { isValidPhoneNumber } from 'libphonenumber-js'
+import {NextApiRequest, NextApiResponse} from "next"
+import {connect} from "../../../src/backend/mongoose/connection"
+import {Claims, getSession, withApiAuthRequired} from "@auth0/nextjs-auth0"
+import BookingService from "../../../src/backend/services/BookingService";
+import withErrorHandler from "../../../src/backend/errors/withErrorHandler";
+import HttpError from "../../../src/backend/errors/HttpError";
 
-const pusher = pusherBackend();
+const bookingService = new BookingService();
+const handler = withApiAuthRequired(withErrorHandler(async (req: NextApiRequest, res: NextApiResponse) => {
+    const session = await getSession(req, res)
+    if (!session) {
+        throw new HttpError(HttpError.StatusCode.UNAUTHORIZED, "Unauthorized")
+    }
+    const user: Claims = session.user
 
-const handler = withApiAuthRequired(async (req: NextApiRequest, res: NextApiResponse) => {
-  //capture request method, we type it as a key of ResponseFunc to reduce typing later
-  const method: keyof ResponseFuncs = req.method as keyof ResponseFuncs
-  const session = await getSession(req, res)
-  const user = session?.user
-  const catcher = (error: Error) => res.status(400).json({ error: ERROR_MSG.GENERAL })
-  await connect()
+    await connect()
+    switch (req.method) {
+        case 'GET':
+            const twoDaysAgo = new Date(new Date().setDate(new Date().getDate() - 2));
+            const bookings = await bookingService.getBookingsByLaundryBuildingAndPostDate(user.app_metadata.laundryBuilding, twoDaysAgo);
+            return res.status(200).json(bookings)
 
-  const handleCase: ResponseFuncs = {
-    GET: async (req: NextApiRequest, res: NextApiResponse) => {
-      logRequest('GET');
-      res.status(200).json(await Booking.find({}).catch(catcher))
-    },
+        case 'POST':
+            const booking = await bookingService.createBooking(user, req.body);
+            return res.status(200).json(booking)
 
-    POST: async (req: NextApiRequest, res: NextApiResponse) => {
-      logRequest('POST');
-      const { date, timeSlot, userName, createdAt } = req.body
-
-
-      const nbr = user?.user_metadata.telephone || ""
-
-      // Check too see if user has added phone Number
-      // Doesn't check if number is correctly formatted. Only done on fronted.
-      if (!isValidPhoneNumber(nbr)) {
-        return res.status(400).json({ error: ERROR_MSG.NONUMBER })
-      }
-
-      // Initial  check if booking-request is in the past => invalid
-      if (new Date(date).getTime() < Date.now()) {
-        return res.status(400).json({ error: ERROR_MSG.SLOTINPAST })
-      }
-      // Fetching allowed slots from active user session. If undefined, defaults to 1
-      const allowedSlots = user?.app_metadata.allowedSlots || 1
-      // Fetching slots already booked by the user
-      const slotCheck = await Booking.find({ userName: user?.name, date: { $gte: new Date() } })
-      if (!slotCheck || slotCheck.length < allowedSlots) {
-        const json = await Booking.create(req.body).catch(catcher)
-        await pusher.trigger('bookingUpdates', 'bookingUpdate', { userName, date, timeSlot, request: 'POST' })
-        return res.status(201).json(json)
-
-      }
-      return res.status(400).json({ error: ERROR_MSG.TOOMANYSLOTS })
-
-    },
-  }
-
-  const response = handleCase[method]
-  if (response) return response(req, res)
-  else return res.status(400).json({ error: ERROR_MSG.NOAPIRESPONSE })
-});
+        default:
+            throw new HttpError(HttpError.StatusCode.NOT_FOUND, "Request method not found")
+    }
+}));
 
 export default handler
