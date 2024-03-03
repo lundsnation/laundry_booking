@@ -1,5 +1,5 @@
 import {LocalizationProvider, PickersDay, PickersDayProps, StaticDatePicker} from '@mui/x-date-pickers';
-import React, {useCallback, useEffect, useRef, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import AdapterDateFns from '@date-io/date-fns'
 import {AlertColor, Badge, Button, Grid, Paper, SnackbarOrigin, TextField} from "@mui/material";
 import svLocale from 'date-fns/locale/sv';
@@ -36,7 +36,6 @@ const snackRTState: SnackInterface = {
     alignment: {vertical: "bottom", horizontal: "right"}
 }
 
-
 const BookingCalendar = ({config, user: initUser, initialBookings}: Props) => {
     const [selectedDate, setSelectedDate] = useState<Date>(new Date());
     const [bookings, setBookings] = useState<Booking[]>(initialBookings);
@@ -47,45 +46,78 @@ const BookingCalendar = ({config, user: initUser, initialBookings}: Props) => {
     const isAdmin = user.app_metadata.roles.includes("admin");
     const throwAsyncError = useAsyncError(); //Used to propagate errors to ErrorBoundary
 
+    console.log("BookingCalendar rendered")
 
-    //This should not have a dependency array as the cleanup function should only be called once on component unmount,
-    // and not everytime user.app_metadata.laundryBuilding changes
+    //Don't change order of useEffects. Order ensures user unsubscribes and disconnects from Pusher in the correct order.
     useEffect(() => {
-        if (!frontendPusher.current) {
+        if (frontendPusher.current === null) {
             frontendPusher.current = new FrontendPusher();
         }
-        return () => {
-            frontendPusher.current!.cleanup(user.app_metadata.laundryBuilding);
+
+        const updateBookings = async () => {
+            try {
+                const bookings = await BackendAPI.fetchBookingsForBuilding(user.app_metadata.laundryBuilding);
+                setBookings(bookings);
+                // Assuming setUserBookings updates the user object with the new bookings
+                user.setUserBookings(bookings);
+            } catch (e) {
+                // Error handling
+                if (isAxiosError(e)) {
+                    throwAsyncError(e);
+                } else {
+                    throwAsyncError(new Error("An error occurred while fetching bookings"));
+                }
+            }
         };
-        //Don't add user.app_metadata.laundryBuilding as a dependency here, as it will cause the cleanup function to be called
-        // everytime the building changes, which is not the intended behavior.
+
+
+        updateBookings().then(); // Initial fetch of bookings
+        const currentFrontendPusher = frontendPusher.current;
+        const channel = currentFrontendPusher.bookingUpdatesSubscribe(user.app_metadata.laundryBuilding);
+
+        // Correctly binding the event with a callback function
+        channel.bind(currentFrontendPusher.bookingUpdateEvent, (data: BookingUpdate) => {
+            // Destructuring data inside the function
+            const {username, startTime, timeSlot, method} = data;
+
+            updateBookings().then(); // Update bookings on cancel or booking event
+            const isPostRequest = method === currentFrontendPusher.bookingUpdateMethod.POST;
+            const snackString = `${username} ${isPostRequest ? 'bokade' : 'avbokade'} ${DateUtils.toLaundryBookingString(new Date(startTime), timeSlot)}`;
+            const myBooking = username === user.name;
+            const alignment: SnackbarOrigin = window.innerWidth > 600 ? {
+                vertical: 'bottom',
+                horizontal: 'right'
+            } : {vertical: 'top', horizontal: 'right'};
+
+            if (!myBooking) {
+                setRealtimeSnack({
+                    show: true,
+                    snackString: snackString,
+                    severity: "info",
+                    alignment: alignment
+                });
+            }
+        });
+
+        return () => {
+            // Cleanup
+            console.log("Unsubscribing and unbinding from Pusher");
+            currentFrontendPusher.bookingEventUnbind();
+            currentFrontendPusher.bookingUpdateUnsubscribe(user.app_metadata.laundryBuilding);
+        };
+    }, [user, throwAsyncError]); // Dependencies
+
+
+    //Disconnect only when the component unmounts, not when the user changes building.
+    useEffect(() => {
+        return () => {
+            // Use the captured value in the cleanup function.
+            console.log("Disconnecting from Pusher");
+            frontendPusher.current!.disconnect();
+        };
     }, []);
 
-
-    const updateBookings = useCallback(async () => {
-        try {
-            const bookings = await BackendAPI.fetchBookingsForBuilding(user.app_metadata.laundryBuilding);
-            setBookings(bookings);
-            // Assuming setUserBookings updates the user object with the new bookings
-            // This might need adjustment depending on how user state is managed
-            user.setUserBookings(bookings);
-        } catch (e) {
-            //This will be caught by the ErrorBoundary. Can be tweaked to use more specific error messages.
-            // For example the error itself can be thrown or information from it.
-            if (isAxiosError(e)) {
-                throwAsyncError(e);
-            } else {
-                throwAsyncError(new Error("An error occurred while fetching bookings"));
-            }
-        }
-    }, [user, throwAsyncError]);
-
-    const handleBuildingChange = useCallback((building: LaundryBuilding) => {
-        // Unsubscribe from the current building's updates
-        if (frontendPusher.current) {
-            frontendPusher.current.bookingUpdateUnsubscribe(user.app_metadata.laundryBuilding);
-        }
-
+    const handleBuildingChange = (building: LaundryBuilding) => {
         // Update the user object and its state
         const updatedUser = {
             ...user.toJSON(),
@@ -96,41 +128,7 @@ const BookingCalendar = ({config, user: initUser, initialBookings}: Props) => {
         };
 
         setUser(new User(updatedUser));
-
-        // Re-subscribe to the new building's updates
-        // This logic has been moved to ensure subscriptions are always correctly managed
-        updateBookings(); // Fetch new bookings for the updated building
-    }, [updateBookings, user]);
-
-    useEffect(() => {
-        const currentFrontendPusher = frontendPusher.current!;
-        updateBookings().then();
-        const channel = currentFrontendPusher.bookingUpdatesSubscribe(user.app_metadata.laundryBuilding);
-        channel.bind(currentFrontendPusher.bookingUpdateEvent, ({
-                                                                    username,
-                                                                    startTime,
-                                                                    timeSlot,
-                                                                    method
-                                                                }: BookingUpdate) => {
-            updateBookings().then();
-            const isPostRequest = method === currentFrontendPusher.bookingUpdateMethod.POST
-            const snackString = `${username} ${isPostRequest ? ' bokade ' : ' avbokade '} ${DateUtils.toLaundryBookingString(new Date(startTime), timeSlot)}`
-            const myBooking = username == user.name
-            const alignment: SnackbarOrigin = window.innerWidth > 600 ? {
-                vertical: 'bottom',
-                horizontal: 'right'
-            } : {vertical: 'top', horizontal: 'right'}
-
-            !myBooking && setRealtimeSnack({
-                show: true,
-                snackString: snackString,
-                severity: "info",
-                alignment: alignment
-            })
-        })
-    }, [user.app_metadata.laundryBuilding, user.name, updateBookings])
-
-
+    };
     const handleRenderDay = (day: Date, _value: Date[], DayComponentProps: PickersDayProps<Date>): JSX.Element => {
         if (DateUtils.isOldDate(day)) {
             return <PickersDay {...DayComponentProps} />;
@@ -232,7 +230,7 @@ const BookingCalendar = ({config, user: initUser, initialBookings}: Props) => {
     const bookingButtonGroup = (
         <BookingButtonGroup
             bookedBookings={BookingsUtil.getBookingsByDate(bookings, selectedDate)}
-            selectedDate={selectedDate} user={user} updateBookings={updateBookings}
+            selectedDate={selectedDate} user={user}
             snackTrigger={snackTrigger}
             config={config}
         />

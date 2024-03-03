@@ -59,10 +59,16 @@ export class FrontendPusher extends PusherClient {
         super(process.env.REACT_APP_PUSHER_KEY as string, frontendOptions)
         this._bookingUpdateChannel = bookingUpdateChannel;
         this._bookingUpdateEvent = bookingUpdateEvent;
+
+        console.log("PusherClient created")
     }
 
     bookingUpdatesSubscribe(laundryBuilding: LaundryBuilding): Channel {
         return super.subscribe(bookingUpdateChannel + "_" + laundryBuilding)
+    }
+
+    bookingEventUnbind(): void {
+        super.unbind(bookingUpdateEvent)
     }
 
     bookingUpdateUnsubscribe(laundryBuilding: LaundryBuilding): void {
@@ -82,9 +88,14 @@ export class FrontendPusher extends PusherClient {
         return this._bookingUpdateEvent
     }
 
+    disconnect() {
+        super.disconnect();
+    }
+
     cleanup(laundryBuilding: LaundryBuilding): void {
         super.unbind(bookingUpdateEvent);
         super.unsubscribe(bookingUpdateChannel + "_" + laundryBuilding);
+        // Unessecary to call disconnect, since useRef ensure one connection for the entire app.
         super.disconnect();
     }
 }

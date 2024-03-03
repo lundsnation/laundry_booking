@@ -1,5 +1,5 @@
 import React, {useState, useEffect, useCallback} from 'react';
-import type {NextPage} from 'next';
+import {NextPage} from 'next';
 import {Grid} from '@mui/material';
 import BookingCalendar from '../src/frontend/components/index/calendar/BookingCalendar';
 import Terms from '../src/frontend/components/Terms';
@@ -9,18 +9,20 @@ import User, {JsonUser} from '../src/frontend/models/User';
 import ConfigUtil from "../src/frontend/utils/ConfigUtil";
 import {useUser} from '@auth0/nextjs-auth0/client';
 import Loading from "../src/frontend/components/Loading";
-import router from 'next/router';
+import {useRouter} from 'next/router';
 import backendAPI from "../src/apiHandlers/BackendAPI";
 import Booking from "../src/frontend/models/Booking";
 import {isAxiosError} from "axios";
 import useAsyncError from "../src/frontend/errorHandling/asyncError";
-
 
 const Index: NextPage = () => {
     const {user, error, isLoading: userIsLoading} = useUser();
     const [initialBookings, setInitialBookings] = useState<Booking[]>([]);
     const [fetchingData, setFetchingData] = useState<boolean>(false);
     const throwAsyncError = useAsyncError();
+    const router = useRouter(); // Using the useRouter hook for redirection
+
+    console.log("Index page rendered")
 
     const fetchData = useCallback(async () => {
         try {
@@ -36,24 +38,39 @@ const Index: NextPage = () => {
         } finally {
             setFetchingData(false);
         }
-    }, [setFetchingData, setInitialBookings, throwAsyncError]); // Add all dependencies here
+    }, [throwAsyncError]);
 
     useEffect(() => {
         if (user && !userIsLoading) {
+            console.log("User", user)
+            console.log("User is loading", userIsLoading)
+            console.log("Fetching data")
             fetchData();
         }
-    }, [user, userIsLoading, fetchData]); // fetchData is stable now
+    }, [user, userIsLoading, fetchData]);
 
+    useEffect(() => {
+        if (!userIsLoading && !user) {
+            console.log("Redirecting to login")
+            router.push('/api/auth/login');
+        }
+    }, [user, userIsLoading, router]); // Handling redirection in useEffect
 
-    if (userIsLoading || fetchingData) return <Loading/>;
-    if (error) return <div>{error.message}</div>;
-    if (!user) {
-        router.push('/api/auth/login').then();
-        return null; // Add this to prevent the component from rendering further
+    if (userIsLoading || fetchingData) {
+        return <Loading/>;
     }
 
-    const userClass = new User(user as JsonUser, initialBookings)
-    const config = ConfigUtil.getLaundryConfigByLaundryBuilding(userClass.app_metadata.laundryBuilding)
+    if (error) {
+        return <div>{error.message}</div>;
+    }
+
+    if (!user) {
+        return null;
+    }
+
+    const userClass = new User(user as JsonUser, initialBookings);
+    const config = ConfigUtil.getLaundryConfigByLaundryBuilding(userClass.app_metadata.laundryBuilding);
+
     return (
         <Layout user={userClass}>
             <Terms user={userClass}/>
@@ -63,6 +80,6 @@ const Index: NextPage = () => {
             </Grid>
         </Layout>
     );
-}
+};
 
 export default Index;
