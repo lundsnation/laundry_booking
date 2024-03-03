@@ -9,13 +9,11 @@ interface Props {
     bookedBookings: Booking[];
     selectedDate: Date;
     user: User;
-    updateBookings: () => void;
     snackTrigger: (severity: AlertColor, snackString: string, alignment: SnackbarOrigin) => void;
     config: Config;
 }
 
-const BookingButtonGroup = (props: Props) => {
-    const {bookedBookings, selectedDate, user, updateBookings, snackTrigger, config} = props;
+const BookingButtonGroup = ({bookedBookings, selectedDate, user, snackTrigger, config}: Props) => {
 
     const buttons = config.timeSlots.map((ts) => {
         const timeSlot = new TimeSlot(ts, config.getDryingBooth(ts), selectedDate);
@@ -31,7 +29,6 @@ const BookingButtonGroup = (props: Props) => {
                 booking={booking || null}
                 selectedDate={selectedDate}
                 user={user}
-                updateBookings={updateBookings}
                 snackTrigger={snackTrigger}
             />
         );

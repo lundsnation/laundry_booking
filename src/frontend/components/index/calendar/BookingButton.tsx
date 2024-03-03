@@ -12,7 +12,6 @@ interface Props {
     booking: Booking | null;
     selectedDate: Date;
     timeSlot: TimeSlot;
-    updateBookings: () => void;
     snackTrigger: (severity: AlertColor, snackString: string, alignment: SnackbarOrigin) => void;
 }
 
