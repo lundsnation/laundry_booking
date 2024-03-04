@@ -13,7 +13,7 @@ const acceptTerms = async (req: NextApiRequest, res: NextApiResponse, session: S
 
     await userService.patchUser(session.user.sub, userUpdate)
     session.user.app_metadata.acceptedTerms = true
-    delete session.refresh_token
+    delete session.refreshToken
     return session
 }
 
@@ -30,7 +30,7 @@ const updateProfile = async (req: NextApiRequest, res: NextApiResponse, session:
     await userService.patchUser(session.user.sub, updatedUser)
     session.user.email = profileUpdate.email
     session.user.user_metadata.telephone = profileUpdate.user_metadata.telephone
-    delete session.refresh_token
+    delete session.refreshToken
     return session
 }
 
