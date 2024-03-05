@@ -13,6 +13,7 @@ const handler = withApiAuthRequired(withErrorHandler(async (req: NextApiRequest,
         throw new HttpError(HttpError.StatusCode.UNAUTHORIZED, "Unauthorized")
     }
 
+
     //Type needs to be solved here
     const bookingId: string = req.query.id as string
 
