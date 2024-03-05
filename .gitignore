@@ -9,7 +9,7 @@
 /coverage
 
 # lists of users
-/utils/users/userLists
+/src/apiHandlers/users/*
 
 # next.js
 /.next/
@@ -35,9 +35,15 @@ yarn-error.log*
 # vercel
 .vercel
 
+#Ideas
+.idea
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts
 
 # VS Code
 .vscode
+
+# Sentry Config File
+.sentryclirc

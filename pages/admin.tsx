@@ -1,35 +1,48 @@
-import { Typography } from "@mui/material";
-import { useUser } from '@auth0/nextjs-auth0/client';
-import UserGrid from "../src/components/admin/UserGrid";
-import { Grid } from "@mui/material";
-import Loading from "../src/components/Loading";
-import { useEffect } from "react";
-import router from "next/router";
-import Layout from "../src/components/layout/Layout";
+import React, {useEffect} from 'react';
+import {useUser} from '@auth0/nextjs-auth0/client';
+import router from 'next/router';
+import {Grid} from '@mui/material';
+import Layout from '../src/frontend/components/layout/Layout';
+import UserGrid from '../src/frontend/components/admin/UserGrid';
+import User, {JsonUser} from '../src/frontend/models/User';
+import Loading from '../src/frontend/components/Loading';
 
 const Admin = () => {
-    const { user, isLoading, error } = useUser()
+    const {user, error, isLoading: userIsLoading} = useUser();
 
     useEffect(() => {
-        if (!(user || isLoading)) {
-            router.push('api/auth/login')
+        if (!userIsLoading && user) {
+            const currentUser = new User(user as JsonUser);
+            if (!currentUser.app_metadata.roles.includes('admin')) {
+                // Redirect to login or unauthorized page if the user is not an admin
+                router.push('/index').then();
+                return; // Prevent further execution
+            }
         }
-    }, [user, isLoading])
+    }, [user, userIsLoading]);
 
+    if (userIsLoading) {
+        // Render loading state while checking user authentication
+        return <Loading/>;
+    }
+    if (error) return <div>{error.message}</div>;
+    if (!user) {
+        // Redirect to login page if user is not authenticated
+        router.push('/api/auth/login').then();
+        return null; // Prevent further rendering until redirection is complete
+    }
 
-    return (user ?
-        <Layout>
+    const currentUser = new User(user as JsonUser);
 
+    return (
+        <Layout user={currentUser}>
             <Grid container justifyContent="center">
-                {user && !isLoading && user.name == "admin" ?
-                    <Grid item xs={12} sx={{ px: { xs: 1 } }}>
-                        <UserGrid />
-                    </Grid> : <Typography variant={'h1'}>Ej auktoriserad</Typography>
-                }
+                <Grid item xs={12} sx={{px: {xs: 1}}}>
+                    <UserGrid/>
+                </Grid>
             </Grid>
+        </Layout>
+    );
+};
 
-        </Layout> : <Loading />
-    )
-}
-
-export default Admin
+export default Admin;
