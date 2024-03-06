@@ -15,7 +15,7 @@ const handler = withApiAuthRequired(withErrorHandler(async (req: NextApiRequest,
     switch (req.method) {
         case 'POST':
             const {email} = req.body;
-            if (userSession.user.email === email && !userSession.user.app_metadata.roles.includes("admin")) {
+            if (!(userSession.user.email === email || userSession.user.app_metadata.roles.includes("admin"))) {
                 throw new HttpError(HttpError.StatusCode.FORBIDDEN, "Forbidden action");
             }
             const response = await userService.changePasswordByEmail(email);

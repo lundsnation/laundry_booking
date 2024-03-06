@@ -107,7 +107,7 @@ const MobileMenuButton = () => {
                 {/*Logga ut knappen läggs till separat pga röd färg*/}
                 <MenuItem
                     key={"Logga ut"}
-                    onClick={() => onClick("api/auth/logout")}
+                    onClick={() => window.location.href = "api/auth/logout"}
                 >
                     <ListItemIcon>
                         <Logout color={"error"} fontSize='medium'/>

@@ -65,7 +65,7 @@ class BackendAPI {
     }
 
     static async ChangePassword(email: string): Promise<AxiosResponse> {
-        return await axios.post("api/users/changePassword", email)
+        return await axios.post("api/users/changePassword", {email})
     }
 }
 
