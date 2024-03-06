@@ -1,10 +1,10 @@
-import {NextApiRequest, NextApiResponse} from "next";
+import { NextApiRequest, NextApiResponse } from "next";
 import HttpError from "../../../../src/backend/errors/HttpError";
-import {connect} from "../../../../src/backend/mongoose/connection";
+import { connect } from "../../../../src/backend/mongoose/connection";
 import BookingService from "../../../../src/backend/services/BookingService";
-import {getSession, withApiAuthRequired} from "@auth0/nextjs-auth0";
+import { getSession, withApiAuthRequired } from "@auth0/nextjs-auth0";
 import withErrorHandler from "../../../../src/backend/errors/withErrorHandler";
-import {LaundryBuilding} from "../../../../src/frontend/configs/Config";
+import { LaundryBuilding } from "../../../../src/frontend/configs/Config";
 
 const bookingService = new BookingService();
 
@@ -20,7 +20,8 @@ const handler = withApiAuthRequired(withErrorHandler(async (req: NextApiRequest,
         if ('id' in req.query) {
             // Functionality for getting bookings by laundry building
             const laundryBuilding = req.query.id as LaundryBuilding;
-            const bookings = await bookingService.getBookingsByLaundryBuildingAndPostDate(laundryBuilding, new Date());
+            const twoDaysAgo = new Date(new Date().setDate(new Date().getDate() - 2));
+            const bookings = await bookingService.getBookingsByLaundryBuildingAndPostDate(laundryBuilding, twoDaysAgo);
             return res.status(200).json(bookings);
         } else {
             throw new HttpError(HttpError.StatusCode.BAD_REQUEST, "Missing required query parameter: laundryBuilding");
