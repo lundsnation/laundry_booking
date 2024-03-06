@@ -2,6 +2,7 @@ import React, {Component, ErrorInfo} from 'react';
 import ErrorSnack from "./ErrorSnack";
 import Button from '@mui/material/Button';
 import axios, {AxiosError} from 'axios';
+import * as Sentry from '@sentry/nextjs';
 
 interface Props {
     children: React.ReactNode;
@@ -40,7 +41,7 @@ class ErrorBoundary extends Component<Props, State> {
         });
 
         // Send error to Sentry
-        //Sentry.captureException(error);
+        Sentry.captureException(error);
     }
 
     resetError = () => {
