@@ -4,6 +4,7 @@ import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import {AccountCircle, Logout} from '@mui/icons-material/';
 import {ListItemIcon, MenuItem, SvgIconTypeMap} from '@mui/material';
+import router from 'next/router';
 import {OverridableComponent} from '@mui/material/OverridableComponent';
 import Hamburger from 'hamburger-react';
 import GavelIcon from '@mui/icons-material/Gavel';
@@ -35,8 +36,7 @@ const MobileMenuButton = () => {
     };
 
     const onClick = (link: string) => {
-        // Equivalent to enter link in address bar
-        window.location.href = link;
+        router.push(link);
     }
 
     return (
@@ -107,7 +107,7 @@ const MobileMenuButton = () => {
                 {/*Logga ut knappen läggs till separat pga röd färg*/}
                 <MenuItem
                     key={"Logga ut"}
-                    onClick={() => onClick("api/auth/logout")}
+                    onClick={() => window.location.href = "api/auth/logout"}
                 >
                     <ListItemIcon>
                         <Logout color={"error"} fontSize='medium'/>

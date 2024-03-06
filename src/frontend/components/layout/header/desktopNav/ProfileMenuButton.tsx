@@ -113,7 +113,6 @@ const ProfileMenuButton = (props: Props) => {
                         >
                             {text}
                         </Typography>
-                        authentication
                     </MenuItem>
                 ))}
 
