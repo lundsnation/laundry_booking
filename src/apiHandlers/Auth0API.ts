@@ -12,7 +12,7 @@ class Auth0API {
     });
 
     private static authentication = new AuthenticationClient({
-        domain: process.env.AUTH0_API_DOMAIN as string,
+        domain: process.env.AUTH0_DOMAIN as string,
         clientId: process.env.AUTH0_CLIENT_ID as string,
         clientSecret: process.env.AUTH0_CLIENT_SECRET as string
     });
@@ -89,9 +89,11 @@ class Auth0API {
     }
 
     static async userChangePasswordEmail(email: string) {
+        console.log("Changing password for user: " + email)
+
         return await this.auth_management.database.changePassword({
             email: email,
-            connection: 'Username-Password-Authentication'
+            connection: "Username-Password-Authentication"
         })
     }
 
