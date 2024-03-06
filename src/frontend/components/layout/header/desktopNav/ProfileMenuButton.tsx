@@ -37,7 +37,8 @@ const ProfileMenuButton = (props: Props) => {
     };
 
     const onClick = (link: string) => {
-        router.push(link);
+        // Equivalent to enter link in address bar
+        window.location.href = link;
     }
 
     return (
@@ -112,7 +113,7 @@ const ProfileMenuButton = (props: Props) => {
                         >
                             {text}
                         </Typography>
-
+                        authentication
                     </MenuItem>
                 ))}
 
