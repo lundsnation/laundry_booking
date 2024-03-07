@@ -20,7 +20,7 @@
     "@mui/x-date-pickers": "^5.0.8",
     "@sentry/nextjs": "^7.101.1",
     "@sideway/formula": "^3.0.1",
-    "@swc/cli": "^0.1.57",
+    "@swc/cli": "^0.3.9",
     "@types/react": "18.0.25",
     "@types/react-dom": "18.0.9",
     "add-to-calendar-button-react": "^2.5.9",
