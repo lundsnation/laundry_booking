@@ -2,8 +2,7 @@
 
 The Laundry Booking Project for Lund Nation is a web service that enables tenants to book laundry times. This project is
 developed using Next.js, Auth0 and MongoDB, along with several other technologies. It accommodates tenants across
-different
-laundry buildings depending on their specific building.
+different laundry buildings depending on their specific building, with laundry building specific real-time booking updates.
 
 ## Technologies Used
 
