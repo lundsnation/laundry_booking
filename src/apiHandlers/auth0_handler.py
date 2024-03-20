@@ -4,6 +4,7 @@ from auth0.management import Auth0
 from auth0.authentication import GetToken
 import time
 import re
+import pandas as pd
 
 """
 This class is used to manage users programmatically in the auth0 database. The class shouldn't be confused with the
@@ -34,6 +35,18 @@ class Auth0Handler:
         self.auth0 = Auth0(domain=domain, token=mgmt_api_token)
         self.userHandler = self.auth0.users
 
+    def get_user(self, user_id):
+        return self.userHandler.get(user_id)
+
+    def create_user(self, data):
+        return self.userHandler.create(data)
+
+    def delete_user(self, user_id):
+        return self.userHandler.delete(user_id)
+
+    def update_user(self, user_id, data):
+        return self.userHandler.update(user_id, data)
+
     def get_users(self):
         page = 0
         per_page = 50
@@ -48,12 +61,6 @@ class Auth0Handler:
             page += 1
 
         return all_users
-
-    def get_user(self, user_id):
-        return self.userHandler.get(user_id)
-
-    def update_user(self, user_id, data):
-        return self.userHandler.update(user_id, data)
 
     # This method is used to update building, apartment and laundryBuilding in the app_metadata of the user.
     def update_user_metadata(self, user):
@@ -111,15 +118,48 @@ def determine_laundry_building(user_name):
 
 if __name__ == "__main__":
     auth0 = Auth0Handler()
-    users = auth0.get_users()
-    updated_counts = {'laundryBuilding': 0, 'building': 0, 'apartment': 0}
 
-    for user in users:
-        updated_attrs = auth0.update_user_metadata(user)
-        for attr, updated in updated_attrs.items():
-            if updated:
-                updated_counts[attr] += 1
-        time.sleep(0.3)  # Sleep to avoid rate limits
+    df = pd.read_excel('arkivet_users.xlsx')
 
-    print(f"Found {len(users)} users")
-    print(f"Updated counts: {updated_counts}")
+    created_users_count = 0
+    for index, row in df.iterrows():
+        
+        # Extract name and email from the corresponding columns
+        name = row[0]  # Assuming 'name' is in column A
+        email = row[3]  # Assuming 'email' is in column D
+        print(f"Name: {name}, Email: {email}")
+
+        # Skip the rows which don't have name and email
+        if not name or not email:
+            continue
+
+        # remove whitespace from name and email
+        name = name.strip() if name else None
+        email = email.strip() if email else None
+
+        new_user_template = {
+            "name": f"{name}",
+            "email": f"{email}",
+            "connection": "Username-Password-Authentication",
+            "password": f"{name}",
+            "email_verified": False,
+            "app_metadata": {
+                "acceptedTerms": False,
+                "allowedSlots": 1,
+                "roles": ["user"],
+                "building": f"{extract_building(name)}",
+                "apartment": f"{extract_apartment(name)}",
+                "laundryBuilding": "ARKIVET",
+                "user_metadata": {
+                    "telephone": ""
+                }
+            }
+        }
+        auth0.create_user(new_user_template)
+
+        created_users_count += 1
+
+        # Sleep for 1 second to avoid rate limiting
+        time.sleep(1)
+
+    print(f"Created {created_users_count} users")
