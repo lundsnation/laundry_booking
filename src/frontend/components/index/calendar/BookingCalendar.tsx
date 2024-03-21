@@ -117,6 +117,24 @@ const BookingCalendar = ({config, user: initUser, initialBookings}: Props) => {
         };
     }, []);
 
+
+    // Ensures pusher channels limit is not reached
+    useEffect(() => {
+        const handleVisibilityChange = () => {
+            if (document.visibilityState === 'hidden') {
+                // Log out the user when the document becomes hidden
+                window.location.href = "/api/auth/logout";
+            }
+        };
+
+        document.addEventListener("visibilitychange", handleVisibilityChange);
+
+        return () => {
+            // Remove event listener for visibility change
+            document.removeEventListener("visibilitychange", handleVisibilityChange);
+        };
+    });
+
     const handleBuildingChange = (building: LaundryBuilding) => {
         // Update the user object and its state
         const updatedUser = {

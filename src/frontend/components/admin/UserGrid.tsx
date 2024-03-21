@@ -10,6 +10,7 @@ import {
     Typography,
     SnackbarOrigin,
     Checkbox,
+    Tooltip,
 } from "@mui/material";
 import {Table, TableBody, TableHead, TableRow, TableContainer, TableCell, TablePagination} from "@mui/material"
 import {Snack, SnackInterface} from "../Snack"
@@ -129,10 +130,13 @@ const UserGrid = () => {
     const handleSearchedUsers = (searchString: string) => {
         setSearchString(searchString); // Always update searchString state
 
+
         const lowerCaseSearchString = searchString.toLowerCase();
         const filteredUsers = users.filter(user =>
+
             user.name.toLowerCase().includes(lowerCaseSearchString) ||
-            user.email.toLowerCase().includes(lowerCaseSearchString)
+            user.email.toLowerCase().includes(lowerCaseSearchString) ||
+            user.app_metadata.laundryBuilding.toLowerCase().includes(lowerCaseSearchString)
         );
         setSearchedUsers(filteredUsers);
     }
@@ -276,26 +280,28 @@ const UserGrid = () => {
 
             <Grid container alignItems='flex-end' justifyContent="stretch">
                 <Grid item xs={12} sm={6} md={2.5}>
-                    <TextField
-                        id={'searchField'}
-                        fullWidth
-                        variant={'outlined'}
-                        size="medium"
-                        label="Sök efter användare"
-                        value={searchString}
-                        onChange={(e) => {
-                            handleSearchedUsers(e.target.value)
-                        }}
-                        InputProps={{
-                            endAdornment: (
-                                <InputAdornment position="end">
-                                    <IconButton>
-                                        <SearchIcon/>
-                                    </IconButton>
-                                </InputAdornment>
-                            )
-                        }}
-                    />
+                    <Tooltip title="OBS! Funkar bara på förstasidan" arrow>
+                        <TextField
+                            id={'searchField'}
+                            fullWidth
+                            variant={'outlined'}
+                            size="medium"
+                            label="Sök efter användare"
+                            value={searchString}
+                            onChange={(e) => {
+                                handleSearchedUsers(e.target.value)
+                            }}
+                            InputProps={{
+                                endAdornment: (
+                                    <InputAdornment position="end">
+                                        <IconButton>
+                                            <SearchIcon/>
+                                        </IconButton>
+                                    </InputAdornment>
+                                )
+                            }}
+                        />
+                    </Tooltip>
                 </Grid>
                 <Grid item xs={12} sm={6} md={4}>
                     <ButtonGroup fullWidth sx={{height: '56px'}} orientation='horizontal' size="small"

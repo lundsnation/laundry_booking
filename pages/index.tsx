@@ -24,6 +24,33 @@ const Index: NextPage = () => {
 
     console.log("Index page rendered")
 
+    // Ensures logout after 10 minutes of inactivity and disconnect from pusher channels, so limit is not reached.
+    const handleUserActivity = () => {
+        // Reset the timer on user activity
+        clearTimeout(inactivityTimeout);
+        // Set a new timer for auto logout after 5 minutes
+        inactivityTimeout = setTimeout(() => {
+            window.location.href = "/api/auth/logout";
+        }, 15 * 60 * 1000); // 15 minutes in milliseconds
+    };
+
+    // Timer variable to track inactivity
+    let inactivityTimeout: NodeJS.Timeout;
+
+    // Add event listener for user activity on component mount
+    useEffect(() => {
+        // Initial setup on component mount
+        handleUserActivity();
+
+        // Add event listener for user activity
+        document.addEventListener('click', handleUserActivity);
+
+        // Cleanup function to remove event listener on component unmount
+        return () => {
+            document.removeEventListener('click', handleUserActivity);
+        };
+    });
+
     const fetchData = useCallback(async () => {
         try {
             setFetchingData(true);

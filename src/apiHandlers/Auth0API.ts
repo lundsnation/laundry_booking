@@ -17,6 +17,7 @@ class Auth0API {
         clientSecret: process.env.AUTH0_CLIENT_SECRET as string
     });
 
+
     private static user_management = this.management.users;
     private static auth_management = this.authentication;
 
