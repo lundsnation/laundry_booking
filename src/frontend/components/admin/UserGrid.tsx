@@ -130,10 +130,13 @@ const UserGrid = () => {
     const handleSearchedUsers = (searchString: string) => {
         setSearchString(searchString); // Always update searchString state
 
+
         const lowerCaseSearchString = searchString.toLowerCase();
         const filteredUsers = users.filter(user =>
+
             user.name.toLowerCase().includes(lowerCaseSearchString) ||
-            user.email.toLowerCase().includes(lowerCaseSearchString)
+            user.email.toLowerCase().includes(lowerCaseSearchString) ||
+            user.app_metadata.laundryBuilding.toLowerCase().includes(lowerCaseSearchString)
         );
         setSearchedUsers(filteredUsers);
     }
