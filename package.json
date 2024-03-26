@@ -16,7 +16,7 @@
     "@emotion/styled": "^11.10.5",
     "@mui/icons-material": "^5.10.14",
     "@mui/lab": "^5.0.0-alpha.108",
-    "@mui/material": "^5.11.1",
+    "@mui/material": "^5.15.10",
     "@mui/x-date-pickers": "^5.0.8",
     "@sentry/nextjs": "^7.101.1",
     "@sideway/formula": "^3.0.1",
