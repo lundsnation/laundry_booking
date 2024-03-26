@@ -12,9 +12,9 @@ import {
     Checkbox,
     Tooltip,
 } from "@mui/material";
-import {Table, TableBody, TableHead, TableRow, TableContainer, TableCell, TablePagination} from "@mui/material"
-import {Snack, SnackInterface} from "../Snack"
-import React, {useEffect, useState} from "react";
+import { Table, TableBody, TableHead, TableRow, TableContainer, TableCell, TablePagination } from "@mui/material"
+import { Snack, SnackInterface } from "../Snack"
+import React, { useEffect, useState } from "react";
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import PersonAddOutlinedIcon from '@mui/icons-material/PersonAddOutlined';
 import NewUserDialog from "./NewUserDialog";
@@ -27,7 +27,7 @@ import BackendAPI from "../../../apiHandlers/BackendAPI";
 import EditSingleUserDialog from "./editUsers/EditSingleUserDialog";
 import EditMultipleUserDialog from "./editUsers/EditMultipleUserDialog";
 import useAsyncError from "../../errorHandling/asyncError";
-import {AxiosError, isAxiosError} from "axios";
+import { AxiosError, isAxiosError } from "axios";
 
 const UserGrid = () => {
     const [selectedUsers, setSelectedUsers] = useState<User[]>([]);
@@ -38,7 +38,7 @@ const UserGrid = () => {
     const [showAddDialog, setShowAddDialog] = useState(false)
     const [loadingData, setLoadingData] = useState(false)
     const [users, setUsers] = useState<User[]>([])
-    const alignment: SnackbarOrigin = {vertical: 'bottom', horizontal: 'left'}
+    const alignment: SnackbarOrigin = { vertical: 'bottom', horizontal: 'left' }
     const [snack, setSnack] = useState<SnackInterface>({
         show: false,
         snackString: "",
@@ -74,13 +74,13 @@ const UserGrid = () => {
         for (let i = 0; i < rowsPerPage; i++) {
             content.push(
                 <TableRow key={"Skeleton" + i}>
-                    <TableCell padding="checkbox"><Skeleton variant="rounded" height="24px" width="24px"/></TableCell>
-                    <TableCell component="th" scope="row" padding="none"><Skeleton/></TableCell>
-                    <TableCell align="right"><Skeleton/></TableCell>
-                    <TableCell align="right"><Skeleton/></TableCell>
-                    <TableCell align="right"><Skeleton/></TableCell>
-                    <TableCell align="right"><Skeleton/></TableCell>
-                    <TableCell align="right"><Skeleton/></TableCell>
+                    <TableCell padding="checkbox"><Skeleton variant="rounded" height="24px" width="24px" /></TableCell>
+                    <TableCell component="th" scope="row" padding="none"><Skeleton /></TableCell>
+                    <TableCell align="right"><Skeleton /></TableCell>
+                    <TableCell align="right"><Skeleton /></TableCell>
+                    <TableCell align="right"><Skeleton /></TableCell>
+                    <TableCell align="right"><Skeleton /></TableCell>
+                    <TableCell align="right"><Skeleton /></TableCell>
                 </TableRow>
             )
         }
@@ -99,7 +99,7 @@ const UserGrid = () => {
             );
             setSelectedUsers([]);
 
-            const alignment: SnackbarOrigin = {vertical: 'bottom', horizontal: 'left'}
+            const alignment: SnackbarOrigin = { vertical: 'bottom', horizontal: 'left' }
             setSnack({
                 show: true,
                 snackString: `Tog bort ${selectedUsers.length} användare`,
@@ -130,7 +130,6 @@ const UserGrid = () => {
     const handleSearchedUsers = (searchString: string) => {
         setSearchString(searchString); // Always update searchString state
 
-
         const lowerCaseSearchString = searchString.toLowerCase();
         const filteredUsers = users.filter(user =>
 
@@ -138,6 +137,11 @@ const UserGrid = () => {
             user.email.toLowerCase().includes(lowerCaseSearchString) ||
             user.app_metadata.laundryBuilding.toLowerCase().includes(lowerCaseSearchString)
         );
+
+        if (page > 0) {
+            setPage(0);
+        }
+
         setSearchedUsers(filteredUsers);
     }
 
@@ -170,11 +174,11 @@ const UserGrid = () => {
                         onClick={(event) => handleSelectedClick(event, userEntry)}
                         key={userEntry.sub}
                         tabIndex={-1}
-                        sx={{'&:last-child td, &:last-child th': {border: 0}}}
+                        sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                         selected={isItemSelected}
                     ><TableCell padding="checkbox">
-                        <Checkbox color="primary" checked={isItemSelected} inputProps={{'aria-labelledby': labelId,}}/>
-                    </TableCell>
+                            <Checkbox color="primary" checked={isItemSelected} inputProps={{ 'aria-labelledby': labelId, }} />
+                        </TableCell>
                         <TableCell align="left" component="th" scope="row" id={labelId} padding="none">
                             {userEntry.name}
                         </TableCell>
@@ -199,12 +203,12 @@ const UserGrid = () => {
 
     //Istället för att fetcha om users efter varje ändring så kan vi bara ändra i listan.
     return (
-        <Paper sx={{width: {lg: '1200px'}}} elevation={0} variant={"outlined"}>
+        <Paper sx={{ width: { lg: '1200px' } }} elevation={0} variant={"outlined"}>
             <Grid item xs={12}>
-                <Typography variant="h5" sx={{m: 2}}> Redigera Användare</Typography>
+                <Typography variant="h5" sx={{ m: 2 }}> Redigera Användare</Typography>
             </Grid>
             <Snack handleClose={() => {
-                setSnack(snack => ({...snack, show: false}))
+                setSnack(snack => ({ ...snack, show: false }))
             }} state={snack}></Snack>
             <NewUserDialog
                 showAddDialog={showAddDialog}
@@ -251,7 +255,7 @@ const UserGrid = () => {
             />
 
             <TableContainer component={Paper}>
-                <Table sx={{minWidth: 750}} size='small' aria-label="simple table">
+                <Table sx={{ minWidth: 750 }} size='small' aria-label="simple table">
                     <TableHead>
                         <TableRow>
                             <TableCell></TableCell>
@@ -271,7 +275,7 @@ const UserGrid = () => {
                                     height: 33 * emptyRows,
                                 }}
                             >
-                                <TableCell colSpan={6}/>
+                                <TableCell colSpan={6} />
                             </TableRow>
                         )}
                     </TableBody>
@@ -280,48 +284,46 @@ const UserGrid = () => {
 
             <Grid container alignItems='flex-end' justifyContent="stretch">
                 <Grid item xs={12} sm={6} md={2.5}>
-                    <Tooltip title="OBS! Funkar bara på förstasidan" arrow>
-                        <TextField
-                            id={'searchField'}
-                            fullWidth
-                            variant={'outlined'}
-                            size="medium"
-                            label="Sök efter användare"
-                            value={searchString}
-                            onChange={(e) => {
-                                handleSearchedUsers(e.target.value)
-                            }}
-                            InputProps={{
-                                endAdornment: (
-                                    <InputAdornment position="end">
-                                        <IconButton>
-                                            <SearchIcon/>
-                                        </IconButton>
-                                    </InputAdornment>
-                                )
-                            }}
-                        />
-                    </Tooltip>
+                    <TextField
+                        id={'searchField'}
+                        fullWidth
+                        variant={'outlined'}
+                        size="medium"
+                        label="Sök efter användare"
+                        value={searchString}
+                        onChange={(e) => {
+                            handleSearchedUsers(e.target.value)
+                        }}
+                        InputProps={{
+                            endAdornment: (
+                                <InputAdornment position="end">
+                                    <IconButton>
+                                        <SearchIcon />
+                                    </IconButton>
+                                </InputAdornment>
+                            )
+                        }}
+                    />
                 </Grid>
                 <Grid item xs={12} sm={6} md={4}>
-                    <ButtonGroup fullWidth sx={{height: '56px'}} orientation='horizontal' size="small"
-                                 variant="outlined">
+                    <ButtonGroup fullWidth sx={{ height: '56px' }} orientation='horizontal' size="small"
+                        variant="outlined">
                         <Button fullWidth onClick={() => {
                             setShowDeleteUserDialog(true)
                         }} disabled={selectedUsers.length === 0} size='small' color="error"
-                                startIcon={<DeleteIcon/>}> Ta
+                            startIcon={<DeleteIcon />}> Ta
                             Bort</Button>
                         <Button fullWidth onClick={() => {
                             setShowEditDialog(true)
                         }} disabled={selectedUsers.length === 0} size='small' color="warning"
-                                startIcon={<EditOutlinedIcon/>}>Ändra</Button>
+                            startIcon={<EditOutlinedIcon />}>Ändra</Button>
                         <Button fullWidth onClick={() => {
                             setShowAddDialog(true)
-                        }} size='small' color="primary" startIcon={<PersonAddOutlinedIcon/>}>Lägg till</Button>
+                        }} size='small' color="primary" startIcon={<PersonAddOutlinedIcon />}>Lägg till</Button>
                     </ButtonGroup>
                 </Grid>
 
-                <Grid item md={0.5}/>
+                <Grid item md={0.5} />
 
                 <Grid item xs={12} sm={12} md={5} justifyContent={'right'}>
                     <TablePagination
