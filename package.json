@@ -27,7 +27,7 @@
     "auth0": "^4.2.0",
     "axios": "^1.4.0",
     "date-fns": "^2.29.3",
-    "dotenv": "^16.0.3",
+    "dotenv": "^16.4.4",
     "eslint": "8.30.0",
     "fast-xml-parser": "^4.3.5",
     "hamburger-react": "^2.5.0",
