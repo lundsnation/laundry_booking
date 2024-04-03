@@ -22,7 +22,7 @@
     "@sideway/formula": "^3.0.1",
     "@swc/cli": "^0.1.57",
     "@types/react": "18.0.25",
-    "@types/react-dom": "18.0.9",
+    "@types/react-dom": "18.2.19",
     "add-to-calendar-button-react": "^2.5.9",
     "auth0": "^4.2.0",
     "axios": "^1.4.0",
