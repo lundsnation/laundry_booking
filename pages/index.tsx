@@ -101,7 +101,7 @@ const Index: NextPage = () => {
     return (
         <Layout user={userClass}>
             <Terms user={userClass}/>
-            <Rules/>
+            <Rules user={userClass}/>
             <Grid container px={1} marginY={10}>
                 <BookingCalendar config={config} user={userClass} initialBookings={initialBookings}/>
             </Grid>
