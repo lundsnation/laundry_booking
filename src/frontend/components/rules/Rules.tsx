@@ -4,8 +4,13 @@ import {Box} from "@mui/system";
 import {useState} from "react";
 import KeyboardDoubleArrowRightIcon from '@mui/icons-material/KeyboardDoubleArrowRight';
 import RulesText from "./RulesText";
+import User from "../../models/User";
 
-const Rules = () => {
+interface Props {
+    user: User
+}
+
+const Rules = ({user}: Props) => {
     const [drawerOpen, setdrawerOpen] = useState<boolean>(false);
 
 
@@ -55,7 +60,7 @@ const Rules = () => {
                 onClose={toggleDrawer}
                 onOpen={toggleDrawer}
             >
-                <RulesText/>
+                <RulesText user={user}/>
             </SwipeableDrawer>
         </Box>
     )

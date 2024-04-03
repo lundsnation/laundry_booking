@@ -25,7 +25,7 @@ const Rules: NextPage = () => {
                 <Grid container justifyContent="center">
                     <Grid item xs={12} md={6}>
                         <Paper variant="outlined" sx={{my: {sm: 6}, mx: {xs: 2}}}>
-                            <RulesText/>
+                            <RulesText user={currentUser}/>
                         </Paper>
                     </Grid>
                 </Grid>

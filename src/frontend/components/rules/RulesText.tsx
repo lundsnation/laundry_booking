@@ -1,16 +1,22 @@
-import { Box, List, ListItem, ListItemText, Stack, Typography } from "@mui/material";
+import {Box, List, ListItem, ListItemText, Stack, Typography} from "@mui/material";
 import EmailIcon from '@mui/icons-material/Email';
 import PhoneIcon from '@mui/icons-material/Phone';
+import User from "../../models/User";
+import {LaundryBuilding} from "../../configs/Config";
 
-export const RulesText = () => {
+interface Props {
+    user: User
+}
+
+export const RulesText = ({user}: Props) => {
 
     const fontWeight = 'medium'
     const mx = 3
     return (
-        <Box >
+        <Box>
             <Typography align="center" variant="h3" padding={2}>
                 Regler
-            </Typography >
+            </Typography>
             <Typography variant="body1" align="left" fontWeight={fontWeight} mx={mx}>
                 Tvättstugan är det viktigaste gemensamma utrymmet vi har på huset, därför är det extremt
                 viktigt att vi alla hjälps åt och att alla tar sitt ansvar när det gäller att hålla det rent och snyggt.
@@ -18,8 +24,8 @@ export const RulesText = () => {
                 över.
             </Typography>
 
-            <List sx={{ listStyleType: 'disc', pl: 4 }} >
-                <ListItem sx={{ display: 'list-item', py: 0 }}>
+            <List sx={{listStyleType: 'disc', pl: 4}}>
+                <ListItem sx={{display: 'list-item', py: 0}}>
                     <ListItemText>
                         <Typography fontWeight={fontWeight} mx={mx}>
                             15 minuter efter avsatt tid är det fritt fram för andra husboende att utnyttja
@@ -29,7 +35,7 @@ export const RulesText = () => {
                     </ListItemText>
                 </ListItem>
 
-                <ListItem sx={{ display: 'list-item', py: 0 }}>
+                <ListItem sx={{display: 'list-item', py: 0}}>
                     <ListItemText>
                         <Typography fontWeight={fontWeight} mx={mx}>
                             4 stycken bokningsbara maskiner och 2 stycken ej bokningsbara stand-by-maskiner
@@ -37,7 +43,7 @@ export const RulesText = () => {
                     </ListItemText>
                 </ListItem>
 
-                <ListItem sx={{ display: 'list-item', py: 0 }}>
+                <ListItem sx={{display: 'list-item', py: 0}}>
                     <ListItemText>
 
                         <Typography fontWeight={fontWeight} mx={mx}>
@@ -47,21 +53,21 @@ export const RulesText = () => {
                     </ListItemText>
 
 
-
                 </ListItem>
 
-                <ListItem sx={{ display: 'list-item', py: 0 }}>
+                <ListItem sx={{display: 'list-item', py: 0}}>
                     <ListItemText>
 
                         <Typography fontWeight={fontWeight} mx={mx}>
-                            Torkbåsen ska vara tömda 24 timmar efter ditt tvättpass börjat. Om torkbåset inte är tömt kan du hitta kontaktuppgifter till personen på hemsidan.
+                            Torkbåsen ska vara tömda 24 timmar efter ditt tvättpass börjat. Om torkbåset inte är tömt
+                            kan du hitta kontaktuppgifter till personen på hemsidan.
                             Observera att detta enbart får användas för detta skäl och att kontaktuppgifterna
                             inte får missbrukas.
                         </Typography>
                     </ListItemText>
                 </ListItem>
 
-                <ListItem sx={{ display: 'list-item', py: 0 }}>
+                <ListItem sx={{display: 'list-item', py: 0}}>
                     <ListItemText>
                         <Typography fontWeight={fontWeight} mx={mx}>
                             När du är klar med din tvättid bör du se till att tvättstugan lämnas i gott skick.
@@ -69,19 +75,25 @@ export const RulesText = () => {
                     </ListItemText>
                 </ListItem>
 
-                <ListItem sx={{ display: 'list-item', py: 0 }}>
+                <ListItem sx={{display: 'list-item', py: 0}}>
                     <ListItemText>
-
-                        <Typography fontWeight={fontWeight} mx={mx}>
-                            Det är viktigt att inte lägga i för mycket tvättmedel i facket. För mycket tvättmedel
-                            resulterar i att avlagring bildas och maskinen behöver servas av en tekniker (dvs.
-                            dyrt). Rätt dosering står på tvättmedelspaketet, men det är ALLTID mindre än vad du
-                            tror.
-                        </Typography>
+                        {user.app_metadata.laundryBuilding === LaundryBuilding.ARKIVET ?
+                            <Typography fontWeight={fontWeight} mx={mx}>
+                                Tvättmaskinerna är självdoserande och anpassar mängden tvättmedel automatiskt. Det är
+                                inte nödvändigt att lägga till eget tvättmedel.
+                            </Typography>
+                            :
+                            <Typography fontWeight={fontWeight} mx={mx}>
+                                Det är viktigt att inte lägga i för mycket tvättmedel i facket. För mycket tvättmedel
+                                resulterar i att avlagring bildas och maskinen behöver servas av en tekniker (dvs.
+                                dyrt). Rätt dosering står på tvättmedelspaketet, men det är ALLTID mindre än vad du
+                                tror.
+                            </Typography>
+                        }
                     </ListItemText>
                 </ListItem>
 
-                <ListItem sx={{ display: 'list-item', py: 0 }}>
+                <ListItem sx={{display: 'list-item', py: 0}}>
                     <ListItemText>
 
                         <Typography fontWeight={fontWeight} mx={mx}>
@@ -94,11 +106,11 @@ export const RulesText = () => {
             </List>
 
             <Box my={3} mx={mx}>
-                <Typography fontWeight={'bold'} >
+                <Typography fontWeight={'bold'}>
                     Kontaktuppgifter till husförmännen:
-                </Typography >
+                </Typography>
                 <Stack direction='row' alignItems='center' gap={0}>
-                    <EmailIcon />
+                    <EmailIcon/>
                     <Typography mx={mx}>
 
                         husforman@lundsnation.se
@@ -106,7 +118,7 @@ export const RulesText = () => {
                 </Stack>
 
                 <Stack direction='row' alignItems='center' gap={0}>
-                    <PhoneIcon />
+                    <PhoneIcon/>
                     <Typography mx={mx}>
                         0735146065 & 0735146066
                     </Typography>
@@ -120,7 +132,7 @@ export const RulesText = () => {
             </Typography>
 
 
-        </Box >
+        </Box>
     )
 
 }
