@@ -36,7 +36,7 @@
     "libphonenumber-js": "^1.10.18",
     "mongoose": "^8.0.0",
     "mui-image": "^1.0.7",
-    "next": "^13.0.5",
+    "next": "^14.1.1",
     "postcss": "^8.4.35",
     "pusher": "^5.1.2",
     "pusher-js": "^8.0.0",
