@@ -28,7 +28,7 @@
     "axios": "^1.4.0",
     "date-fns": "^2.29.3",
     "dotenv": "^16.0.3",
-    "eslint": "8.30.0",
+    "eslint": "9.0.0",
     "fast-xml-parser": "^4.3.5",
     "hamburger-react": "^2.5.0",
     "ip": "^2.0.1",
