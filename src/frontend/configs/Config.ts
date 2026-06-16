@@ -56,7 +56,7 @@ abstract class Config {
     public getDryingBooth(inputString: string): number {
         const result = this.dryingBoothsMappings.get(inputString);
 
-        if (!result) {
+        if (result === undefined) {
             throw new Error(`Drying booth not found for string: ${inputString}`);
         }
 
