@@ -38,7 +38,8 @@ const Footer = () => {
                             ÖPPETTIDER HUSEXPEDITIONEN
                         </Typography>
                         <Typography variant="body1" align="center" fontWeight="medium">
-                            Mån & Tors 17.00-18.00
+                            Tis & Ons 18.00-19.00 <br></br>
+                            Tors 17.00-18.00
                         </Typography>
                         <Typography variant="body1" align="center" fontWeight="medium">
                             Agardhsgatan 1, 223 51, Lund
