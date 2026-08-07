@@ -18,7 +18,7 @@
     "@mui/lab": "^5.0.0-alpha.108",
     "@mui/material": "^5.11.1",
     "@mui/x-date-pickers": "^5.0.8",
-    "@sentry/nextjs": "^7.101.1",
+    "@sentry/nextjs": "^8.10.0",
     "@sideway/formula": "^3.0.1",
     "@swc/cli": "^0.1.57",
     "@types/react": "18.0.25",
