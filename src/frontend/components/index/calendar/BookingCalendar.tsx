@@ -15,6 +15,7 @@ import BackendAPI from "../../../../apiHandlers/BackendAPI";
 import DateUtils from "../../../utils/DateUtils";
 import useAsyncError from "../../../errorHandling/asyncError";
 import {isAxiosError} from "axios";
+import ConfigUtil from "../../../utils/ConfigUtil";
 
 interface Props {
     config: Config
@@ -42,6 +43,7 @@ const BookingCalendar = ({config, user: initUser, initialBookings}: Props) => {
     const [snack, setSnack] = useState<SnackInterface>(snackInitState)
     const [realtimeSnack, setRealtimeSnack] = useState<SnackInterface>(snackRTState)
     const [user, setUser] = useState<User>(initUser);
+    const [currentConfig, setCurrentConfig] = useState<Config>(config);
     const frontendPusher = useRef<FrontendPusher | null>(null);
     const isAdmin = user.app_metadata.roles.includes("admin");
     const throwAsyncError = useAsyncError(); //Used to propagate errors to ErrorBoundary
@@ -136,16 +138,9 @@ const BookingCalendar = ({config, user: initUser, initialBookings}: Props) => {
     });
 
     const handleBuildingChange = (building: LaundryBuilding) => {
-        // Update the user object and its state
-        const updatedUser = {
-            ...user.toJSON(),
-            app_metadata: {
-                ...user.app_metadata,
-                laundryBuilding: building
-            }
-        };
-
+        const updatedUser = {...user.toJSON(), app_metadata: {...user.app_metadata, laundryBuilding: building}};
         setUser(new User(updatedUser));
+        setCurrentConfig(ConfigUtil.getLaundryConfigByLaundryBuilding(building));
     };
     const handleRenderDay = (day: Date, _value: Date[], DayComponentProps: PickersDayProps<Date>): JSX.Element => {
         if (DateUtils.isOldDate(day)) {
@@ -166,7 +161,7 @@ const BookingCalendar = ({config, user: initUser, initialBookings}: Props) => {
         }
     };
 
-    const isFullyBooked = (nbrBookedTimes: number) => nbrBookedTimes === config.timeSlots.length;
+    const isFullyBooked = (nbrBookedTimes: number) => nbrBookedTimes === currentConfig.timeSlots.length;
 
     const renderFullyBookedDayWithUserBooking = (DayComponentProps: PickersDayProps<Date>) => (
         <Badge
@@ -246,12 +241,9 @@ const BookingCalendar = ({config, user: initUser, initialBookings}: Props) => {
     };
 
     const bookingButtonGroup = (
-        <BookingButtonGroup
-            bookedBookings={BookingsUtil.getBookingsByDate(bookings, selectedDate)}
-            selectedDate={selectedDate} user={user}
-            snackTrigger={snackTrigger}
-            config={config}
-        />
+        <BookingButtonGroup bookedBookings={BookingsUtil.getBookingsByDate(bookings, selectedDate)}
+                            selectedDate={selectedDate} user={user} snackTrigger={snackTrigger}
+                            config={currentConfig}/>
     )
 
     const todaysDateMinus2Days = new Date(new Date().setDate(new Date().getDate() - 2));
